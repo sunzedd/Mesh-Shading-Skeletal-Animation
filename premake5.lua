@@ -39,6 +39,7 @@ workspace "Mesh-Shaders-Skeletal-Animation"
 
         links
         {
+            "opengl32.lib",
             "glfw3.lib"
         }
 
