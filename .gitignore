@@ -30,3 +30,18 @@
 *.exe
 *.out
 *.app
+
+build/
+
+# IDE
+.vscode/
+.vs/
+
+*.sln
+*.vcxproj
+*.vcxproj.user
+*.vcxproj.filters
+
+# misc
+*.un~
+*.gitignore~
