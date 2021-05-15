@@ -8,6 +8,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 
+#if 0
 static const struct
 {
     float x, y;
@@ -139,3 +140,29 @@ int main(void)
     glfwTerminate();
     exit(EXIT_SUCCESS);
 }
+
+#endif
+
+#define TESTWINDOW 1
+#if TESTWINDOW
+
+#include "Window.h"
+#include <iostream>
+
+int main()
+{
+    using namespace FQW;
+
+    Logger::Initialize(spdlog::level::trace);
+
+    Window w(800, 600, "TestingWindow");
+
+    FQW_INFO("Start running");
+    while (!w.IsClosed())
+    {
+        w.Clear();
+        w.Update();
+    }
+    FQW_INFO("End running");
+}
+#endif

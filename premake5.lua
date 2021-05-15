@@ -27,6 +27,7 @@ workspace "Mesh-Shaders-Skeletal-Animation"
         includedirs
         {
             "%{wks.location}/deps/glad/include",
+            "%{wks.location}/deps/spdlog/include",
             
             "D:/Library/GLFW/glfw-3.3.4/include",
             "D:/Library/glm"
