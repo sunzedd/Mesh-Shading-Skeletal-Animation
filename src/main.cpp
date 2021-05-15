@@ -147,6 +147,7 @@ int main(void)
 #if TESTWINDOW
 
 #include "Window.h"
+#include "Input.h"
 #include <iostream>
 
 int main()
@@ -154,13 +155,31 @@ int main()
     using namespace FQW;
 
     Logger::Initialize(spdlog::level::trace);
-
     Window w(800, 600, "TestingWindow");
+    Input::Initialize(w);
 
     FQW_INFO("Start running");
     while (!w.IsClosed())
     {
         w.Clear();
+
+        if (Input::IsKeyPressed(GLFW_KEY_A)) { FQW_TRACE("A"); }
+        if (Input::IsKeyPressed(GLFW_KEY_W)) { FQW_TRACE("W"); }
+        if (Input::IsKeyPressed(GLFW_KEY_D)) { FQW_TRACE("D"); }
+        if (Input::IsKeyPressed(GLFW_KEY_S)) { FQW_TRACE("S"); }
+
+        if (Input::IsKeyPressed(GLFW_KEY_SPACE)) {
+            double time_s = Input::GetTime_s();
+            double time_ms = Input::GetTime_ms();
+            FQW_TRACE("Time: s{}, ms{}", time_s, time_ms);
+        }
+
+        if (Input::IsMouseButtonPressed(GLFW_MOUSE_BUTTON_1))
+        {
+            auto xy = Input::GetCursorPosition();
+            FQW_TRACE("Left btn pressed {} {}", xy.first, xy.second); 
+        }
+
         w.Update();
     }
     FQW_INFO("End running");

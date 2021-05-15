@@ -21,6 +21,7 @@ public:
     int GetWidth() const { return m_Size.width; }
     int GetHeight() const { return m_Size.height; }
     const char *GetTitle() const { return m_Title; }
+    void* GetNativeWindow() { return (void*)m_Window; }
 
     void Clear();
     void Update();

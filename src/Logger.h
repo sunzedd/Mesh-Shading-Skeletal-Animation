@@ -11,6 +11,8 @@ namespace FQW {
 class Logger
 {
 public:
+	Logger() = delete;
+
 	static void Initialize(spdlog::level::level_enum logLevel);
 	static std::shared_ptr<spdlog::logger>& GetInstance();
 
