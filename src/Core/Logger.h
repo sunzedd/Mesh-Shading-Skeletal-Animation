@@ -13,7 +13,7 @@ class Logger
 public:
 	Logger() = delete;
 
-	static void Initialize(spdlog::level::level_enum logLevel);
+	static void Initialize(spdlog::level::level_enum logLevel = spdlog::level::level_enum::trace);
 	static std::shared_ptr<spdlog::logger>& GetInstance();
 
 private:
