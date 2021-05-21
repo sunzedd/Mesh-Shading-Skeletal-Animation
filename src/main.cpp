@@ -12,7 +12,6 @@
 #include "Graphics/Shader.h"
 #include "Core/Logger.h"
 
-
 static const struct
 {
     float x, y;
@@ -67,9 +66,9 @@ int main(void)
 
     // NOTE: OpenGL error checks have been omitted for brevity
 
-    glGenBuffers(1, &vertex_buffer);
-    glBindBuffer(GL_ARRAY_BUFFER, vertex_buffer);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+    OPENGL_CALL( glGenBuffers(1, &vertex_buffer) );
+    OPENGL_CALL( glBindBuffer(GL_ARRAY_BUFFER, vertex_buffer) );
+    OPENGL_CALL( glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW) );
     
     FQW::Shader shader("res/shaders/test.vs", "res/shaders/test.fs");
 
@@ -80,10 +79,10 @@ int main(void)
     vpos_location = shader.GetAttributeLocation("vPos");
     vcol_location = shader.GetAttributeLocation("vCol");
     
-    glEnableVertexAttribArray(vpos_location);
-    glVertexAttribPointer(vpos_location, 2, GL_FLOAT, GL_FALSE, sizeof(vertices[0]), (void*)0);
-    glEnableVertexAttribArray(vcol_location);
-    glVertexAttribPointer(vcol_location, 3, GL_FLOAT, GL_FALSE, sizeof(vertices[0]), (void*)(sizeof(float) * 2));
+    OPENGL_CALL( glEnableVertexAttribArray(vpos_location) );
+    OPENGL_CALL( glVertexAttribPointer(vpos_location, 2, GL_FLOAT, GL_FALSE, sizeof(vertices[0]), (void*)0) );
+    OPENGL_CALL( glEnableVertexAttribArray(vcol_location) );
+    OPENGL_CALL( glVertexAttribPointer(vcol_location, 3, GL_FLOAT, GL_FALSE, sizeof(vertices[0]), (void*)(sizeof(float) * 2)) );
 
     float intensity = 1.0f;
     const float d_intensity = 0.001f;
@@ -100,8 +99,8 @@ int main(void)
         glfwGetFramebufferSize(window, &width, &height);
         ratio = width / (float)height;
 
-        glViewport(0, 0, width, height);
-        glClear(GL_COLOR_BUFFER_BIT);
+        OPENGL_CALL( glViewport(0, 0, width, height) );
+        OPENGL_CALL( glClear(GL_COLOR_BUFFER_BIT) );
 
         m = glm::rotate(m, (float)glfwGetTime(), glm::vec3(0, 0, -1.0f));
         p = glm::ortho(-ratio, ratio, -1.0f, 1.0f);
@@ -130,7 +129,7 @@ int main(void)
         shader.SetMatrix4fv("MVP", mvp);
         shader.SetFloat("u_intensity", intensity);
 
-        glDrawArrays(GL_TRIANGLES, 0, 3);
+        OPENGL_CALL( glDrawArrays(GL_TRIANGLES, 0, 3) );
 
         glfwSwapBuffers(window);
         glfwPollEvents();
