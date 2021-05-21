@@ -11,7 +11,7 @@
 #include <glm/gtc/type_ptr.hpp>
 
 #include "../Core/Logger.h"
-#include "OpenGL_Debug.h"
+#include "OpenGL_Utils.h"
 
 
 namespace FQW {

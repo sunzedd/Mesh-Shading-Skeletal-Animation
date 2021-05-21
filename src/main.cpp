@@ -65,7 +65,22 @@ int main(void)
     glfwSwapInterval(1);
 
     // NOTE: OpenGL error checks have been omitted for brevity
+    const auto gpuName = FQW::OpenGL_GetGraphicsDeviceInfo();
+    FQW_INFO(gpuName);
 
+    const auto openglVersion = FQW::OpenGL_GetVersion();
+    FQW_INFO("OpenGL version: {}.{}", openglVersion.first, openglVersion.second);
+
+    std::string requiredExtensionName = "GL_NV_mesh_shader";
+    if (FQW::OpenGL_CheckExtensionSupport(requiredExtensionName))
+    {
+        FQW_INFO("Extension is supported: {}", requiredExtensionName);
+    }
+    else 
+    {
+        FQW_CRITICAL("Extension is not supported: {}", requiredExtensionName);
+    }
+    
     OPENGL_CALL( glGenBuffers(1, &vertex_buffer) );
     OPENGL_CALL( glBindBuffer(GL_ARRAY_BUFFER, vertex_buffer) );
     OPENGL_CALL( glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW) );
