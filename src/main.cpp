@@ -8,7 +8,10 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-#if 0
+#if 1
+#include "Graphics/Shader.h"
+#include "Core/Logger.h"
+
 static const struct
 {
     float x, y;
@@ -20,25 +23,6 @@ static const struct
     {   0.f,  0.6f, 0.f, 0.f, 1.f }
 };
 
-static const char* vertex_shader_text =
-"#version 110\n"
-"uniform mat4 MVP;\n"
-"attribute vec3 vCol;\n"
-"attribute vec2 vPos;\n"
-"varying vec3 color;\n"
-"void main()\n"
-"{\n"
-"    gl_Position = MVP * vec4(vPos, 0.0, 1.0);\n"
-"    color = vCol;\n"
-"}\n";
-
-static const char* fragment_shader_text =
-"#version 110\n"
-"varying vec3 color;\n"
-"void main()\n"
-"{\n"
-"    gl_FragColor = vec4(color, 1.0);\n"
-"}\n";
 
 static void error_callback(int error, const char* description)
 {
@@ -53,8 +37,10 @@ static void key_callback(GLFWwindow* window, int key, int scancode, int action, 
 
 int main(void)
 {
+    FQW::Logger::Initialize();
+
     GLFWwindow* window;
-    GLuint vertex_buffer, vertex_shader, fragment_shader, program;
+    GLuint vertex_buffer;
     GLint mvp_location, vpos_location, vcol_location;
 
     glfwSetErrorCallback(error_callback);
@@ -79,35 +65,43 @@ int main(void)
     glfwSwapInterval(1);
 
     // NOTE: OpenGL error checks have been omitted for brevity
+    const auto gpuName = FQW::OpenGL_GetGraphicsDeviceInfo();
+    FQW_INFO(gpuName);
 
-    glGenBuffers(1, &vertex_buffer);
-    glBindBuffer(GL_ARRAY_BUFFER, vertex_buffer);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+    const auto openglVersion = FQW::OpenGL_GetVersion();
+    FQW_INFO("OpenGL version: {}.{}", openglVersion.first, openglVersion.second);
 
-    vertex_shader = glCreateShader(GL_VERTEX_SHADER);
-    glShaderSource(vertex_shader, 1, &vertex_shader_text, NULL);
-    glCompileShader(vertex_shader);
+    std::string requiredExtensionName = "GL_NV_mesh_shader";
+    if (FQW::OpenGL_CheckExtensionSupport(requiredExtensionName))
+    {
+        FQW_INFO("Extension is supported: {}", requiredExtensionName);
+    }
+    else 
+    {
+        FQW_CRITICAL("Extension is not supported: {}", requiredExtensionName);
+    }
+    
+    OPENGL_CALL( glGenBuffers(1, &vertex_buffer) );
+    OPENGL_CALL( glBindBuffer(GL_ARRAY_BUFFER, vertex_buffer) );
+    OPENGL_CALL( glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW) );
+    
+    FQW::Shader shader("res/shaders/test.vs", "res/shaders/test.fs");
 
-    fragment_shader = glCreateShader(GL_FRAGMENT_SHADER);
-    glShaderSource(fragment_shader, 1, &fragment_shader_text, NULL);
-    glCompileShader(fragment_shader);
 
-    program = glCreateProgram();
-    glAttachShader(program, vertex_shader);
-    glAttachShader(program, fragment_shader);
-    glLinkProgram(program);
+    mvp_location = shader.GetUniformLocation("MVP");
 
-    mvp_location = glGetUniformLocation(program, "MVP");
-    vpos_location = glGetAttribLocation(program, "vPos");
-    vcol_location = glGetAttribLocation(program, "vCol");
 
-    glEnableVertexAttribArray(vpos_location);
-    glVertexAttribPointer(vpos_location, 2, GL_FLOAT, GL_FALSE,
-        sizeof(vertices[0]), (void*)0);
-    glEnableVertexAttribArray(vcol_location);
-    glVertexAttribPointer(vcol_location, 3, GL_FLOAT, GL_FALSE,
-        sizeof(vertices[0]), (void*)(sizeof(float) * 2));
+    vpos_location = shader.GetAttributeLocation("vPos");
+    vcol_location = shader.GetAttributeLocation("vCol");
+    
+    OPENGL_CALL( glEnableVertexAttribArray(vpos_location) );
+    OPENGL_CALL( glVertexAttribPointer(vpos_location, 2, GL_FLOAT, GL_FALSE, sizeof(vertices[0]), (void*)0) );
+    OPENGL_CALL( glEnableVertexAttribArray(vcol_location) );
+    OPENGL_CALL( glVertexAttribPointer(vcol_location, 3, GL_FLOAT, GL_FALSE, sizeof(vertices[0]), (void*)(sizeof(float) * 2)) );
 
+    float intensity = 1.0f;
+    const float d_intensity = 0.001f;
+    bool direction = true; // true = forward, false = backward
     while (!glfwWindowShouldClose(window))
     {
         float ratio;
@@ -120,16 +114,37 @@ int main(void)
         glfwGetFramebufferSize(window, &width, &height);
         ratio = width / (float)height;
 
-        glViewport(0, 0, width, height);
-        glClear(GL_COLOR_BUFFER_BIT);
+        OPENGL_CALL( glViewport(0, 0, width, height) );
+        OPENGL_CALL( glClear(GL_COLOR_BUFFER_BIT) );
 
         m = glm::rotate(m, (float)glfwGetTime(), glm::vec3(0, 0, -1.0f));
         p = glm::ortho(-ratio, ratio, -1.0f, 1.0f);
         mvp = p * m;
 
-        glUseProgram(program);
-        glUniformMatrix4fv(mvp_location, 1, GL_FALSE, glm::value_ptr(mvp));
-        glDrawArrays(GL_TRIANGLES, 0, 3);
+        // calc intensity
+        if (intensity <= 0)
+        {
+            direction = true;
+        }
+        else if (intensity >= 1.0f)
+        {
+            direction = false;
+        }
+
+        if (direction)
+        {
+            intensity += d_intensity;
+        }
+        else
+        {
+            intensity -= d_intensity;
+        }
+
+        shader.Use();
+        shader.SetMatrix4fv("MVP", mvp);
+        shader.SetFloat("u_intensity", intensity);
+
+        OPENGL_CALL( glDrawArrays(GL_TRIANGLES, 0, 3) );
 
         glfwSwapBuffers(window);
         glfwPollEvents();
@@ -143,11 +158,11 @@ int main(void)
 
 #endif
 
-#define TESTWINDOW 1
+#define TESTWINDOW 0
 #if TESTWINDOW
 
-#include "Window.h"
-#include "Input.h"
+#include "Core/Window.h"
+#include "Core/Input.h"
 #include <iostream>
 
 #include <assimp/Importer.hpp>
