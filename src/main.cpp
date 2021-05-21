@@ -150,6 +150,10 @@ int main(void)
 #include "Input.h"
 #include <iostream>
 
+#include <assimp/Importer.hpp>
+#include <assimp/scene.h>
+#include <assimp/postprocess.h>
+
 int main()
 {
     using namespace FQW;
@@ -157,6 +161,14 @@ int main()
     Logger::Initialize(spdlog::level::trace);
     Window w(800, 600, "TestingWindow");
     Input::Initialize(w);
+
+    Assimp::Importer importer;
+    const aiScene* scene = importer.ReadFile("res/meshes/cube.dae", aiProcess_Triangulate);
+    if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode)
+    {
+        FQW_ERROR("[ASSIMP] {}", importer.GetErrorString());
+    }
+
 
     FQW_INFO("Start running");
     while (!w.IsClosed())

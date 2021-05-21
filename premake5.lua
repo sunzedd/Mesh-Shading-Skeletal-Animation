@@ -30,18 +30,21 @@ workspace "Mesh-Shaders-Skeletal-Animation"
             "%{wks.location}/deps/spdlog/include",
             
             "D:/Library/GLFW/glfw-3.3.4/include",
-            "D:/Library/glm"
+            "D:/Library/glm",
+            "D:/Library/Assimp/include"
         }
 
         libdirs
         {
-            "D:/Library/GLFW/glfw-3.3.4.bin.WIN64/lib-vc2019"
+            "D:/Library/GLFW/glfw-3.3.4.bin.WIN64/lib-vc2019",
+            "D:/Library/Assimp/lib/Debug"
         }
 
         links
         {
             "opengl32.lib",
-            "glfw3.lib"
+            "glfw3.lib",
+            "assimp-vc142-mtd.lib"
         }
 
         filter "configurations:Debug"
