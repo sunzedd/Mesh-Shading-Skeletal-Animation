@@ -40,4 +40,12 @@ void Mesh::Setup()
                                      (void*)offsetof(Vertex, textureCoords)) );
 }
 
+
+void Mesh::Draw(Shader& shader, ICamera& camera)
+{
+    OPENGL_CALL( glBindVertexArray(m_VAO) );
+    OPENGL_CALL( glDrawElements(GL_TRIANGLES, m_Indices.size(), GL_UNSIGNED_INT, 0) );
+    OPENGL_CALL( glBindVertexArray(0) );
 }
+
+} // namespace FQW

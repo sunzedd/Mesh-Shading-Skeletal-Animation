@@ -6,7 +6,7 @@
 #include <glm/gtc/matrix_transform.hpp>
 
 #include "Shader.h"
-
+#include "IDrawable.h"
 
 namespace FQW {
 
@@ -18,11 +18,11 @@ struct Vertex
 };
 
 
-class Mesh
+class Mesh : public IDrawable
 {
 public:
     Mesh(std::vector<Vertex> vertices, std::vector<unsigned int> indices /*TODO: textures*/);
-    void Draw(Shader& shader);
+    void Draw(Shader& shader, ICamera& camera);
 
 private:
     void Setup();
