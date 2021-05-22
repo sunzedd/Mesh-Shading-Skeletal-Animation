@@ -29,13 +29,12 @@ bool Input::IsMouseButtonPressed(short mouseButtonCode)
 }
 
 
-std::pair<int, int> Input::GetCursorPosition()
+glm::vec2 Input::GetCursorPosition()
 {
     double x, y;
     glfwGetCursorPos(s_Window, &x, &y);
-    return std::make_pair(floor(x), floor(y));
+    return glm::vec2(x, y);
 }
-
 
 double Input::GetTime_s()
 {
