@@ -40,4 +40,4 @@ void CameraFPS::UpdateVectors()
     m_Up = glm::normalize(glm::cross(m_Right, m_Front));
 }
 
-}
+} // namespace FQW
