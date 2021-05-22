@@ -10,18 +10,18 @@
 
 namespace FQW {
 
-struct Vertex
-{
-    glm::vec3 position;
-    glm::vec3 normal;
-    glm::vec2 textureCoords;
-};
-
-
-class Mesh : public IDrawable
+class StaticMesh : public IDrawable
 {
 public:
-    Mesh(std::vector<Vertex> vertices, std::vector<unsigned int> indices /*TODO: textures*/);
+    struct Vertex
+    {
+        glm::vec3 position;
+        glm::vec3 normal;
+        glm::vec2 textureCoords;
+    };
+
+
+    StaticMesh(std::vector<Vertex> vertices, std::vector<unsigned int> indices /*TODO: textures*/);
     void Draw(Shader& shader, ICamera& camera);
 
 private:

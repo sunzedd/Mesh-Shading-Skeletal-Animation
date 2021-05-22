@@ -28,7 +28,7 @@ public:
     glm::mat4 GetProjectionMatrix() const override;
 
     // https://learnopengl.com/code_viewer_gh.php?code=includes/learnopengl/camera.h
-    virtual void Update(float deltaTime) = 0;
+    virtual void Update(float deltaTime) { }
 
 private:
     void UpdateVectors();

@@ -1,8 +1,8 @@
-#include "Mesh.h"
+#include "StaticMesh.h"
 
 namespace FQW {
 
-Mesh::Mesh(std::vector<Vertex> vertices, std::vector<unsigned int> indices /*TODO: textures*/)
+StaticMesh::StaticMesh(std::vector<StaticMesh::Vertex> vertices, std::vector<unsigned int> indices /*TODO: textures*/)
 {
     m_Vertices = vertices;
     m_Indices = indices;
@@ -10,7 +10,7 @@ Mesh::Mesh(std::vector<Vertex> vertices, std::vector<unsigned int> indices /*TOD
     Setup();
 }
 
-void Mesh::Setup()
+void StaticMesh::Setup()
 {
     // Buffers
     OPENGL_CALL( glGenVertexArrays(1, &m_VAO) );
@@ -41,7 +41,7 @@ void Mesh::Setup()
 }
 
 
-void Mesh::Draw(Shader& shader, ICamera& camera)
+void StaticMesh::Draw(Shader& shader, ICamera& camera)
 {
     OPENGL_CALL( glBindVertexArray(m_VAO) );
     OPENGL_CALL( glDrawElements(GL_TRIANGLES, m_Indices.size(), GL_UNSIGNED_INT, 0) );

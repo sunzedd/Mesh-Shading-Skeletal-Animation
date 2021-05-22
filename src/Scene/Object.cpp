@@ -36,10 +36,16 @@ void Object::Draw(Shader& shader, ICamera& camera)
     shader.SetMatrix4fv("u_ModelMatrix", M);
     shader.SetMatrix4fv("u_MVP", MVP);
 
-    for (IDrawable* drawable : m_Drawables)
+    for (Ref<IDrawable> drawable : m_Drawables)
     {
         drawable->Draw(shader, camera);
     }
+}
+
+
+void Object::PushDrawable(Ref<IDrawable> drawable)
+{
+    m_Drawables.push_back(drawable);
 }
 
 

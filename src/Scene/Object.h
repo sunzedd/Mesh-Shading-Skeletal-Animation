@@ -1,5 +1,6 @@
 #pragma once
 #include "../Graphics/IDrawable.h"
+#include "../Core/Alias.h"
 
 namespace FQW {
 
@@ -16,7 +17,9 @@ public:
     void Draw(Shader& shader, ICamera& camera);
     virtual void Update(float deltaTime) { }
 
-    std::vector<IDrawable*> m_Drawables;
+    void PushDrawable(Ref<IDrawable> drawable);
+
+    std::vector<Ref<IDrawable>> m_Drawables;
 };
 
 } // namespace FQW
