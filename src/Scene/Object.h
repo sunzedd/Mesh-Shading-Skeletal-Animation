@@ -14,9 +14,9 @@ public:
     Object();
 
     void Draw(Shader& shader, ICamera& camera);
-    virtual void Update(float deltaTime) = 0;
+    virtual void Update(float deltaTime) { }
 
-    std::vector<IDrawable> m_Drawables;
+    std::vector<IDrawable*> m_Drawables;
 };
 
 } // namespace FQW

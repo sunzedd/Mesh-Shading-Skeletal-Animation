@@ -36,9 +36,9 @@ void Object::Draw(Shader& shader, ICamera& camera)
     shader.SetMatrix4fv("u_ModelMatrix", M);
     shader.SetMatrix4fv("u_MVP", MVP);
 
-    for (IDrawable& drawable : m_Drawables)
+    for (IDrawable* drawable : m_Drawables)
     {
-        drawable.Draw(shader, camera);
+        drawable->Draw(shader, camera);
     }
 }
 

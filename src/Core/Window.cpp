@@ -34,7 +34,7 @@ void Window::Clear()
 
 void Window::Update()
 {
-    glfwSwapBuffers(m_Window);
+    glfwSwapBuffers(glfwGetCurrentContext());
     glfwPollEvents();
 }
 
@@ -92,6 +92,7 @@ void Window::_Create(int width, int height, const char* title)
     }
 
     glfwMakeContextCurrent(m_Window);
+    gladLoadGLLoader((GLADloadproc)glfwGetProcAddress);
     glfwSwapInterval(1);
 }
 
