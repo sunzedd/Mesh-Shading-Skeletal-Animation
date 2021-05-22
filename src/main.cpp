@@ -1,10 +1,10 @@
 #if 1
 
-#include "Applications/Test_1/TestApplication_1.h"
+#include "Applications/Test_1/TestApplication_2.h"
 
 int main()
 {
-    FQW::TestApplication_1 app;
+    FQW::TestApplication_2 app;
     app.Run();
 }
 

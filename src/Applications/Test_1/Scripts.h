@@ -13,7 +13,7 @@ private:
 
 public:
     void Start() { ThisObject = std::static_pointer_cast<Object>(m_Entity); }
-    void Update(float deltaTime) { ThisObject->Rotation += deltaTime; }
+    void Update(float deltaTime) { ThisObject->Rotation.y += deltaTime; }
 };
 
 

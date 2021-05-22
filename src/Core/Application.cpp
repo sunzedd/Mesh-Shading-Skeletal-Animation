@@ -10,6 +10,10 @@ Application::Application(int width, int height, std::string title)
 
     CheckGraphicsRequirements();
 
+    glEnable(GL_CULL_FACE);
+    glCullFace(GL_BACK);
+    glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+
     m_IsRunning = true;
 }
 

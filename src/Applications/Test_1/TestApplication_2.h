@@ -4,13 +4,14 @@
 
 #include "../../Core/Application.h"
 #include "../../Graphics/StaticMesh.h"
+#include "../../Scene/Model/StaticModel.h"
 
 #include "Scripts.h"
 
 namespace FQW {
 
 
-class TestApplication_1 : public Application
+class TestApplication_2 : public Application
 {
 private:
     std::vector<Ref<IDrawable>> m_Drawables;
@@ -19,27 +20,12 @@ private:
     Ref<ICamera> m_Camera;
 
 public:
-    TestApplication_1()
+    TestApplication_2()
         :
-        Application(1536, 960, "Test Application 1")
+        Application(1536, 960, "Test Application 2")
     {
-        std::vector<StaticMesh::Vertex> vertices = {
-            { {-0.5f,  0.5f, 0.0f}, {1.0f, 0.0f, 4.0f}, {1.0f, 4.0f} },
-            { { 0.5f,  0.5f, 0.0f}, {2.0f, 0.0f, 3.0f}, {2.0f, 3.0f} },
-            { {-0.5f, -0.5f, 0.0f}, {3.0f, 0.0f, 2.0f}, {3.0f, 2.0f} },
-            { { 0.5f, -0.5f, 0.0f}, {4.0f, 0.0f, 1.0f}, {4.0f, 1.0f} }
-        };
-
-        std::vector<unsigned int> indices = { 0, 1, 2, 1, 3, 2 };
-
-        Ref<StaticMesh> staticMesh = CreateRef<StaticMesh>(vertices, indices);
-        Ref<Object> object = CreateRef<Object>();
-        Ref<ObjectScript> objectScript = CreateRef<ObjectScript>();
-        BehaviourScript::Link(object, objectScript);
-        
-        object->PushDrawable(staticMesh);
-        m_Drawables.push_back(object);
-        m_Scriptables.push_back(object);
+        Ref<StaticModel> staticModel = CreateRef<StaticModel>("res/meshes/cube.dae");
+        m_Drawables.push_back(staticModel);
 
         m_Shader = CreateUnique<Shader>("res/shaders/test_1.vs", "res/shaders/test_1.fs");
 
