@@ -1,4 +1,5 @@
 #include "ICamera.h"
+#include "BehaviourScript.h"
 
 
 namespace FQW {
@@ -8,11 +9,10 @@ class CameraFPS : public ICamera
 private:
     static constexpr float YAW = -90.0f;
     static constexpr float PITCH = 0.0f;
-    static constexpr float SPEED = 2.5f;
-    static constexpr float SENSITIVITY = 0.1f;
-    static constexpr float ZOOM = 45.0f;
 
-    enum MovementDirection {
+public:
+    enum class Direction 
+    {
         Forward,
         Backward,
         Left,
@@ -24,11 +24,17 @@ public:
               const glm::vec3& up = glm::vec3(0, 1, 0),
               float yaw = YAW, float pitch = PITCH);
 
-    glm::mat4 GetViewMatrix() const override;
-    glm::mat4 GetProjectionMatrix() const override;
+    const glm::mat4& GetViewMatrix() const override;
+    const glm::mat4& GetProjectionMatrix() const override;
+    const glm::vec3& GetPosition() const { return m_Position; }
+    float GetYaw() const { return m_Yaw; }
+    float GetPitch() const { return m_Pitch; }
 
-    // https://learnopengl.com/code_viewer_gh.php?code=includes/learnopengl/camera.h
-    virtual void Update(float deltaTime) { }
+    void SetPosition(const glm::vec3& position);
+    void SetYaw(float yaw);
+    void SetPitch(float pitch);
+
+    void Move(Direction direction, float velosity);
 
 private:
     void UpdateVectors();
@@ -42,10 +48,6 @@ private:
 
     float m_Yaw;
     float m_Pitch;
-
-    float m_MovementSpeed;
-    float m_MouseSensitivity;
-    float m_Zoom;
 };
 
 } // namespace FQW

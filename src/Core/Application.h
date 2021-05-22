@@ -20,6 +20,7 @@ protected:
     virtual void Render() { }
     virtual void DrawUI() { }
 
+    virtual void Start() { }
     virtual void Shutdown();
 
 private:

@@ -7,26 +7,59 @@ CameraFPS::CameraFPS(const glm::vec3& position, const glm::vec3& up, float yaw, 
     m_Position(position),
     m_Front(glm::vec3(0, 0, -1)),
     m_Up(up),
+    m_WorldUp(glm::vec3(0, 1, 0)),
     m_Yaw(yaw),
-    m_Pitch(pitch),
-    m_MovementSpeed(SPEED),
-    m_MouseSensitivity(SENSITIVITY),
-    m_Zoom(ZOOM)
+    m_Pitch(pitch)
 {
     UpdateVectors();
 }
 
 
-glm::mat4 CameraFPS::GetViewMatrix() const
+const glm::mat4& CameraFPS::GetViewMatrix() const
 {
     return glm::lookAt(m_Position, m_Position + m_Front, m_Up);
 }
 
 
-glm::mat4 CameraFPS::GetProjectionMatrix() const
+const glm::mat4& CameraFPS::GetProjectionMatrix() const
 {
     return glm::perspective(0.60f, 16.0f / 10.0f, 0.001f, 1000.0f);
 }
+
+
+void CameraFPS::SetPosition(const glm::vec3& position)
+{
+    m_Position = position;
+    UpdateVectors();
+}
+
+
+void CameraFPS::SetYaw(float yaw)
+{
+    m_Yaw = yaw;
+    UpdateVectors();
+}
+
+
+void CameraFPS::SetPitch(float pitch)
+{
+    m_Pitch = pitch;
+    UpdateVectors();
+}
+
+
+void CameraFPS::Move(CameraFPS::Direction direction, float velosity)
+{
+    switch (direction)
+    {
+        case Direction::Forward: m_Position -= m_Front * velosity; break;
+        case Direction::Backward: m_Position += m_Front * velosity; break;
+        case Direction::Rigth: m_Position -= m_Right * velosity; break;
+        case Direction::Left: m_Position += m_Right * velosity; break;
+        default: break;
+    }
+}
+
 
 void CameraFPS::UpdateVectors()
 {

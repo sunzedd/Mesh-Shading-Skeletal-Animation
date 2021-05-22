@@ -20,6 +20,8 @@ void Object::Draw(Shader& shader, ICamera& camera)
     glm::mat4 T = glm::mat4(1.0f);      // Translate
 
     glm::mat4 M = glm::mat4(1.0f);
+    glm::mat4 V = glm::mat4(1.0f);
+    glm::mat4 P = glm::mat4(1.0f);
     glm::mat4 MVP = glm::mat4(1.0f);
 
     S = glm::scale(S, Scale);
@@ -29,8 +31,10 @@ void Object::Draw(Shader& shader, ICamera& camera)
     R = Rx * Ry * Rz;
     T = glm::translate(T, Position);
 
-    M = S * R * T;
-    MVP = M * camera.GetViewMatrix() * camera.GetProjectionMatrix();
+    M = T * R * S;
+    V = camera.GetViewMatrix();
+    P = camera.GetProjectionMatrix();
+    MVP = P * V * M;
 
     shader.Use();
     shader.SetMatrix4fv("u_ModelMatrix", M);

@@ -1,10 +1,11 @@
 #pragma once
 #include "../Graphics/IDrawable.h"
 #include "../Core/Alias.h"
+#include "BehaviourScript.h"
 
 namespace FQW {
 
-class Object : public IDrawable
+class Object : public IDrawable, public ScriptableEntity
 {
 public:
     glm::vec3 Position;

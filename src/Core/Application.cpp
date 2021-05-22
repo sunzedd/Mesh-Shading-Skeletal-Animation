@@ -19,6 +19,8 @@ Application::~Application() { }
 
 void Application::Run()
 {
+    Start();
+
     while (m_IsRunning)
     {
         const float currentTime = Input::GetTime_s();
@@ -27,7 +29,7 @@ void Application::Run()
 
         Update(deltaTime);
         
-        if (!m_Window->IsClosed())
+        //if (!m_Window->IsClosed())
         {
             m_Window->Clear();
             Render();
