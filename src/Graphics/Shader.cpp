@@ -50,10 +50,14 @@ Shader::Shader(std::string vertexPath, std::string fragmentPath)
     OPENGL_CALL( glGetShaderiv(vertex, GL_COMPILE_STATUS, &success) );
     if (!success)
     {
-        OPENGL_CALL( glGetShaderInfoLog(vertex, 512, NULL, infoLog) );
+        OPENGL_CALL(glGetShaderInfoLog(vertex, 512, NULL, infoLog));
         FQW_ERROR("[Shader]: Failed to compile vertex shader {}", infoLog);
         throw std::runtime_error("Failed to compile vertex shader");
-    };
+    } 
+    else
+    {
+        FQW_TRACE("[Shader]: Compiled vertex shader successfully");
+    }
 
     // Fragment Shader
     OPENGL_CALL( fragment = glCreateShader(GL_FRAGMENT_SHADER) );
@@ -65,7 +69,11 @@ Shader::Shader(std::string vertexPath, std::string fragmentPath)
         OPENGL_CALL( glGetShaderInfoLog(vertex, 512, NULL, infoLog) );
         FQW_ERROR("[Shader]: Failed to compile fragment shader {}", infoLog);
         throw std::runtime_error("Failed to compile fragment shader");
-    };
+    }
+    else
+    {
+        FQW_TRACE("[Shader]: Compiled fragment shader successfully");
+    }
 
     // Create ShaderProgram
     OPENGL_CALL( m_Id = glCreateProgram() );

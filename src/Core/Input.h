@@ -1,5 +1,6 @@
 #pragma once
 
+#include <glm/glm.hpp>
 #include "Window.h"
 
 namespace FQW {
@@ -14,7 +15,7 @@ public:
     static bool IsKeyPressed(short keycode);
     static bool IsMouseButtonPressed(short mouseButtonCode);
 
-    static std::pair<int, int> GetCursorPosition();
+    static glm::vec2 GetCursorPosition();
 
     static double GetTime_s();
     static double GetTime_ms();

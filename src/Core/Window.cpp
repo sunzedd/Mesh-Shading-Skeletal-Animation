@@ -28,13 +28,13 @@ Window::~Window()
 
 void Window::Clear()
 {
-    glClear(GL_COLOR_BUFFER_BIT);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 }
 
 
 void Window::Update()
 {
-    glfwSwapBuffers(m_Window);
+    glfwSwapBuffers(glfwGetCurrentContext());
     glfwPollEvents();
 }
 
@@ -92,6 +92,7 @@ void Window::_Create(int width, int height, const char* title)
     }
 
     glfwMakeContextCurrent(m_Window);
+    gladLoadGLLoader((GLADloadproc)glfwGetProcAddress);
     glfwSwapInterval(1);
 }
 
