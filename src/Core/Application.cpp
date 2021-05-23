@@ -10,9 +10,10 @@ Application::Application(int width, int height, std::string title)
 
     CheckGraphicsRequirements();
 
+    glViewport(0, 0, width, height);
     glEnable(GL_CULL_FACE);
     glCullFace(GL_BACK);
-    glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+    //glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
     m_IsRunning = true;
 }
@@ -27,18 +28,22 @@ void Application::Run()
 
     while (m_IsRunning)
     {
+        if (m_Window->IsClosed())
+        {
+            m_IsRunning = false;
+            continue;
+        }
+
         const float currentTime = Input::GetTime_s();
         const float deltaTime = m_LastFrameTime - currentTime;
         m_LastFrameTime = currentTime;
 
         Update(deltaTime);
-        
-        //if (!m_Window->IsClosed())
-        {
-            m_Window->Clear();
-            Render();
-            m_Window->Update();
-        }
+
+        m_Window->Clear();
+        Render();
+        DrawUI();
+        m_Window->Update();
     }
 }
 

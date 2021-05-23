@@ -23,7 +23,14 @@ const glm::mat4& CameraFPS::GetViewMatrix() const
 
 const glm::mat4& CameraFPS::GetProjectionMatrix() const
 {
-    return glm::perspective(0.60f, 16.0f / 10.0f, 0.001f, 1000.0f);
+    return glm::perspective(m_Fovy, m_AspectRatio, 0.001f, 1000.0f);
+}
+
+
+void CameraFPS::SetProjectionParameters(float aspectRatio, float fovy)
+{
+    m_AspectRatio = aspectRatio;
+    m_Fovy = glm::radians(fovy);
 }
 
 

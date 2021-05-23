@@ -30,6 +30,7 @@ public:
     float GetYaw() const { return m_Yaw; }
     float GetPitch() const { return m_Pitch; }
 
+    void SetProjectionParameters(float aspectRatio, float fovy);
     void SetPosition(const glm::vec3& position);
     void SetYaw(float yaw);
     void SetPitch(float pitch);
@@ -48,6 +49,9 @@ private:
 
     float m_Yaw;
     float m_Pitch;
+
+    float m_Fovy = 0.70f;
+    float m_AspectRatio = 4.0f / 3.0f;
 };
 
 } // namespace FQW

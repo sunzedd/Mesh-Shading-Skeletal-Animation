@@ -22,8 +22,8 @@ class CameraScript : public BehaviourScript
 {
 private:
     Ref<CameraFPS> ThisCamera;
-    float m_MouseSensitivity = 0.1f;
-    float m_Speed = 2.5f;
+    float m_MouseSensitivity = 0.05f;
+    float m_Speed = 4.0f;
     glm::vec2 m_LastMousePosition;
     bool m_IsMouseButtonPressed = false;
 
