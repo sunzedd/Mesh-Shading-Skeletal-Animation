@@ -18,7 +18,6 @@ public:
     void Draw(Shader& shader, ICamera& camera) override;
 
 private:
-
     void Load(std::string filepath);
     void ProcessNode(aiNode* node, const aiScene* scene);
     Ref<StaticMesh> ProcessMesh(aiMesh* mesh, const aiScene* scene);
