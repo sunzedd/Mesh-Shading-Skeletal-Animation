@@ -8,27 +8,29 @@
 #include "Shader.h"
 #include "IDrawable.h"
 
+#include "../Animation.h"
+
 namespace FQW {
 
 class StaticMesh : public IDrawable
 {
 public:
-    struct Vertex
+    struct Vertex_
     {
         glm::vec3 position;
         glm::vec3 normal;
         glm::vec2 textureCoords;
     };
 
-
-    StaticMesh(std::vector<Vertex> vertices, std::vector<unsigned int> indices /*TODO: textures*/);
+    StaticMesh(std::vector<Vertex> vertices, std::vector<uint32_t> indices);
+    StaticMesh(std::vector<Vertex_> vertices, std::vector<unsigned int> indices /*TODO: textures*/);
     void Draw(Shader& shader, ICamera& camera);
 
 private:
     void Setup();
 
 private:
-    std::vector<Vertex> m_Vertices;
+    std::vector<Vertex_> m_Vertices;
     std::vector<unsigned int> m_Indices;
     // TODO: Textures
 

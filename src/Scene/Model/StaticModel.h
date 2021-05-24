@@ -14,6 +14,7 @@ class StaticModel : public IDrawable, public ScriptableEntity
 {
 public:
     StaticModel(std::string filepath);
+    StaticModel(Ref<StaticMesh> mesh);
 
     void Draw(Shader& shader, ICamera& camera) override;
 

@@ -7,7 +7,7 @@
 #include<glm/gtc/quaternion.hpp>
 
 
-class AssimpGLMHelpers
+class AssimpGlmConverter
 {
 public:
 

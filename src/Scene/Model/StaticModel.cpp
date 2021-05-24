@@ -8,6 +8,11 @@ StaticModel::StaticModel(std::string filepath)
     FQW_TRACE("[Assimp] Succesfuly loaded model from {}", filepath);
 }
 
+StaticModel::StaticModel(Ref<StaticMesh> mesh)
+{
+    m_Meshes.push_back(mesh);
+}
+
 
 void StaticModel::Draw(Shader& shader, ICamera& camera)
 {
@@ -82,13 +87,13 @@ void StaticModel::ProcessNode(aiNode* node, const aiScene* scene)
 
 Ref<StaticMesh> StaticModel::ProcessMesh(aiMesh* mesh, const aiScene* scene)
 {
-    std::vector<StaticMesh::Vertex> vertices;
+    std::vector<StaticMesh::Vertex_> vertices;
     std::vector<unsigned int> indices;
     // TODO: Textures
 
     for (int i = 0; i < mesh->mNumVertices; i++)
     {
-        StaticMesh::Vertex vertex;
+        StaticMesh::Vertex_ vertex;
 
         const aiVector3D& aiPosition = mesh->mVertices[i];
         vertex.position.x = aiPosition.x;

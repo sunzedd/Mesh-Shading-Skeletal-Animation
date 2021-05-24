@@ -7,6 +7,8 @@
 
 #include "../CameraScript.h"
 
+#include "../../Animation.h"
+
 namespace FQW {
 
 
@@ -26,8 +28,10 @@ public:
         :
         Application(WIDTH, HEIGHT, "Test Application 2")
     {
-        auto animatedModel = CreateRef<StaticModel>("res/meshes/M4A1.dae");
-        m_Drawables.push_back(animatedModel);
+        auto _mesh = AnimatedMesh("res/meshes/wolf.obj");
+        auto staticMesh = CreateRef<StaticMesh>(_mesh.vertexBuffer, _mesh.indexBuffer);
+        auto staticModel = CreateRef<StaticModel>(staticMesh);
+        m_Drawables.push_back(staticModel);
 
         m_Shader = CreateUnique<Shader>("res/shaders/test_1.vs", "res/shaders/test_1.fs");
 
