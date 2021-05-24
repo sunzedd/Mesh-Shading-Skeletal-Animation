@@ -9,13 +9,7 @@ Application::Application(int width, int height, std::string title)
     Input::Initialize(*m_Window);
 
     CheckGraphicsRequirements();
-
-    glViewport(0, 0, width, height);
-    glEnable(GL_CULL_FACE);
-    glCullFace(GL_BACK);
-    //glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-
-    m_IsRunning = true;
+    SetupGraphicsPipeline();
 }
 
 
@@ -24,6 +18,8 @@ Application::~Application() { }
 
 void Application::Run()
 {
+    m_IsRunning = true;
+
     Start();
 
     while (m_IsRunning)
@@ -51,6 +47,15 @@ void Application::Shutdown()
 {
     m_IsRunning = false;
     m_Window->Close();
+}
+
+
+void Application::SetupGraphicsPipeline()
+{
+    glViewport(0, 0, m_Window->GetWidth(), m_Window->GetHeight());
+    glEnable(GL_CULL_FACE);
+    glCullFace(GL_BACK);
+    glEnable(GL_DEPTH_TEST);
 }
 
 

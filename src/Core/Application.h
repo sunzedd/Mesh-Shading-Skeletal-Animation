@@ -23,6 +23,8 @@ protected:
     virtual void Start() { }
     virtual void Shutdown();
 
+    virtual void SetupGraphicsPipeline();
+
 private:
     bool CheckGraphicsRequirements();
 
