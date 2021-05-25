@@ -31,6 +31,8 @@ public:
     void SetInt(const std::string& name, int value) const;
     void SetFloat(const std::string& name, float value) const;
     void SetMatrix4fv(const std::string& name, const glm::mat4& value) const;
+    void SetMatrix4fvArray(const std::string& name,
+                           const std::vector<glm::mat4>& matrices) const;
 
 
 private:

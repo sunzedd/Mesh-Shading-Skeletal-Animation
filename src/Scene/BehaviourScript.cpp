@@ -13,6 +13,8 @@ void BehaviourScript::Link(Ref<ScriptableEntity> entity, Ref<BehaviourScript> sc
 {
     entity->AttachScript(script);
     script->AttachEntity(entity);
+
+    script->FirstSetup();
 }
 
 

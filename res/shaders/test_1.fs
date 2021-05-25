@@ -12,7 +12,7 @@ void main()
     vec3 objectColor = vec3(1.0f, 1.0f, 1.0f);
 
     vec3 n = normalize(Normal);
-    vec3 lightDir = normalize(FragPosition - vec3(0, -1, -1));
+    vec3 lightDir = normalize(FragPosition - vec3(0, 0, -1));
 
     float diff = max(dot(n, lightDir), 0.0f);
     vec3 diffuse = diff * lightColor;

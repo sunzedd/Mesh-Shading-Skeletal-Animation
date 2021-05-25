@@ -16,9 +16,13 @@ private:
     bool m_IsMouseButtonPressed = false;
 
 public:
-    void Start() override
+    void FirstSetup() override
     {
         ThisCamera = std::static_pointer_cast<CameraFPS>(m_Entity);
+    }
+
+    void Start() override
+    {
         ThisCamera->SetPosition(glm::vec3(0, 0, 10));
     }
 

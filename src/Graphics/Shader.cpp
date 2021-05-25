@@ -119,28 +119,36 @@ void Shader::Use()
 
 void Shader::SetBool(const std::string& name, bool value) const
 {
-    unsigned int location = GetUniformLocation(name);
+    uint32_t location = GetUniformLocation(name);
     OPENGL_CALL( glUniform1i(location, (int)value) );
 }
 
 
 void Shader::SetInt(const std::string& name, int value) const
 {
-    unsigned int location = GetUniformLocation(name);
+    uint32_t location = GetUniformLocation(name);
     OPENGL_CALL( glUniform1i(location, value) );
 }
 
 
 void Shader::SetFloat(const std::string& name, float value) const
 {
-    unsigned int location = GetUniformLocation(name);
+    uint32_t location = GetUniformLocation(name);
     OPENGL_CALL( glUniform1f(location, value) );
 }
 
 void Shader::SetMatrix4fv(const std::string& name, const glm::mat4 &value) const
 {
-    unsigned int location = GetUniformLocation(name);
+    uint32_t location = GetUniformLocation(name);
     OPENGL_CALL( glUniformMatrix4fv(location, 1, GL_FALSE, glm::value_ptr(value)) );
+}
+
+void Shader::SetMatrix4fvArray(const std::string& name,
+                               const std::vector<glm::mat4>& matrices) const
+{
+    uint32_t location = GetUniformLocation(name);
+    OPENGL_CALL( glUniformMatrix4fv(location, matrices.size(), GL_FALSE,
+                                    glm::value_ptr(matrices[0])) );
 }
 
 } // namespace FQW

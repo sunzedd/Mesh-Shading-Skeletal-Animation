@@ -12,8 +12,9 @@
 #include <assimp/scene.h>
 #include <assimp/postprocess.h>
 
-#include "Utility/AssimpGlmConverter.h"
-#include "Core/Logger.h"
+#include "../Core/Logger.h"
+#include "../Graphics/OpenGL_Utils.h"
+#include "../Utility/AssimpGlmConverter.h"
 
 
 namespace FQW {
@@ -62,15 +63,28 @@ struct Animation
 class AnimatedMesh
 {
 public:
-    std::vector<Vertex> vertexBuffer;
-    std::vector<uint32_t> indexBuffer;
-    Bone skeleton;
-    uint32_t boneCount = 0;
+    // Mesh data
+    std::vector<Vertex> m_VertexBuffer;
+    std::vector<uint32_t> m_IndexBuffer;
+
+    // Animation data
+    Bone m_Skeleton;
+    uint32_t m_BoneCount = 0;
+    Animation m_Animation;
+    std::vector<glm::mat4> m_Pose;
+    glm::mat4 m_GlobalInverseTransform;
 
     AnimatedMesh(std::string filepath);
 
+    uint32_t GetVertexArrayObject() const { return m_VertexArrayObject; }
+    std::vector<glm::mat4>& GetCurrentPose(float time);
+
 private:
-    // Загрузка анимированной модели из asScene
+    uint32_t m_VertexBufferObject = 0;
+    uint32_t m_ElementBufferObject = 0;
+    uint32_t m_VertexArrayObject = 0;
+
+    // Загрузка анимированной модели из aiScene
     static void LoadMesh(const aiScene* scene, aiMesh* mesh,
                          std::vector<Vertex>& verticesOutput,
                          std::vector<uint32_t>& indicesOutput,
@@ -81,7 +95,17 @@ private:
                              aiNode* node,
                              std::unordered_map<std::string, std::pair<int, glm::mat4>>& boneInfo);
 
-    static void LoadAnimation(const aiScene* scene, Animation& animation);
+    void LoadAnimation(const aiScene* scene, Animation& animation);
+
+    void CreateVertexArrayObject();
+
+    std::pair<uint32_t, float> GetTimeFraction(std::vector<float>& times,
+                                               float currentTime);
+
+    void CalculatePose(Animation& animation, Bone& skeletion,
+                       float time, std::vector<glm::mat4>& output,
+                       glm::mat4& parentTransform,
+                       glm::mat4& globalInverseTransform);
 };
 
 } // namespace FQW

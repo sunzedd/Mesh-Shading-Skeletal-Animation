@@ -1,11 +1,7 @@
-#if 1
-
-#include "Sandbox/Test_2/TestApplication_2.h"
+#include "Sandbox/TestAnimation/TestAnimationApplication.h"
 
 int main()
 {
-    FQW::TestApplication_2 app;
+    FQW::TestAnimationApplication app;
     app.Run();
 }
-
-#endif

@@ -59,10 +59,10 @@ void CameraFPS::Move(CameraFPS::Direction direction, float velosity)
 {
     switch (direction)
     {
-        case Direction::Forward: m_Position -= m_Front * velosity; break;
-        case Direction::Backward: m_Position += m_Front * velosity; break;
-        case Direction::Rigth: m_Position -= m_Right * velosity; break;
-        case Direction::Left: m_Position += m_Right * velosity; break;
+        case Direction::Forward: m_Position += m_Front * velosity; break;
+        case Direction::Backward: m_Position -= m_Front * velosity; break;
+        case Direction::Rigth: m_Position += m_Right * velosity; break;
+        case Direction::Left: m_Position -= m_Right * velosity; break;
         default: break;
     }
 }

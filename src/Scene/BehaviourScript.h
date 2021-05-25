@@ -11,6 +11,7 @@ class BehaviourScript
 public:
     void AttachEntity(Ref<ScriptableEntity> entity);
 
+    virtual void FirstSetup() { }
     virtual void Start() { }
     virtual void Update(float deltaTime) { }
 
