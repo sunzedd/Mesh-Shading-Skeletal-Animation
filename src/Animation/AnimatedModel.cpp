@@ -2,27 +2,26 @@
 
 namespace FQW {
 
-AnimatedModel::AnimatedModel(Ref<AnimatedMesh> animatedMesh)
+
+AnimatedModel::AnimatedModel(Ref<Mesh> mesh, Ref<Animator> animator)
     :
-    mesh(animatedMesh)
-{
-    currentPose.resize(mesh->m_BoneCount, glm::mat4(1.0f));
-}
+    m_Mesh(mesh),
+    m_Animator(animator)
+{ }
 
 
 void AnimatedModel::Draw(Shader& shader, ICamera& camera)
 {
-    float time = Input::GetTime_s() * 100;
-
-    currentPose = mesh->GetCurrentPose(time);
     SetupShaderUniforms(shader, camera);
 
-    shader.Use();
 
-    OPENGL_CALL(glBindVertexArray(mesh->GetVertexArrayObject()));
-    OPENGL_CALL(glDrawElements(GL_TRIANGLES,
-                mesh->m_IndexBuffer.size(),
-                GL_UNSIGNED_INT, (GLvoid*)0));
+    OPENGL_CALL(glBindVertexArray(m_Mesh->GetVertexArrayObject()));
+
+    OPENGL_CALL(glDrawElements(
+        GL_TRIANGLES,
+        m_Mesh->GetIndexBuffer().size(),
+        GL_UNSIGNED_INT, (GLvoid*)0));
+
     OPENGL_CALL(glBindVertexArray(0));
 }
 
@@ -56,7 +55,8 @@ void AnimatedModel::SetupShaderUniforms(Shader& shader, ICamera& camera)
     shader.Use();
     shader.SetMatrix4fv("model_matrix", M);
     shader.SetMatrix4fv("view_projection_matrix", VP);
-    shader.SetMatrix4fvArray("bone_transforms", currentPose);
+    shader.SetMatrix4fvArray("bone_transforms", m_Animator->GetCurrentPose());
 }
+
 
 } // namespace FQW

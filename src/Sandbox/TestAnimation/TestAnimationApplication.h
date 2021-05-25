@@ -5,10 +5,12 @@
 
 #include "../../Core/Alias.h"
 #include "../../Core/Application.h"
+
 #include "../../Animation/AnimatedModel.h"
-#include "../../Graphics/Shader.h"
+#include "../../Animation/Loader.h"
+
 #include "../../Scene/CameraFPS.h"
-#include "../../Graphics/IDrawable.h"
+
 
 namespace FQW {
 
@@ -25,11 +27,13 @@ public:
 
     std::vector<Ref<ScriptableEntity>> _scriptables;
 
+    Ref<Animator> _animator;
+
 
     TestAnimationApplication()
         : Application(WIDTH, HEIGHT, "Test Animation")
     {
-        SetupeDrawable();
+        SetupDrawable();
         SetupCamera();
     }
 
@@ -42,15 +46,17 @@ public:
         _scriptables.push_back(std::static_pointer_cast<ScriptableEntity>(_camera));
     }
 
-    void SetupeDrawable()
+    void SetupDrawable()
     {
         // Loading assets
         _shader = CreateUnique<Shader>("res/shaders/animation/shader.vs",
                                        "res/shaders/animation/shader.fs");
-        auto mesh = CreateRef<AnimatedMesh>("res/meshes/man.dae");
+        
+        auto model = Loader::LoadAnimatedModel("res/meshes/man.dae");
+        FQW_TRACE("Loaded animated model from 'res/meshes/man.dae'");
 
-        // Creating drawable entities
-        auto model = CreateRef<AnimatedModel>(mesh);
+        _animator = model->GetAnimator();
+
         auto modelScript = CreateRef<ModelScript>();
         Script::Link(model, modelScript);
 
@@ -65,13 +71,18 @@ public:
 
     void Start() override
     {
-        for (auto& scriptable : _scriptables) scriptable->Start();
+        for (auto& scriptable : _scriptables)
+            scriptable->Start();
     }
 
     void Update(float deltaTime) override
     {
         if (Input::IsKeyPressed(GLFW_KEY_ESCAPE)) Shutdown();
-        for (auto& scriptable : _scriptables) scriptable->Update(deltaTime);
+
+        for (auto& scriptable : _scriptables)
+            scriptable->Update(deltaTime);
+
+        _animator->Update(deltaTime);
     }
 };
 
