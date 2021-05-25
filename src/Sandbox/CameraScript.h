@@ -1,12 +1,12 @@
 #pragma once
 
-#include "../Scene/BehaviourScript.h"
+#include "../Scene/Script.h"
 #include "../Core/Input.h"
 #include "../Scene/CameraFPS.h"
 
 namespace FQW {
 
-class CameraScript : public BehaviourScript
+class CameraScript : public Script
 {
 private:
     Ref<CameraFPS> ThisCamera;

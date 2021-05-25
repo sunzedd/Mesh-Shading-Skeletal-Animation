@@ -3,7 +3,7 @@
 
 namespace FQW {
 
-class ModelScript : public BehaviourScript
+class ModelScript : public Script
 {
 public:
     Ref<AnimatedModel> ThisEntity;

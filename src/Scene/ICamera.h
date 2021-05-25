@@ -3,7 +3,7 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 
-#include "BehaviourScript.h"
+#include "Script.h"
 
 namespace FQW {
 

@@ -38,7 +38,7 @@ public:
         _camera = CreateRef<CameraFPS>(glm::vec3(0, 0, 5));
         _camera->SetProjectionParameters((float)WIDTH / (float)HEIGHT, 60.0f);
         auto cameraScript = CreateRef<CameraScript>();
-        BehaviourScript::Link(_camera, cameraScript);
+        Script::Link(_camera, cameraScript);
         _scriptables.push_back(std::static_pointer_cast<ScriptableEntity>(_camera));
     }
 
@@ -52,7 +52,7 @@ public:
         // Creating drawable entities
         auto model = CreateRef<AnimatedModel>(mesh);
         auto modelScript = CreateRef<ModelScript>();
-        BehaviourScript::Link(model, modelScript);
+        Script::Link(model, modelScript);
 
         _scriptables.push_back(model);
         _drawableModel = std::static_pointer_cast<IDrawable>(model);

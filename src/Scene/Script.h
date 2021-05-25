@@ -6,7 +6,7 @@ namespace FQW {
 class ScriptableEntity;
 
 
-class BehaviourScript
+class Script
 {
 public:
     void AttachEntity(Ref<ScriptableEntity> entity);
@@ -15,7 +15,7 @@ public:
     virtual void Start() { }
     virtual void Update(float deltaTime) { }
 
-    static void Link(Ref<ScriptableEntity> entity, Ref<BehaviourScript>);
+    static void Link(Ref<ScriptableEntity> entity, Ref<Script>);
 
 protected:
     Ref<ScriptableEntity> m_Entity;
@@ -26,13 +26,13 @@ protected:
 class ScriptableEntity
 {
 public:
-    void AttachScript(Ref<BehaviourScript> script);
+    void AttachScript(Ref<Script> script);
     void DetachScript();
 
     void Start();
     void Update(float deltaTime);
 
-    Ref<BehaviourScript> m_BehaviourScript;
+    Ref<Script> m_BehaviourScript;
 };
 
 } // namespace FQW

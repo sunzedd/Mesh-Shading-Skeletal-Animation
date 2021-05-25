@@ -1,6 +1,5 @@
 #pragma once
 #include "ICamera.h"
-#include "BehaviourScript.h"
 
 
 namespace FQW {

@@ -1,15 +1,15 @@
 #pragma once
-#include "BehaviourScript.h"
+#include "Script.h"
 
 namespace FQW {
 
-// ----------------------  BehaviourScript ----------------------
-void BehaviourScript::AttachEntity(Ref<ScriptableEntity> entity)
+// ------------------------  Script------------------------------
+void Script::AttachEntity(Ref<ScriptableEntity> entity)
 {
     m_Entity = entity;
 }
 
-void BehaviourScript::Link(Ref<ScriptableEntity> entity, Ref<BehaviourScript> script)
+void Script::Link(Ref<ScriptableEntity> entity, Ref<Script> script)
 {
     entity->AttachScript(script);
     script->AttachEntity(entity);
@@ -19,7 +19,7 @@ void BehaviourScript::Link(Ref<ScriptableEntity> entity, Ref<BehaviourScript> sc
 
 
 // ---------------------  ScriptableEntity ----------------------
-void ScriptableEntity::AttachScript(Ref<BehaviourScript> script)
+void ScriptableEntity::AttachScript(Ref<Script> script)
 {
     m_BehaviourScript = script;
 }
