@@ -21,7 +21,17 @@ public:
 
     void Update(float deltaTime) override
     {
-       // ThisEntity->transform.rotation.y += deltaTime;
+        ThisEntity->transform.rotation.y += deltaTime;
+
+        if (Input::IsKeyPressed(GLFW_KEY_P))
+        {
+            auto animator = ThisEntity->GetAnimator();
+            if (!animator->IsPlaying())
+            {
+                animator->PlayAnimation();
+                FQW_INFO("Playing animation starts");
+            }
+        }
     }
 };
 

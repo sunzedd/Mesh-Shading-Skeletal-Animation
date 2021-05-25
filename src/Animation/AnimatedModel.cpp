@@ -14,7 +14,6 @@ void AnimatedModel::Draw(Shader& shader, ICamera& camera)
 {
     SetupShaderUniforms(shader, camera);
 
-
     OPENGL_CALL(glBindVertexArray(m_Mesh->GetVertexArrayObject()));
 
     OPENGL_CALL(glDrawElements(

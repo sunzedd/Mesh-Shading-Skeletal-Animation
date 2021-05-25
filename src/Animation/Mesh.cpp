@@ -20,19 +20,21 @@ void Mesh::CreateVertexArrayObject()
     // VAO, VBO, EBO generation
     OPENGL_CALL(glGenVertexArrays(1, &m_VAO));
     OPENGL_CALL(glGenBuffers(1, &m_VBO));
-    OPENGL_CALL(glGenBuffers(1, &m_VBO));
+    OPENGL_CALL(glGenBuffers(1, &m_EBO));
 
     OPENGL_CALL(glBindVertexArray(m_VAO));
 
     // VBO
     OPENGL_CALL(glBindBuffer(GL_ARRAY_BUFFER, m_VBO));
-    OPENGL_CALL(glBufferData(GL_ARRAY_BUFFER,
+    OPENGL_CALL(glBufferData(
+        GL_ARRAY_BUFFER,
         m_VertexBuffer.size() * sizeof(Vertex),
         &(m_VertexBuffer[0]), GL_STATIC_DRAW));
 
     // EBO
-    OPENGL_CALL(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_VBO));
-    OPENGL_CALL(glBufferData(GL_ELEMENT_ARRAY_BUFFER,
+    OPENGL_CALL(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_EBO));
+    OPENGL_CALL(glBufferData(
+        GL_ELEMENT_ARRAY_BUFFER,
         m_IndexBuffer.size() * sizeof(uint32_t),
         &(m_IndexBuffer[0]), GL_STATIC_DRAW));
 

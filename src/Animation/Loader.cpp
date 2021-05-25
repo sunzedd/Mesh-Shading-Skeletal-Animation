@@ -203,7 +203,7 @@ void Loader::LoadAnimation(
         outAnimation.ticksPerSecond = 1;
     }
 
-    outAnimation.duration = animation->mDuration * animation->mTicksPerSecond;
+    outAnimation.duration = animation->mDuration / animation->mTicksPerSecond * 1000;
     outAnimation.boneTransforms = {};
 
     // load positions rotations and scales for each bone
@@ -239,7 +239,7 @@ void Loader::LoadAnimation(
     }
 
     glm::mat4 globalInverseTransform = AssimpGlmConverter::AssimpMatrixToGlm(scene->mRootNode->mTransformation);
-    outAnimation.globalInverseTransform = globalInverseTransform;
+    outAnimation.globalInverseTransform = glm::inverse(globalInverseTransform);
 }
 
 

@@ -18,24 +18,32 @@ Animator::Animator(
 void Animator::PlayAnimation()
 {
     m_CurrentAnimationTime = 0.0f;
+    m_IsPlaying = true;
 }
 
 
 void Animator::Update(float deltaTime)
 {
-    m_CurrentAnimationTime += deltaTime;
+    if (m_CurrentAnimationTime >= m_Animation.duration)
+    {
+        m_IsPlaying = false;
+    }
+
+    if (m_IsPlaying)
+    {
+        m_CurrentAnimationTime += deltaTime;
+    }
 }
 
 
-const std::vector<glm::mat4> Animator::GetCurrentPose()
+const std::vector<glm::mat4>& Animator::GetCurrentPose()
 {
-    CalculatePose(
-        m_Animation,
-        m_Skeleton,
-        m_CurrentAnimationTime,
-        m_CurrentPose,
-        glm::mat4(1.0f),
-        m_Animation.globalInverseTransform);
+    if (m_IsPlaying)
+    {
+        CalculatePose(m_Animation, m_Skeleton, m_CurrentAnimationTime,
+                      m_CurrentPose, glm::mat4(1.0f), 
+                      m_Animation.globalInverseTransform);
+    }
 
     return m_CurrentPose;
 }

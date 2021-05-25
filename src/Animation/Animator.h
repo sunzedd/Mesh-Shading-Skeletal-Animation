@@ -15,11 +15,14 @@ public:
 
     void PlayAnimation();
 
+
+    bool IsPlaying() const { return m_IsPlaying; }
     
+
     void Update(float deltaTime);
     
     
-    const std::vector<glm::mat4> GetCurrentPose();
+    const std::vector<glm::mat4>& GetCurrentPose();
 
 
 private:
@@ -42,6 +45,7 @@ private:
 
 private:
     float m_CurrentAnimationTime = 0.0f;
+    bool m_IsPlaying = false;
 
     std::vector<glm::mat4> m_CurrentPose;
 

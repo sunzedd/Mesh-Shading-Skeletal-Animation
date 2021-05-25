@@ -39,7 +39,7 @@ public:
 
     void SetupCamera()
     {
-        _camera = CreateRef<CameraFPS>(glm::vec3(0, 0, 5));
+        _camera = CreateRef<CameraFPS>(glm::vec3(0, 0, 20));
         _camera->SetProjectionParameters((float)WIDTH / (float)HEIGHT, 60.0f);
         auto cameraScript = CreateRef<CameraScript>();
         Script::Link(_camera, cameraScript);
@@ -82,7 +82,7 @@ public:
         for (auto& scriptable : _scriptables)
             scriptable->Update(deltaTime);
 
-        _animator->Update(deltaTime);
+        _animator->Update(deltaTime * 1000);
     }
 };
 

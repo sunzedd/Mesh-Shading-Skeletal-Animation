@@ -14,22 +14,22 @@ uniform mat4 model_matrix;
 
 void main()
 {
-    //vec4 bw = vec4(0);
-    //mat4 bone_transform = mat4(0.0);
-    //
-    //bone_transform += bone_transforms[boneIds.x] * boneWeights.x;    
-    //bone_transform += bone_transforms[boneIds.y] * boneWeights.y;    
-    //bone_transform += bone_transforms[boneIds.z] * boneWeights.z;    
-    //bone_transform += bone_transforms[boneIds.w] * boneWeights.w;    
-    //
-    //vec4 position = bone_transform * vec4(position, 1.0);   // Позиция вершины в локальном  модельном пространстве
-    //
-    //gl_Position = view_projection_matrix * model_matrix * position;
-    //
-    //v_position = vec3(model_matrix * position); // позиция вершины в мировом пространстве для расчета освещения
-    //
-    //v_normal = mat3(transpose(inverse(model_matrix * bone_transform))) * normal;
-    //v_normal = normalize(v_normal);
+    vec4 bw = vec4(0);
+    mat4 bone_transform = mat4(0.0);
+    
+    bone_transform += bone_transforms[boneIds.x] * boneWeights.x;    
+    bone_transform += bone_transforms[boneIds.y] * boneWeights.y;    
+    bone_transform += bone_transforms[boneIds.z] * boneWeights.z;    
+    bone_transform += bone_transforms[boneIds.w] * boneWeights.w;    
+    
+    vec4 position = bone_transform * vec4(position, 1.0);   // Позиция вершины в локальном  модельном пространстве
+    
+    gl_Position = view_projection_matrix * model_matrix * position;
+    
+    v_position = vec3(model_matrix * position); // позиция вершины в мировом пространстве для расчета освещения
+    
+    v_normal = mat3(transpose(inverse(model_matrix * bone_transform))) * normal;
+    v_normal = normalize(v_normal);
 
-    gl_Position = view_projection_matrix * model_matrix * vec4(v_position, 1.0);
+    //gl_Position = view_projection_matrix * model_matrix * vec4(position, 1.0);
 }
