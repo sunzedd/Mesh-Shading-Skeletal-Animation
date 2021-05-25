@@ -44,7 +44,7 @@ double Input::GetTime_s()
 
 double Input::GetTime_ms()
 {
-    return glfwGetTime() / 1000.0f;
+    return glfwGetTime() * 1000.0f;
 }
 
 }

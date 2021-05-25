@@ -11,7 +11,7 @@ class CameraScript : public Script
 private:
     Ref<CameraFPS> ThisCamera;
     float m_MouseSensitivity = 0.05f;
-    float m_Speed = 4.0f;
+    float m_Speed = 0.01f;
     glm::vec2 m_LastMousePosition;
     bool m_IsMouseButtonPressed = false;
 

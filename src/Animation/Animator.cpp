@@ -58,7 +58,16 @@ void Animator::CalculatePose(
     const glm::mat4& parentTransform,
     const glm::mat4& globalInverseTransform)
 {
-    const BoneTransformTrack& btt = animation.boneTransforms.at(skeleton.name); //[std::string(skeleton.name)] ;
+    //const BoneTransformTrack btt = 
+    auto found = animation.boneTransforms.find(skeleton.name); //at(skeleton.name); //[std::string(skeleton.name)] ;
+    if (found == animation.boneTransforms.end())
+    {
+        FQW_CRITICAL("Failed to get bone transform for the name {}", skeleton.name);
+        return;
+    }
+        
+    const BoneTransformTrack& btt = found->second;
+
     time = fmod(time, animation.duration);
     std::pair<uint32_t, float> fp;
 

@@ -19,17 +19,18 @@ class TestAnimationApplication : public Application
 public:
     static const int WIDTH = 1280;
     static const int HEIGHT = 720;
+    const std::string MODEL_FILEPATH = "res/meshes/man.dae";
 
     Unique<Shader> _shader;
     Ref<CameraFPS> _camera;
 
     Ref<IDrawable> _drawableModel;
+    Ref<Animator> _animator;
 
     std::vector<Ref<ScriptableEntity>> _scriptables;
 
-    Ref<Animator> _animator;
 
-
+public:
     TestAnimationApplication()
         : Application(WIDTH, HEIGHT, "Test Animation")
     {
@@ -52,8 +53,8 @@ public:
         _shader = CreateUnique<Shader>("res/shaders/animation/shader.vs",
                                        "res/shaders/animation/shader.fs");
         
-        auto model = Loader::LoadAnimatedModel("res/meshes/man.dae");
-        FQW_TRACE("Loaded animated model from 'res/meshes/man.dae'");
+        auto model = Loader::LoadAnimatedModel(MODEL_FILEPATH);
+        FQW_TRACE("Loaded animated model from {}", MODEL_FILEPATH);
 
         _animator = model->GetAnimator();
 
@@ -82,7 +83,7 @@ public:
         for (auto& scriptable : _scriptables)
             scriptable->Update(deltaTime);
 
-        _animator->Update(deltaTime * 1000);
+        _animator->Update(deltaTime);
     }
 };
 

@@ -30,7 +30,7 @@ void Application::Run()
             continue;
         }
 
-        const float currentTime = Input::GetTime_s();
+        const float currentTime = Input::GetTime_ms();
         const float deltaTime = currentTime - m_LastFrameTime;
         m_LastFrameTime = currentTime;
 

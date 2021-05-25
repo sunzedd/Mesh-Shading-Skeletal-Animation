@@ -203,7 +203,7 @@ void Loader::LoadAnimation(
         outAnimation.ticksPerSecond = 1;
     }
 
-    outAnimation.duration = animation->mDuration / animation->mTicksPerSecond * 1000;
+    outAnimation.duration = animation->mDuration;
     outAnimation.boneTransforms = {};
 
     // load positions rotations and scales for each bone
