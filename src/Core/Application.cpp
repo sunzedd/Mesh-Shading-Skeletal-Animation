@@ -10,6 +10,7 @@ Application::Application(int width, int height, std::string title)
 
     CheckGraphicsRequirements();
     SetupGraphicsPipeline();
+    SetupImgui();
 }
 
 
@@ -30,6 +31,7 @@ void Application::Run()
             continue;
         }
 
+
         const float currentTime = Input::GetTime_ms();
         const float deltaTime = currentTime - m_LastFrameTime;
         m_LastFrameTime = currentTime;
@@ -37,8 +39,17 @@ void Application::Run()
         Update(deltaTime);
 
         m_Window->Clear();
+        
+        ImGui_ImplOpenGL3_NewFrame();
+        ImGui_ImplGlfw_NewFrame();
+        ImGui::NewFrame();
+
         Render();
         DrawUI();
+
+        ImGui::Render();
+        ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+        
         m_Window->Update();
     }
 }
@@ -58,6 +69,16 @@ void Application::SetupGraphicsPipeline()
     glEnable(GL_DEPTH_TEST);
 }
 
+void Application::SetupImgui()
+{
+    ImGui::CreateContext();
+    ImGui::StyleColorsDark();
+    ImGui_ImplGlfw_InitForOpenGL((GLFWwindow*)m_Window->GetNativeWindow(), true);
+    ImGui_ImplOpenGL3_Init("#version 460");
+
+    ImGuiIO& io = ImGui::GetIO();
+    io.Fonts->AddFontFromFileTTF("C:\\Windows\\Fonts\\Tahoma.ttf", 14.0f, &m_FontConfig, ranges);
+}
 
 bool Application::CheckGraphicsRequirements()
 {

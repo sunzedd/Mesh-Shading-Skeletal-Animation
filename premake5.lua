@@ -21,13 +21,16 @@ workspace "Mesh-Shaders-Skeletal-Animation"
         {
             "src/**.h",
             "src/**.cpp",
-            "deps/glad/src/glad.c"
+            "deps/glad/src/glad.c",
+            "deps/imgui/**.h",
+            "deps/imgui/**.cpp",
         }
 
         includedirs
         {
             "%{wks.location}/deps/glad/include",
             "%{wks.location}/deps/spdlog/include",
+            "%{wks.location}/deps/imgui",
             
             "D:/Library/GLFW/glfw-3.3.4/include",
             "D:/Library/glm",

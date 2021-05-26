@@ -1,4 +1,8 @@
 #pragma once
+#include <imgui.h>
+#include <imgui_impl_opengl3.h>
+#include <imgui_impl_glfw.h>
+
 #include "../Graphics/OpenGL_Utils.h"
 
 #include "Window.h"
@@ -6,6 +10,13 @@
 #include "Alias.h"
 
 namespace FQW {
+
+static const ImWchar ranges[] =
+{
+    0x0020, 0x00FF, // Basic Latin + Latin Supplement
+    0x0400, 0x044F, // Cyrillic
+    0,
+};
 
 class Application
 {
@@ -27,11 +38,14 @@ protected:
 
 private:
     bool CheckGraphicsRequirements();
+    void SetupImgui();
 
 protected:
     Unique<Window> m_Window;
     bool m_IsRunning;
     float m_LastFrameTime = 0.0f;
+
+    ImFontConfig m_FontConfig;
 };
 
 } // namespace FQW
