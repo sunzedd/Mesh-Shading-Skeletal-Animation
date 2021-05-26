@@ -1,5 +1,6 @@
 #pragma once
 #include "../CameraScript.h"
+#include "ModelScript.h"
 
 #include "../../Core/Alias.h"
 #include "../../Core/Application.h"
@@ -67,8 +68,11 @@ public:
         for (const auto& anim : _model->GetAnimations()) {
             LogAnimationTransformations(anim);
         }
-        FQW_TRACE("");
+        
+        auto modelScript = CreateRef<ModelScript>();
+        Script::Link(_model, modelScript);
 
+        _scriptables.push_back(_model);
         _drawableModel = _model;
     }
 
@@ -115,18 +119,18 @@ public:
 
         _animator->Update(deltaTime);
 
-        if (!_animator->IsPlaying())
-        {
-            if (Input::IsKeyPressed(GLFW_KEY_1)) {
-                _animator->PlayAnimation(_model->GetAnimations()[0]);  FQW_INFO("Playing animation 0");
-            }
-            else if (Input::IsKeyPressed(GLFW_KEY_2)) {
-                _animator->PlayAnimation(_model->GetAnimations()[1]);  FQW_INFO("Playing animation 1");
-            }
-            else if (Input::IsKeyPressed(GLFW_KEY_3)) {
-                _animator->PlayAnimation(_model->GetAnimations()[2]);  FQW_INFO("Playing animation 2");
-            }
-        }
+        //if (!_animator->IsPlaying())
+        //{
+        //    if (Input::IsKeyPressed(GLFW_KEY_1)) {
+        //        _animator->PlayAnimation(_model->GetAnimations()[0]);  FQW_INFO("Playing animation 0");
+        //    }
+        //    else if (Input::IsKeyPressed(GLFW_KEY_2)) {
+        //        _animator->PlayAnimation(_model->GetAnimations()[1]);  FQW_INFO("Playing animation 1");
+        //    }
+        //    else if (Input::IsKeyPressed(GLFW_KEY_3)) {
+        //        _animator->PlayAnimation(_model->GetAnimations()[2]);  FQW_INFO("Playing animation 2");
+        //    }
+        //}
     }
 };
 
