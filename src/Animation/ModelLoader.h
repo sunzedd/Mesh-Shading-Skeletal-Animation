@@ -73,14 +73,12 @@ public:
             auto dstAnimation = CreateRef<Animation>();
 
             LoadAnimation(scene, assimpAnimation, *dstAnimation);
-            //LoadMissingBones(assimpAnimation, boneMap);
 
             animations.push_back(dstAnimation);
         }
         
         // Skeleton building
         ComposeSkeleton(rootNode, boneMap, skeletonRoot);
-        //NameUnnamedBones(skeletonRoot);
 
         auto animator = CreateRef<Animator>(skeletonRoot, boneMap.size());
         auto result = CreateRef<Model>(meshes, animations, animator);
@@ -97,7 +95,7 @@ public:
         for (int i = 0; i < node->mNumMeshes; i++)
         {
             const aiMesh* assimpMesh = scene->mMeshes[node->mMeshes[i]];
-            Ref<Mesh> mesh = ConvertMeshAndFillBonemap(assimpMesh, scene, outBoneMap);
+            Ref<Mesh> mesh = ProcessMeshAndUpdateBonemap(assimpMesh, scene, outBoneMap);
             outMeshes.push_back(mesh);
         }
 
@@ -108,7 +106,7 @@ public:
     }
 
 
-    static Ref<Mesh> ConvertMeshAndFillBonemap(const aiMesh* assimpMesh, const aiScene* scene, BoneMap& outBoneMap)
+    static Ref<Mesh> ProcessMeshAndUpdateBonemap(const aiMesh* assimpMesh, const aiScene* scene, BoneMap& outBoneMap)
     {
         std::vector<Vertex> vertexBuffer;
         std::vector<uint32_t> indexBuffer;
@@ -199,6 +197,18 @@ public:
                     default:
                         break;
                 }
+            }
+        }
+
+        // Нормализация весов
+        for (int i = 0; i < vertexBuffer.size(); i++)
+        {
+            glm::vec4& weights = vertexBuffer[i].boneWeights;
+            
+            float totalWeight = weights.x + weights.y + weights.z + weights.w;
+            if (totalWeight > 0.0f) 
+            {
+                weights /= totalWeight;
             }
         }
     }

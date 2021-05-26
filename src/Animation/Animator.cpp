@@ -66,49 +66,58 @@ void Animator::CalculatePose(
         
     const BoneTransformTrack& btt = found->second;
 
-    time = fmod(time, animation.duration);
-    std::pair<uint32_t, float> fp;
+    glm::mat4 globalTransform;
 
-    //calculate interpolated position
-    glm::vec3 position1;
+    try {
+        time = fmod(time, animation.duration);
+        std::pair<uint32_t, float> fp;
 
-    fp = GetTimeFraction(btt.positionTimestamps, time);
-    //if (fp.first == 0) { position1 = glm::vec3(1.0f); }
-    //else { glm::vec3 position1 = btt.positions[fp.first - 1]; }
-    position1 = btt.positions[fp.first - 1];
-    glm::vec3 position2 = btt.positions[fp.first];
-    glm::vec3 position = glm::mix(position1, position2, fp.second);
+        //calculate interpolated position
+        glm::vec3 position1;
 
-    //calculate interpolated rotation
-    glm::quat rotation1;
-    fp = GetTimeFraction(btt.rotationTimestamps, time);
-    //if (fp.first == 0) { rotation1 = glm::quat(glm::vec3(0.0f)); }
-    //else { rotation1 = btt.rotations[fp.first - 1]; }
-    rotation1 = btt.rotations[fp.first - 1];
-    glm::quat rotation2 = btt.rotations[fp.first];
-    glm::quat rotation = glm::slerp(rotation1, rotation2, fp.second);
+        fp = GetTimeFraction(btt.positionTimestamps, time);
+        //if (fp.first == 0) { position1 = glm::vec3(1.0f); }
+        //else { glm::vec3 position1 = btt.positions[fp.first - 1]; }
+        position1 = btt.positions[fp.first - 1];
+        glm::vec3 position2 = btt.positions[fp.first];
+        glm::vec3 position = glm::mix(position1, position2, fp.second);
 
-    //calculate interpolated scale
-    glm::vec3 scale1;
-    fp = GetTimeFraction(btt.scaleTimestamps, time);
-    //if (fp.first == 0) { scale1 = glm::vec3(1.0f); }
-    //else { scale1 = btt.scales[fp.first - 1]; }
-    scale1 = btt.scales[fp.first - 1];
-    glm::vec3 scale2 = btt.scales[fp.first];
-    glm::vec3 scale = glm::mix(scale1, scale2, fp.second);
+        //calculate interpolated rotation
+        glm::quat rotation1;
+        fp = GetTimeFraction(btt.rotationTimestamps, time);
+        //if (fp.first == 0) { rotation1 = glm::quat(glm::vec3(0.0f)); }
+        //else { rotation1 = btt.rotations[fp.first - 1]; }
+        rotation1 = btt.rotations[fp.first - 1];
+        glm::quat rotation2 = btt.rotations[fp.first];
+        glm::quat rotation = glm::slerp(rotation1, rotation2, fp.second);
 
-    glm::mat4 positionMat = glm::mat4(1.0);
-    glm::mat4 scaleMat = glm::mat4(1.0);
+        //calculate interpolated scale
+        glm::vec3 scale1;
+        fp = GetTimeFraction(btt.scaleTimestamps, time);
+        //if (fp.first == 0) { scale1 = glm::vec3(1.0f); }
+        //else { scale1 = btt.scales[fp.first - 1]; }
+        scale1 = btt.scales[fp.first - 1];
+        glm::vec3 scale2 = btt.scales[fp.first];
+        glm::vec3 scale = glm::mix(scale1, scale2, fp.second);
 
-    // calculate localTransform
-    positionMat = glm::translate(positionMat, position);
-    glm::mat4 rotationMat = glm::toMat4(rotation);
-    scaleMat = glm::scale(scaleMat, scale);
+        glm::mat4 positionMat = glm::mat4(1.0);
+        glm::mat4 scaleMat = glm::mat4(1.0);
 
-    glm::mat4 localTransform = positionMat * rotationMat * scaleMat;
-    glm::mat4 globalTransform = parentTransform * localTransform;
+        // calculate localTransform
+        positionMat = glm::translate(positionMat, position);
+        glm::mat4 rotationMat = glm::toMat4(rotation);
+        scaleMat = glm::scale(scaleMat, scale);
 
-    outFinalTransforms[bone.id] = globalInverseTransform * globalTransform * bone.offset;
+        glm::mat4 localTransform = positionMat * rotationMat * scaleMat;
+        globalTransform = parentTransform * localTransform;
+
+        outFinalTransforms[bone.id] = globalInverseTransform * globalTransform * bone.offset;
+    }
+    catch (std::exception& e)
+    {
+        FQW_ERROR("Exception: {}", e.what());
+        globalTransform = glm::mat4(1.0f);
+    }
 
     //update values for children bones
     for (const Bone& child : bone.children)

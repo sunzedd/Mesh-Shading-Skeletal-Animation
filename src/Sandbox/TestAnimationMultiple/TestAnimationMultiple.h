@@ -18,7 +18,9 @@ class TestAnimationMultipleApplication : public Application
 public:
     static const int WIDTH = 1280;
     static const int HEIGHT = 720;
+    //const std::string MODEL_FILEPATH = "res/meshes/astroBoy_walk_Maya.dae";
     const std::string MODEL_FILEPATH = "res/meshes/man.dae";
+
 
     Unique<Shader> _shader;
     Ref<CameraFPS> _camera;
