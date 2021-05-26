@@ -31,6 +31,10 @@ public:
         }
     }
 
+    Ref<Animator> GetAnimator() const { return animator; }
+    const std::vector<Ref<Animation>>& GetAnimations() { return animations; }
+    const std::vector<Ref<Mesh>>& GetMeshes() { return meshes; }
+
 private:
     void BindShaderUniforms(Shader& shader, ICamera& camera)
     {

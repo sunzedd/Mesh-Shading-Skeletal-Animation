@@ -4,7 +4,9 @@
 #include "../../Core/Alias.h"
 #include "../../Core/Application.h"
 #include "../../Scene/CameraFPS.h"
-#include "../../AnimationMultiple/ModelLoader.h"
+#include "../../Animation/Animator.h"
+#include "../../Animation/Model.h"
+#include "../../Animation/ModelLoader.h"
 
 
 
@@ -15,7 +17,7 @@ class TestAnimationMultipleApplication : public Application
 public:
     static const int WIDTH = 1280;
     static const int HEIGHT = 720;
-    const std::string MODEL_FILEPATH = "res/meshes/argon.dae";
+    const std::string MODEL_FILEPATH = "res/meshes/man.dae";
 
     Unique<Shader> _shader;
     Ref<CameraFPS> _camera;
@@ -53,15 +55,16 @@ public:
         );
 
         _model = ModelLoader::LoadModel(MODEL_FILEPATH);
+
         FQW_TRACE("Loaded animated model from {}", MODEL_FILEPATH);
-        FQW_TRACE("\tMeshes count: {}", _model->meshes.size());
-        FQW_TRACE("\tAnimations count: {}", _model->animations.size());
-        _animator = _model->animator;
+        FQW_TRACE("\tMeshes count: {}", _model->GetMeshes().size());
+        FQW_TRACE("\tAnimations count: {}", _model->GetAnimations().size());
+        _animator = _model->GetAnimator();
 
         FQW_INFO("Skeleton hierarchy");
         LogSkeletonHierarchy(_animator->GetSkeleton());
         
-        for (const auto& anim : _model->animations) {
+        for (const auto& anim : _model->GetAnimations()) {
             LogAnimationTransformations(anim);
         }
         FQW_TRACE("");
@@ -115,13 +118,13 @@ public:
         if (!_animator->IsPlaying())
         {
             if (Input::IsKeyPressed(GLFW_KEY_1)) {
-                _animator->PlayAnimation(_model->animations[0]);  FQW_INFO("Playing animation 0");
+                _animator->PlayAnimation(_model->GetAnimations()[0]);  FQW_INFO("Playing animation 0");
             }
             else if (Input::IsKeyPressed(GLFW_KEY_2)) {
-                _animator->PlayAnimation(_model->animations[1]);  FQW_INFO("Playing animation 1");
+                _animator->PlayAnimation(_model->GetAnimations()[1]);  FQW_INFO("Playing animation 1");
             }
             else if (Input::IsKeyPressed(GLFW_KEY_3)) {
-                _animator->PlayAnimation(_model->animations[2]);  FQW_INFO("Playing animation 2");
+                _animator->PlayAnimation(_model->GetAnimations()[2]);  FQW_INFO("Playing animation 2");
             }
         }
     }
