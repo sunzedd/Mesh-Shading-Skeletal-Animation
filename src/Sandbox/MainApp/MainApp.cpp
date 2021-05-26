@@ -5,6 +5,8 @@ namespace FQW {
 MainApp::MainApp()
     : Application(WIDTH, HEIGHT, "Test Animation")
 {
+    glEnable(GL_CULL_FACE);
+    //glPolygonMode(GL_FRONT, GL_LINE);
     SetupDrawable();
     SetupCamera();
 }

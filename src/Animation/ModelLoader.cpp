@@ -8,8 +8,9 @@ namespace FQW {
     const aiScene* scene = importer.ReadFile(
         filepath,
         aiProcess_Triangulate |
+        aiProcess_GenSmoothNormals |
+        aiProcess_OptimizeMeshes |
         aiProcess_GenSmoothNormals
-        | aiProcess_OptimizeMeshes
     );
 
     if (!scene ||
