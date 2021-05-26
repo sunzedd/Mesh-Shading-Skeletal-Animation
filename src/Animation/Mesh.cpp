@@ -15,6 +15,32 @@ Mesh::Mesh(
 }
 
 
+void Mesh::Draw()
+{
+    OPENGL_CALL(glBindVertexArray(m_VAO));
+
+    OPENGL_CALL(glDrawElements(
+        GL_TRIANGLES,
+        m_IndexBuffer.size(),
+        GL_UNSIGNED_INT, (GLvoid*)0));
+
+    OPENGL_CALL(glBindVertexArray(0));
+}
+
+
+void Mesh::Draw(Shader& shader, ICamera& camera)
+{
+    OPENGL_CALL(glBindVertexArray(m_VAO));
+
+    OPENGL_CALL(glDrawElements(
+        GL_TRIANGLES,
+        m_IndexBuffer.size(),
+        GL_UNSIGNED_INT, (GLvoid*)0));
+
+    OPENGL_CALL(glBindVertexArray(0));
+}
+
+
 void Mesh::CreateVertexArrayObject()
 {
     // VAO, VBO, EBO generation

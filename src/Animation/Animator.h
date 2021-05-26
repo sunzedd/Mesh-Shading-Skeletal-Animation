@@ -4,16 +4,14 @@
 
 namespace FQW {
 
+
 class Animator
 {
 public:
-    Animator(
-        const Bone& skeleton,
-        uint32_t boneCount,
-        const Animation& animation);
+    Animator(const Bone& skeleton, uint32_t boneCount);
 
 
-    void PlayAnimation();
+    void PlayAnimation(Ref<Animation> animation);
 
 
     bool IsPlaying() const { return m_IsPlaying; }
@@ -25,12 +23,15 @@ public:
     const std::vector<glm::mat4>& GetCurrentPose();
 
 
+    const Bone& GetSkeleton() const { return m_Skeleton; }
+
+
 private:
 
     // Расчет текущей позы
     static void CalculatePose(
         const Animation& animation,
-        const Bone& skeleton,
+        const Bone& bone,
         float time,
         std::vector<glm::mat4>& outFinalTransforms,
         const glm::mat4& parentTransform,
@@ -50,7 +51,7 @@ private:
     std::vector<glm::mat4> m_CurrentPose;
 
     Bone m_Skeleton;
-    Animation m_Animation;
+    Ref<Animation> m_Animation;
     uint32_t m_BoneCount = 0;
 };
 

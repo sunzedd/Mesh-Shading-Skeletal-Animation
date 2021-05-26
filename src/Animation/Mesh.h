@@ -9,6 +9,8 @@
 #include "../Graphics/OpenGL_Utils.h"
 #include "../Utility/AssimpGlmConverter.h"
 
+#include "../Graphics/IDrawable.h"
+
 
 namespace FQW {
 
@@ -21,17 +23,19 @@ struct Vertex
 };
 
 
-class Mesh
+class Mesh : public IDrawable
 {
 public:
     Mesh(const std::vector<Vertex>& vertexBuffer,
          const std::vector<uint32_t>& indexBuffer);
 
+    void Draw();
+    void Draw(Shader& shader, ICamera& camera) override;
+
 
     const std::vector<Vertex>& GetVertexBuffer() const { return m_VertexBuffer; }
     const std::vector<uint32_t>& GetIndexBuffer() const { return m_IndexBuffer; }
     uint32_t GetVertexArrayObject() const { return m_VAO; }
-
 
 private:
     const std::vector<Vertex> m_VertexBuffer;

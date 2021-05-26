@@ -42,6 +42,8 @@ struct Animation
 {
     float duration = 0.0f;
     float ticksPerSecond = 1.0f;
+
+    // Ключ - имя кости, значение - набор трансформаций кости в ключевых кадрах
     std::unordered_map<std::string, BoneTransformTrack> boneTransforms = {};
 
     glm::mat4 globalInverseTransform;

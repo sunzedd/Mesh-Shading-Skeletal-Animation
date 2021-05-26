@@ -30,6 +30,15 @@ public:
     {
         ProcessKeyboard(deltaTime);
         ProcessMouse();
+
+        if (Input::IsKeyPressed(GLFW_KEY_EQUAL))
+        {
+            m_Speed += 0.005;
+        }
+        else if (Input::IsKeyPressed(GLFW_KEY_MINUS))
+        {
+            m_Speed -= 0.005;
+        }
     }
 
 private:
