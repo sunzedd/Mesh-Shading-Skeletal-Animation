@@ -60,7 +60,7 @@ void Animator::CalculatePose(
     auto found = animation.boneTransforms.find(bone.name);
     if (found == animation.boneTransforms.end())
     {
-        FQW_CRITICAL("Failed to get bone transform for the name {}", bone.name);
+        FQW_WARN("Failed to get bone transform for the name {}", bone.name);
         return;
     }
         

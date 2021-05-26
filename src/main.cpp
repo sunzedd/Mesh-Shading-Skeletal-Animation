@@ -8,11 +8,11 @@ int main()
 }
 #else
 
-#include "Sandbox/TestAnimationMultiple/TestAnimationMultiple.h"
+#include "Sandbox/MainApp/MainApp.h"
 
 int main()
 {
-    FQW::TestAnimationMultipleApplication app;
+    FQW::MainApp app;
     app.Run();
 }
 
