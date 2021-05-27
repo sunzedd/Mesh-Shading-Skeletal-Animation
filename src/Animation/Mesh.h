@@ -18,7 +18,7 @@ struct Vertex
 {
     glm::vec3  position;
     glm::vec3  normal;
-    glm::ivec4 boneIds = glm::ivec4(-1);
+    glm::ivec4 boneIds = glm::ivec4(0);
     glm::vec4  boneWeights = glm::vec4(0.0f);
 
     void AddBoneData(uint32_t boneId, float weight)

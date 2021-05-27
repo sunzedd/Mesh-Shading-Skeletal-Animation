@@ -14,27 +14,7 @@ uniform mat4 view_projection_matrix;
 uniform mat4 model_matrix;
 
 
-mat4 CalculateVertexSkinnedPosition()
-{
-    mat4 transform = mat4(0);
-
-    if (boneIds.x != -1) {
-        transform += bone_transforms[boneIds.x] * boneWeights.x;
-    }
-    if (boneIds.y != -1) {
-        transform += bone_transforms[boneIds.y] * boneWeights.y;
-    }
-    if (boneIds.z != -1) {
-        transform += bone_transforms[boneIds.z] * boneWeights.z;
-    }
-    if (boneIds.w != -1) {
-        transform += bone_transforms[boneIds.w] * boneWeights.w;
-    }
-
-    return transform;
-}
-
-mat4 CalcMat()
+mat4 CalculateSkinTransformationMatrix()
 {
     mat4 transform = mat4(0);
     for (int i = 0; i < 4; i++)
@@ -46,7 +26,7 @@ mat4 CalcMat()
 
 void main()
 {    
-    mat4 skinnedTransform = CalcMat();//CalculateVertexSkinnedPosition();
+    mat4 skinnedTransform = CalculateSkinTransformationMatrix();
     vec4 skinned_position = skinnedTransform * vec4(position, 1.0);   // Позиция вершины в локальном  модельном пространстве
     
     vec4 final_position = view_projection_matrix * model_matrix * skinned_position;
