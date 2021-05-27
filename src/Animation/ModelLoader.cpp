@@ -131,6 +131,7 @@ namespace FQW {
     for (int i = 0; i < assimpMesh->mNumBones; i++)
     {
         const aiBone& assimpBone = *(assimpMesh->mBones[i]);
+        FQW_TRACE("[Model loader] Bone {}", assimpBone.mName.C_Str());
 
         std::string name = assimpMesh->mBones[i]->mName.C_Str();
         if (name.empty()) {

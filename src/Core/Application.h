@@ -44,6 +44,7 @@ protected:
     Unique<Window> m_Window;
     bool m_IsRunning;
     float m_LastFrameTime = 0.0f;
+    float m_DeltaTime;
 
     ImFontConfig m_FontConfig;
 };

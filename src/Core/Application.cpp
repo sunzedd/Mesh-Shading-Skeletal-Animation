@@ -33,10 +33,10 @@ void Application::Run()
 
 
         const float currentTime = Input::GetTime_ms();
-        const float deltaTime = currentTime - m_LastFrameTime;
+        m_DeltaTime = currentTime - m_LastFrameTime;
         m_LastFrameTime = currentTime;
 
-        Update(deltaTime);
+        Update(m_DeltaTime);
 
         m_Window->Clear();
         

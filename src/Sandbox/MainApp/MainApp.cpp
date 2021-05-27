@@ -103,6 +103,7 @@ void MainApp::DrawUI()
 {
     ImGui::Begin(u8"Производительность");
     ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
+    ImGui::Text(u8"Время композиции кадра %.3f", m_DeltaTime);
     ImGui::SetWindowFontScale(2);
     ImGui::End();
 }

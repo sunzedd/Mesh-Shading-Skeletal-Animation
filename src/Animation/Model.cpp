@@ -49,7 +49,12 @@ void Model::BindShaderUniforms(Shader& shader, ICamera& camera)
     shader.Use();
     shader.SetMatrix4fv("model_matrix", M);
     shader.SetMatrix4fv("view_projection_matrix", VP);
-    shader.SetMatrix4fvArray("bone_transforms", animator->GetCurrentPose());
+
+    const std::vector<glm::mat4>& pose = animator->GetCurrentPose();
+    if (pose.size() > 0)
+    {
+        shader.SetMatrix4fvArray("bone_transforms", animator->GetCurrentPose());
+    }
 }
 
 }
