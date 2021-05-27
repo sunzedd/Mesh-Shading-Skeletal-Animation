@@ -16,21 +16,30 @@ void ModelScript::Start()
 
 void ModelScript::Update(float deltaTime)
 {
-    ThisEntity->transform.rotation.y += deltaTime * 0.01;
+    //ThisEntity->transform.rotation.y += deltaTime * 0.01;
     auto animator = ThisEntity->GetAnimator();
+
 
     if (!animator->IsPlaying())
     {
-        if (Input::IsKeyPressed(GLFW_KEY_1)) {
-            animator->PlayAnimation(ThisEntity->GetAnimations()[0]);  FQW_INFO("Playing animation 0");
-        }
+        static uint32_t animationsCount = ThisEntity->GetAnimations().size();
+        static uint32_t currentAnimation = 0;
 
-        else if (Input::IsKeyPressed(GLFW_KEY_2)) {
-            animator->PlayAnimation(ThisEntity->GetAnimations()[1]);  FQW_INFO("Playing animation 1");
-        }
-        else if (Input::IsKeyPressed(GLFW_KEY_3)) {
-            animator->PlayAnimation(ThisEntity->GetAnimations()[2]);  FQW_INFO("Playing animation 2");
+        if (Input::IsKeyPressed(GLFW_KEY_1)) 
+        {
+            FQW_INFO("Playing animation {}", currentAnimation);
+            animator->PlayAnimation(ThisEntity->GetAnimations()[currentAnimation]);
+            
+            if (currentAnimation == animationsCount - 1)
+            {
+                currentAnimation = 0;
+            }
+            else
+            {
+                currentAnimation++;
+            }
         }
     }
 }
+
 }

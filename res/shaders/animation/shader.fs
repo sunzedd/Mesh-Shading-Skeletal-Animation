@@ -2,6 +2,7 @@
 
 in vec3 v_normal;
 in vec3 v_position;
+in vec3 v_color;
 
 out vec4 frag_color;
 
@@ -16,7 +17,7 @@ void main()
     //float diff = max(dot(v_normal, light_dir), 0.0);
     //vec3 diffuse = diff * light_color;
     //
-    //vec3 result_color = (ambient + diffuse) * object_color;
+    //vec3 result_color = (ambient + diffuse) * v_color;
     //
     //frag_color = vec4(result_color, 1.0);
     //frag_color = vec4(1.0f, 1.0f, 1.0f, 1.0f);

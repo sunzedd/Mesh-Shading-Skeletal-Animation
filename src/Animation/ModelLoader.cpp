@@ -2,8 +2,10 @@
 
 namespace FQW {
 
- Ref<Model> ModelLoader::LoadModel(std::string filepath)
+Ref<Model> ModelLoader::LoadModel(std::string filepath)
 {
+    FQW_INFO("\nLoading model from {}", filepath);
+
     Assimp::Importer importer;
     const aiScene* scene = importer.ReadFile(
         filepath,
@@ -13,13 +15,9 @@ namespace FQW {
         aiProcess_GenSmoothNormals
     );
 
-    if (!scene ||
-        scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE ||
-        !scene->mRootNode)
+    if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode)
     {
-        FQW_ERROR("[Assimp] Failed to load model from {}.\nError: {}",
-            filepath, importer.GetErrorString());
-
+        FQW_ERROR("[Assimp] Failed to load model from {}.\nError: {}", filepath, importer.GetErrorString());
         throw std::runtime_error("[Assimp] Failed to load model from " + filepath);
     }
 
@@ -29,7 +27,7 @@ namespace FQW {
 }
 
 
- Ref<Model> ModelLoader::ConstructModel(const aiScene* scene)
+Ref<Model> ModelLoader::ConstructModel(const aiScene* scene)
 {
     std::vector<Ref<Mesh>> meshes;
     BoneMap boneMap;
@@ -39,6 +37,14 @@ namespace FQW {
 
     // Mesh and bones hierarchy loading
     RecursivelyLoadMeshAndBonesData(rootNode, scene, meshes, boneMap);
+    
+    for (int i = 0; i < meshes.size(); i++)
+    {
+        if (!CheckIfAllVerticesSkinned(*meshes[i]))
+        {
+            FQW_CRITICAL("Not all vertices skinned in mesh");
+        }
+    }
 
 
     // Animation loading
@@ -49,24 +55,26 @@ namespace FQW {
         auto dstAnimation = CreateRef<Animation>();
 
         LoadAnimation(scene, assimpAnimation, *dstAnimation);
-
         animations.push_back(dstAnimation);
     }
 
     // Skeleton building
     ComposeSkeleton(rootNode, boneMap, skeletonRoot);
 
+    // Model composing
     auto animator = CreateRef<Animator>(skeletonRoot, boneMap.size());
     auto result = CreateRef<Model>(meshes, animations, animator);
+
+    FQW_INFO("Model loaded \n\t\tmeshes: {}\n\t\tanimations: {}", meshes.size(), animations.size());
 
     return result;
 }
 
 
- void ModelLoader::RecursivelyLoadMeshAndBonesData(const aiNode* node,
-    const aiScene* scene,
-    std::vector<Ref<Mesh>>& outMeshes,
-    BoneMap& outBoneMap)
+void ModelLoader::RecursivelyLoadMeshAndBonesData(const aiNode* node,
+                                                  const aiScene* scene,
+                                                  std::vector<Ref<Mesh>>& outMeshes,
+                                                  BoneMap& outBoneMap)
 {
     for (int i = 0; i < node->mNumMeshes; i++)
     {
@@ -82,7 +90,9 @@ namespace FQW {
 }
 
 
- Ref<Mesh> ModelLoader::ProcessMeshAndUpdateBonemap(const aiMesh* assimpMesh, const aiScene* scene, BoneMap& outBoneMap)
+Ref<Mesh> ModelLoader::ProcessMeshAndUpdateBonemap(const aiMesh* assimpMesh,
+                                                    const aiScene* scene,
+                                                    BoneMap& outBoneMap)
 {
     std::vector<Vertex> vertexBuffer;
     std::vector<uint32_t> indexBuffer;
@@ -94,8 +104,6 @@ namespace FQW {
 
         v.position = AssimpGlmConverter::AssimpVec3ToGlm(assimpMesh->mVertices[i]);
         v.normal = AssimpGlmConverter::AssimpVec3ToGlm(assimpMesh->mNormals[i]);
-        v.boneIds = glm::ivec4(0);
-        v.boneWeights = glm::vec4(0.0f);
 
         vertexBuffer.push_back(v);
     }
@@ -121,10 +129,10 @@ namespace FQW {
 }
 
 
- void ModelLoader::ExtractBonesWeights(std::vector<Vertex>& vertexBuffer,
-    const aiMesh* assimpMesh,
-    const aiScene* scene,
-    BoneMap& outBoneMap)
+void ModelLoader::ExtractBonesWeights(std::vector<Vertex>& vertexBuffer,
+                                       const aiMesh* assimpMesh,
+                                       const aiScene* scene,
+                                       BoneMap& outBoneMap)
 {
     std::vector<uint32_t> boneCountForVertex(vertexBuffer.size(), 0);
 
@@ -147,6 +155,7 @@ namespace FQW {
             };
         }
 
+        
         for (int j = 0; j < assimpBone.mNumWeights; j++)
         {
             uint32_t affectedVertexId = assimpBone.mWeights[j].mVertexId;
@@ -177,6 +186,14 @@ namespace FQW {
         }
     }
 
+#if 0
+    for (uint j = 0; j < pMesh->mBones[i]->mNumWeights; j++) {
+        uint VertexID = m_Entries[MeshIndex].BaseVertex + pMesh->mBones[i]->mWeights[j].mVertexId;
+        float Weight = pMesh->mBones[i]->mWeights[j].mWeight;
+        Bones[VertexID].AddBoneData(BoneIndex, Weight);
+    }
+#endif
+
     // Нормализация весов
     for (int i = 0; i < vertexBuffer.size(); i++)
     {
@@ -191,7 +208,7 @@ namespace FQW {
 }
 
 
- bool ModelLoader::ComposeSkeleton(const aiNode* node, BoneMap& boneMap, Bone& outBone)
+bool ModelLoader::ComposeSkeleton(const aiNode* node, BoneMap& boneMap, Bone& outBone)
 {
     if (boneMap.find(node->mName.C_Str()) != boneMap.end())     // если кость найдена
     {
@@ -227,9 +244,9 @@ namespace FQW {
 
 
 // Загрузка ключевых кадров анимации
- void ModelLoader::LoadAnimation(const aiScene* scene,
-    const aiAnimation* animation,
-    Animation& outAnimation)
+void ModelLoader::LoadAnimation(const aiScene* scene,
+                                const aiAnimation* animation,
+                                Animation& outAnimation)
 {
     if (animation->mTicksPerSecond != 0.0f)
     {
@@ -277,6 +294,8 @@ namespace FQW {
         if (std::string(channel->mNodeName.C_Str()).empty()) {
             FQW_WARN("[LoadAnimation] channel (bone) name is empty");
         }
+
+        //LoadMissingBones(animation);
     }
 
     glm::mat4 globalInverseTransform = AssimpGlmConverter::AssimpMatrixToGlm(scene->mRootNode->mTransformation);
@@ -284,7 +303,7 @@ namespace FQW {
 }
 
 
- void ModelLoader::LoadMissingBones(const aiAnimation* assimpAnimation, BoneMap& outBoneMap)
+void ModelLoader::LoadMissingBones(const aiAnimation* assimpAnimation, BoneMap& outBoneMap)
 {
     for (int i = 0; i < assimpAnimation->mNumChannels; i++)
     {
@@ -297,4 +316,24 @@ namespace FQW {
         }
     }
 }
+
+
+bool ModelLoader::CheckIfAllVerticesSkinned(const Mesh& mesh)
+{
+    const auto& vertices = mesh.GetVertexBuffer();
+    bool allAffected = true;
+
+    for (int i = 0; i < vertices.size(); i++)
+    {
+        const Vertex& v = vertices[i];
+
+        if (v.boneIds.x == -1) { allAffected = false; break; }
+        if (v.boneIds.y == -1) { allAffected = false; break; }
+        if (v.boneIds.z == -1) { allAffected = false; break; }
+        if (v.boneIds.w == -1) { allAffected = false; break; }
+    }
+
+    return allAffected;
+}
+
 }

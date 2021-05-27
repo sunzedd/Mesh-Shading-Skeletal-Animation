@@ -55,8 +55,13 @@ private:
                               const aiAnimation* animation,
                               Animation& outAnimation);
 
+
+    // Utils, checkers
     static void LoadMissingBones(const aiAnimation* assimpAnimation, BoneMap& outBoneMap);
 
+
+    // Returns true if all vertices are affected
+    static bool CheckIfAllVerticesSkinned(const Mesh& mesh);
 };
 
 } // namespace FQW 

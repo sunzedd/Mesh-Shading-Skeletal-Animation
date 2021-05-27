@@ -7,29 +7,61 @@ layout (location = 3) in vec4 boneWeights;
 
 out vec3 v_normal;
 out vec3 v_position;
+out vec3 v_color;
 
 uniform mat4 bone_transforms[50];
 uniform mat4 view_projection_matrix;
 uniform mat4 model_matrix;
 
-void main()
+
+mat4 CalculateVertexSkinnedPosition()
 {
-    vec4 bw = vec4(0);
-    mat4 bone_transform = mat4(0.0);
+    mat4 transform = mat4(0);
+
+    if (boneIds.x != -1) {
+        transform += bone_transforms[boneIds.x] * boneWeights.x;
+    }
+    if (boneIds.y != -1) {
+        transform += bone_transforms[boneIds.y] * boneWeights.y;
+    }
+    if (boneIds.z != -1) {
+        transform += bone_transforms[boneIds.z] * boneWeights.z;
+    }
+    if (boneIds.w != -1) {
+        transform += bone_transforms[boneIds.w] * boneWeights.w;
+    }
+
+    return transform;
+}
+
+mat4 CalcMat()
+{
+    mat4 transform = mat4(0);
+    for (int i = 0; i < 4; i++)
+    {
+        transform += bone_transforms[boneIds[i]] * boneWeights[i];
+    }
+    return transform;
+}
+
+void main()
+{    
+    mat4 skinnedTransform = CalcMat();//CalculateVertexSkinnedPosition();
+    vec4 skinned_position = skinnedTransform * vec4(position, 1.0);   // Позиция вершины в локальном  модельном пространстве
     
-    bone_transform += bone_transforms[boneIds.x] * boneWeights.x;    
-    bone_transform += bone_transforms[boneIds.y] * boneWeights.y;    
-    bone_transform += bone_transforms[boneIds.z] * boneWeights.z;    
-    bone_transform += bone_transforms[boneIds.w] * boneWeights.w;    
+    vec4 final_position = view_projection_matrix * model_matrix * skinned_position;
+    if (final_position == vec4(0, 0, 0, 0))
+    {
+        v_color = vec3(1, 1, 1);
+        final_position = view_projection_matrix * model_matrix * vec4(position, 1.0);
+    }
     
-    vec4 position = bone_transform * vec4(position, 1.0);   // Позиция вершины в локальном  модельном пространстве
+    gl_Position = final_position;
     
-    gl_Position = view_projection_matrix * model_matrix * position;
-    
-    v_position = vec3(model_matrix * position); // позиция вершины в мировом пространстве для расчета освещения
-    
-    v_normal = mat3(transpose(inverse(model_matrix * bone_transform))) * normal;
+    v_position = vec3(model_matrix * vec4(position, 1.0)); // позиция вершины в мировом пространстве для расчета освещения
+    v_normal = mat3(transpose(inverse(model_matrix * skinnedTransform))) * normal;
     v_normal = normalize(v_normal);
 
+    //v_normal = normal;
     //gl_Position = view_projection_matrix * model_matrix * vec4(position, 1.0);
 }

@@ -18,8 +18,7 @@ class MainApp : public Application
 public:
     static const int WIDTH = 1280;
     static const int HEIGHT = 720;
-    //const std::string MODEL_FILEPATH = "res/meshes/deer.fbx";
-    const std::string MODEL_FILEPATH = "res/meshes/man.dae";
+    const std::string MODEL_FILEPATH = "res/meshes/working/spider.fbx";
 
 
     Unique<Shader> _shader;
