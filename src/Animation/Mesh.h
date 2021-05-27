@@ -5,11 +5,11 @@
 #include <glm/gtx/quaternion.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
-#include "../Core/Logger.h"
-#include "../Graphics/OpenGL_Utils.h"
-#include "../Utility/AssimpGlmConverter.h"
+#include "../EngineCore/Core/Logger.h"
+#include "../EngineCore/Graphics/IDrawable.h"
+#include "../EngineCore/Graphics/OpenGL_Utils.h"
+#include "../EngineCore/Utility/AssimpGlmConverter.h"
 
-#include "../Graphics/IDrawable.h"
 
 
 namespace FQW {

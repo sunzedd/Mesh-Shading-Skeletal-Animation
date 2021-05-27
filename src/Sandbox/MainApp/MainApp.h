@@ -2,9 +2,9 @@
 #include "../CameraScript.h"
 #include "ModelScript.h"
 
-#include "../../Core/Alias.h"
-#include "../../Core/Application.h"
-#include "../../Scene/CameraFPS.h"
+#include "../../EngineCore/Core/Alias.h"
+#include "../../EngineCore/Core/Application.h"
+#include "../../EngineCore/Scene/CameraFPS.h"
 #include "../../Animation/Animator.h"
 #include "../../Animation/Model.h"
 #include "../../Animation/ModelLoader.h"

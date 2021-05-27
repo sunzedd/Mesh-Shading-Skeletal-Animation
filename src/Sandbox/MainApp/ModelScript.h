@@ -1,5 +1,5 @@
 #pragma once
-#include "../../Core/Input.h"
+#include "../../EngineCore/Core/Input.h"
 #include "../../Animation/Model.h"
 #include "../../Animation/Animator.h"
 
