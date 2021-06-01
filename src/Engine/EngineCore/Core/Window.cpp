@@ -93,7 +93,7 @@ void Window::_Create(int width, int height, const char* title)
 
     glfwMakeContextCurrent(m_Window);
     gladLoadGLLoader((GLADloadproc)glfwGetProcAddress);
-    glfwSwapInterval(1);
+    glfwSwapInterval(0);
 }
 
 } // namespace FQW

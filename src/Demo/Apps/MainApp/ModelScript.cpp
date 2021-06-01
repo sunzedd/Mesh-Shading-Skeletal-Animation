@@ -1,6 +1,6 @@
 #include "ModelScript.h"
 
-namespace FQW {
+namespace FQW::MainApp {
 
 void ModelScript::FirstSetup()
 {

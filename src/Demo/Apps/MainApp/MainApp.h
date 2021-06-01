@@ -1,17 +1,17 @@
 #pragma once
-#include "../CameraScript.h"
+#include <CameraScript.h>
 #include "ModelScript.h"
 
-#include "../../EngineCore/Core/Alias.h"
-#include "../../EngineCore/Core/Application.h"
-#include "../../EngineCore/Scene/CameraFPS.h"
-#include "../../Animation/Animator.h"
-#include "../../Animation/Model.h"
-#include "../../Animation/ModelLoader.h"
+#include <EngineCore/Core/Alias.h>
+#include <EngineCore/Core/Application.h>
+#include <EngineCore/Scene/CameraFPS.h>
+#include <Animation/Animator.h>
+#include <Animation/Model.h>
+#include <Animation/ModelLoader.h>
 
 
 
-namespace FQW {
+namespace FQW::MainApp {
 
 class MainApp : public Application
 {

@@ -3,7 +3,7 @@
 
 namespace FQW {
 
-Shader::Shader(std::string vertexPath, std::string fragmentPath)
+Shader::Shader(GLenum shaderType, std::string vertexPath, std::string fragmentPath)
 {
     // Reading
     std::string vertexCode;
@@ -14,10 +14,19 @@ Shader::Shader(std::string vertexPath, std::string fragmentPath)
     vShaderFile.exceptions(std::ifstream::failbit | std::ifstream::badbit);
     fShaderFile.exceptions(std::ifstream::failbit | std::ifstream::badbit);
 
-    try
+    try { vShaderFile.open(vertexPath); }
+    catch (std::ifstream::failure e)
     {
-        vShaderFile.open(vertexPath);
-        fShaderFile.open(fragmentPath);
+        FQW_ERROR("[Shader] Failed to read vertex/mesh shader file {}", vertexPath);
+        throw e;
+    }
+    try { fShaderFile.open(fragmentPath); }
+    catch (std::ifstream::failure e)
+    {
+        FQW_ERROR("[Shader] Failed to read fragment shader file {}", fragmentPath);
+        throw e;
+    }
+    {
         std::stringstream vShaderStream, fShaderStream;
 
         vShaderStream << vShaderFile.rdbuf();
@@ -29,11 +38,7 @@ Shader::Shader(std::string vertexPath, std::string fragmentPath)
         vertexCode = vShaderStream.str();
         fragmentCode = fShaderStream.str();
     }
-    catch (std::ifstream::failure e)
-    {
-        FQW_ERROR("[Shader] Failed to read shader file");
-        throw e;
-    }
+
 
     const char* vShaderCode = vertexCode.c_str();
     const char* fShaderCode = fragmentCode.c_str();
@@ -43,16 +48,21 @@ Shader::Shader(std::string vertexPath, std::string fragmentPath)
     int success;
     char infoLog[512];
 
-    // Vertex Shader
-    OPENGL_CALL( vertex = glCreateShader(GL_VERTEX_SHADER) );
+    // Vertex / Mesh Shader
+    if (shaderType == GL_MESH_SHADER_NV) {
+        OPENGL_CALL( vertex = glCreateShader(GL_MESH_SHADER_NV) );
+    } else {
+        OPENGL_CALL(vertex = glCreateShader(GL_VERTEX_SHADER));
+    }
+
     OPENGL_CALL( glShaderSource(vertex, 1, &vShaderCode, NULL) );
     OPENGL_CALL( glCompileShader(vertex) );
     OPENGL_CALL( glGetShaderiv(vertex, GL_COMPILE_STATUS, &success) );
     if (!success)
     {
         OPENGL_CALL(glGetShaderInfoLog(vertex, 512, NULL, infoLog));
-        FQW_ERROR("[Shader]: Failed to compile vertex shader {}", infoLog);
-        throw std::runtime_error("Failed to compile vertex shader");
+        FQW_ERROR("[Shader]: Failed to compile vertex/mesh shader {}", infoLog);
+        throw std::runtime_error("Failed to compile vertex/mesh shader");
     } 
     else
     {

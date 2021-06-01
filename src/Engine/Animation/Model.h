@@ -16,6 +16,7 @@ public:
     Model(const std::vector<Ref<Mesh>>& meshes, std::vector<Ref<Animation>>& animations, Ref<Animator> animator);
 
     void Draw(Shader& shader, ICamera& camera);
+    void DrawWithMeshShader(Shader& shader, ICamera& camera);
 
     Ref<Animator> GetAnimator() const { return animator; }
     const std::vector<Ref<Animation>>& GetAnimations() { return animations; }

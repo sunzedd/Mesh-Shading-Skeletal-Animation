@@ -9,9 +9,16 @@ namespace FQW::MeshShaders {
 class NaiveMeshletBuilder
 {
 public:
-    NaiveMeshletBuilder(const Mesh& mesh)
+    NaiveMeshletBuilder()
     {
-        Build(mesh);
+    }
+
+    void BuildForMultipleMeshes(const std::vector<Ref<Mesh>>& meshes)
+    {
+        m_Meshlets.clear();
+        for (const auto& mesh : meshes) {
+            Build(*mesh);
+        }
     }
 
     void Build(const Mesh& mesh)
@@ -68,6 +75,8 @@ public:
             m_Meshlets.push_back(meshlet);
         }
     }
+
+    std::vector<Meshlet>& GetMeshlets() { return m_Meshlets; }
 
 private:
     std::vector<Meshlet> m_Meshlets;

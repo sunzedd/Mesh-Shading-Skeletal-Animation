@@ -1,4 +1,6 @@
 #pragma once
+//#include <string>
+
 #include <imgui.h>
 #include <imgui_impl_opengl3.h>
 #include <imgui_impl_glfw.h>
@@ -17,6 +19,10 @@ static const ImWchar ranges[] =
     0x0400, 0x044F, // Cyrillic
     0,
 };
+
+static const std::string s_SolutionDirectory = SOLUTION_DIR;
+
+
 
 class Application
 {

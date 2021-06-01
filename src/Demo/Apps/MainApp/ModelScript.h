@@ -1,9 +1,9 @@
 #pragma once
-#include "../../EngineCore/Core/Input.h"
-#include "../../Animation/Model.h"
-#include "../../Animation/Animator.h"
+#include <EngineCore/Core/Input.h>
+#include <Animation/Model.h>
+#include <Animation/Animator.h>
 
-namespace FQW {
+namespace FQW::MainApp {
 
 class ModelScript : public Script
 {

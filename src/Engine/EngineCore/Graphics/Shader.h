@@ -19,7 +19,7 @@ namespace FQW {
 class Shader
 {
 public:
-    Shader(std::string vertexPath, std::string fragmentPath);
+    Shader(GLenum shaderType, std::string vertexPath, std::string fragmentPath);
 
     unsigned int GetId() const { return m_Id; }
     unsigned int GetUniformLocation(const std::string& name) const;

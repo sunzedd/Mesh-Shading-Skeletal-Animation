@@ -44,6 +44,8 @@ public:
 
     void Draw();
     void Draw(Shader& shader, ICamera& camera) override;
+    void DrawWithMeshShader();
+    void DrawWithMeshShader(Shader& shader, ICamera& camera) override;
 
     const std::vector<Vertex>& GetVertexBuffer() const { return m_VertexBuffer; }
     const std::vector<uint32_t>& GetIndexBuffer() const { return m_IndexBuffer; }

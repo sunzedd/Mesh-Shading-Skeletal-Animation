@@ -20,6 +20,16 @@ void Model::Draw(Shader& shader, ICamera& camera)
     }
 }
 
+void Model::DrawWithMeshShader(Shader& shader, ICamera& camera)
+{
+    BindShaderUniforms(shader, camera);
+
+    for (auto& mesh : meshes)
+    {
+        mesh->DrawWithMeshShader();
+    }
+}
+
 void Model::BindShaderUniforms(Shader& shader, ICamera& camera)
 {
     glm::mat4 S = glm::mat4(1.0f);

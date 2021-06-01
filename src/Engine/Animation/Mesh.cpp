@@ -41,6 +41,24 @@ void Mesh::Draw(Shader& shader, ICamera& camera)
 }
 
 
+void Mesh::DrawWithMeshShader()
+{
+    OPENGL_CALL(glBindVertexArray(m_VAO));
+    GLuint mesh_task_count = m_IndexBuffer.size() / 3 / 32;
+    OPENGL_CALL(glDrawMeshTasksNV(0, mesh_task_count));
+    OPENGL_CALL(glBindVertexArray(0));
+}
+
+
+void Mesh::DrawWithMeshShader(Shader& shader, ICamera& camera)
+{
+    OPENGL_CALL(glBindVertexArray(m_VAO));
+    GLuint mesh_task_count = m_IndexBuffer.size() / 3 / 32;
+    OPENGL_CALL(glDrawMeshTasksNV(0, mesh_task_count));
+    OPENGL_CALL(glBindVertexArray(0));
+}
+
+
 void Mesh::CreateVertexArrayObject()
 {
     // VAO, VBO, EBO generation
