@@ -10,7 +10,7 @@ Model::Model(const std::vector<Ref<Mesh>>& meshes, std::vector<Ref<Animation>>& 
 }
 
 
-void Model::Draw(Shader& shader, ICamera& camera)
+void Model::Draw(ShaderPipeline& shader, ICamera& camera)
 {
     BindShaderUniforms(shader, camera);
 
@@ -20,17 +20,8 @@ void Model::Draw(Shader& shader, ICamera& camera)
     }
 }
 
-void Model::DrawWithMeshShader(Shader& shader, ICamera& camera)
-{
-    BindShaderUniforms(shader, camera);
 
-    for (auto& mesh : meshes)
-    {
-        mesh->DrawWithMeshShader();
-    }
-}
-
-void Model::BindShaderUniforms(Shader& shader, ICamera& camera)
+void Model::BindShaderUniforms(ShaderPipeline& shaderPipleline, ICamera& camera)
 {
     glm::mat4 S = glm::mat4(1.0f);
     glm::mat4 Rx = glm::mat4(1.0f);
@@ -56,14 +47,18 @@ void Model::BindShaderUniforms(Shader& shader, ICamera& camera)
     P = camera.GetProjectionMatrix();
     VP = P * V;
 
-    shader.Use();
-    shader.SetMatrix4fv("model_matrix", M);
-    shader.SetMatrix4fv("view_projection_matrix", VP);
+    shaderPipleline.Use();
+    shaderPipleline.SetMatrix4fv(ShaderPipeline::ShaderType::Vertex, "model_matrix", M);
+    shaderPipleline.SetMatrix4fv(ShaderPipeline::ShaderType::Vertex, "view_projection_matrix", VP);
 
     const std::vector<glm::mat4>& pose = animator->GetCurrentPose();
     if (pose.size() > 0)
     {
-        shader.SetMatrix4fvArray("bone_transforms", animator->GetCurrentPose());
+        shaderPipleline.SetMatrix4fvArray(
+            ShaderPipeline::ShaderType::Vertex, 
+            "bone_transforms", 
+            animator->GetCurrentPose()
+        );
     }
 }
 

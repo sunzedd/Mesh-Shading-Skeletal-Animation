@@ -24,11 +24,9 @@ void MainApp::SetupCamera()
 
 void MainApp::SetupDrawable()
 {
-    // Loading assets
-    _shader = CreateUnique<Shader>(
-        GL_VERTEX_SHADER,
-        "res/shaders/animation/shader.vs",
-        "res/shaders/animation/shader.fs"
+    _shaderPipeline = CreateUnique<ClassicShaderPipeline>(
+        s_SolutionDirectory + "res\\shaders\\animation\\shader.vs",
+        s_SolutionDirectory + "res\\shaders\\animation\\shader.fs"
         );
 
     _model = ModelLoader::LoadModel(MODEL_FILEPATH);
@@ -38,14 +36,7 @@ void MainApp::SetupDrawable()
     FQW_TRACE("\tAnimations count: {}", _model->GetAnimations().size());
     _animator = _model->GetAnimator();
 
-    FQW_INFO("Skeleton hierarchy");
-    LogSkeletonHierarchy(_animator->GetSkeleton());
-
-    for (const auto& anim : _model->GetAnimations()) {
-        LogAnimationTransformations(anim);
-    }
-
-    auto modelScript = CreateRef<ModelScript>();
+    auto modelScript = CreateRef<FQW::MainApp::ModelScript>();
     Script::Link(_model, modelScript);
 
     _scriptables.push_back(_model);
@@ -79,7 +70,7 @@ void MainApp::LogAnimationTransformations(Ref<Animation> animation) {
 
 void MainApp::Render()
 {
-    _drawableModel->Draw(*_shader, *_camera);
+    _drawableModel->Draw(*_shaderPipeline, *_camera);
 }
 
 

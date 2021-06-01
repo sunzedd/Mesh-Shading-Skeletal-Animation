@@ -7,7 +7,6 @@
 
 #include "../EngineCore/Core/Alias.h"
 #include "../EngineCore/Core/Input.h"
-#include "../EngineCore/Graphics/Shader.h"
 #include "../EngineCore/Graphics/IDrawable.h"
 
 #include "../Animation/Mesh.h"

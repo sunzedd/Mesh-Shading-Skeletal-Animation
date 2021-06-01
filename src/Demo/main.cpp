@@ -1,27 +1,9 @@
-#if 0
-#include "Sandbox/TestAnimation/TestAnimationApplication.h"
+#if 1
+#include "Apps/MainApp/MainApp.h"
 
 int main()
 {
-    FQW::TestAnimationApplication app;
-    app.Run();
-}
-#elseif 0
-
-#include "Sandbox/MainApp/MainApp.h"
-
-int main()
-{
-    FQW::MainApp app;
-    app.Run();
-}
-
-#else
-#include "Apps/MeshShaderTest/MeshShaderTestApp.h"
-
-int main()
-{
-    FQW::MeshShaderTest::MeshShaderTestApp app;
+    FQW::MainApp::MainApp app;
     app.Run();
 }
 

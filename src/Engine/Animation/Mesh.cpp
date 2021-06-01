@@ -28,7 +28,7 @@ void Mesh::Draw()
 }
 
 
-void Mesh::Draw(Shader& shader, ICamera& camera)
+void Mesh::Draw(ShaderPipeline& shader, ICamera& camera)
 {
     OPENGL_CALL(glBindVertexArray(m_VAO));
 
@@ -50,7 +50,7 @@ void Mesh::DrawWithMeshShader()
 }
 
 
-void Mesh::DrawWithMeshShader(Shader& shader, ICamera& camera)
+void Mesh::DrawWithMeshShader(ShaderPipeline& shader, ICamera& camera)
 {
     OPENGL_CALL(glBindVertexArray(m_VAO));
     GLuint mesh_task_count = m_IndexBuffer.size() / 3 / 32;
