@@ -3,7 +3,7 @@
 #include "Meshlet.h"
 
 
-namespace FQW::MeshShaders { 
+namespace FQW::NV_MeshShaders {
 
 // Class for meshlet building from the mesh in the naive maner
 class NaiveMeshletBuilder
@@ -11,6 +11,12 @@ class NaiveMeshletBuilder
 public:
     NaiveMeshletBuilder()
     {
+    }
+
+    void BuildForSingleMesh(const Mesh& mesh)
+    {
+        m_Meshlets.clear();
+        Build(mesh);
     }
 
     void BuildForMultipleMeshes(const std::vector<Ref<Mesh>>& meshes)
@@ -21,6 +27,9 @@ public:
         }
     }
 
+    vector<Meshlet>& GetMeshlets() { return m_Meshlets; }
+
+private:
     void Build(const Mesh& mesh)
     {
         const std::vector<Vertex>& vertexBuffer = mesh.GetVertexBuffer();
@@ -75,8 +84,6 @@ public:
             m_Meshlets.push_back(meshlet);
         }
     }
-
-    std::vector<Meshlet>& GetMeshlets() { return m_Meshlets; }
 
 private:
     std::vector<Meshlet> m_Meshlets;

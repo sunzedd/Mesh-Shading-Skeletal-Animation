@@ -32,30 +32,14 @@ mat4 CalculateSkinTransformationMatrix()
 
 void main()
 {    
-    //vec4 positions[] = {
-    //    {-1.0, -1.0, 0.0, 1.0},
-    //    {0.0, 1.0, 0.0, 1.0},
-    //    {1.0, -1.0, 0.0, 1.0},
-    //};
-
     mat4 skinnedTransform = CalculateSkinTransformationMatrix();
     vec4 skinned_position = skinnedTransform * vec4(position, 1.0);   // Позиция вершины в локальном  модельном пространстве
 
     vec4 final_position = view_projection_matrix * model_matrix * skinned_position;
-    //if (final_position == vec4(0, 0, 0, 0))
-    //{
-    //    v_color = vec3(1, 1, 1);
-    //    final_position = view_projection_matrix * model_matrix * vec4(position, 1.0);
-    //}
 
     gl_Position = final_position;
-    //gl_Position = vec4(0, 0, 0, 1);
 
     v_position = vec3(model_matrix * vec4(position, 1.0)); // позиция вершины в мировом пространстве для расчета освещения
     v_normal = mat3(transpose(inverse(model_matrix * skinnedTransform))) * normal;
-    v_normal = normalize(v_normal);  //v_normal = normal;
-
-    //gl_Position = view_projection_matrix * model_matrix * vec4(position, 1.0);
-    //gl_Position = positions[ int(mod(gl_VertexID, 3)) ];
-
+    v_normal = normalize(v_normal);
 }

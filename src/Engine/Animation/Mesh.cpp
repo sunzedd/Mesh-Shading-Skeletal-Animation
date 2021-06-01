@@ -17,88 +17,88 @@ Mesh::Mesh(
 
 void Mesh::Draw()
 {
-    OPENGL_CALL(glBindVertexArray(m_VAO));
+    glcheck(glBindVertexArray(m_VAO));
 
-    OPENGL_CALL(glDrawElements(
+    glcheck(glDrawElements(
         GL_TRIANGLES,
         m_IndexBuffer.size(),
         GL_UNSIGNED_INT, (GLvoid*)0));
 
-    OPENGL_CALL(glBindVertexArray(0));
+    glcheck(glBindVertexArray(0));
 }
 
 
 void Mesh::Draw(ShaderPipeline& shader, ICamera& camera)
 {
-    OPENGL_CALL(glBindVertexArray(m_VAO));
+    glcheck(glBindVertexArray(m_VAO));
 
-    OPENGL_CALL(glDrawElements(
+    glcheck(glDrawElements(
         GL_TRIANGLES,
         m_IndexBuffer.size(),
         GL_UNSIGNED_INT, (GLvoid*)0));
 
-    OPENGL_CALL(glBindVertexArray(0));
+    glcheck(glBindVertexArray(0));
 }
 
 
 void Mesh::DrawWithMeshShader()
 {
-    OPENGL_CALL(glBindVertexArray(m_VAO));
+    glcheck(glBindVertexArray(m_VAO));
     GLuint mesh_task_count = m_IndexBuffer.size() / 3 / 32;
-    OPENGL_CALL(glDrawMeshTasksNV(0, mesh_task_count));
-    OPENGL_CALL(glBindVertexArray(0));
+    glcheck(glDrawMeshTasksNV(0, mesh_task_count));
+    glcheck(glBindVertexArray(0));
 }
 
 
 void Mesh::DrawWithMeshShader(ShaderPipeline& shader, ICamera& camera)
 {
-    OPENGL_CALL(glBindVertexArray(m_VAO));
+    glcheck(glBindVertexArray(m_VAO));
     GLuint mesh_task_count = m_IndexBuffer.size() / 3 / 32;
-    OPENGL_CALL(glDrawMeshTasksNV(0, mesh_task_count));
-    OPENGL_CALL(glBindVertexArray(0));
+    glcheck(glDrawMeshTasksNV(0, mesh_task_count));
+    glcheck(glBindVertexArray(0));
 }
 
 
 void Mesh::CreateVertexArrayObject()
 {
     // VAO, VBO, EBO generation
-    OPENGL_CALL(glGenVertexArrays(1, &m_VAO));
-    OPENGL_CALL(glGenBuffers(1, &m_VBO));
-    OPENGL_CALL(glGenBuffers(1, &m_EBO));
+    glcheck(glGenVertexArrays(1, &m_VAO));
+    glcheck(glGenBuffers(1, &m_VBO));
+    glcheck(glGenBuffers(1, &m_EBO));
 
-    OPENGL_CALL(glBindVertexArray(m_VAO));
+    glcheck(glBindVertexArray(m_VAO));
 
     // VBO
-    OPENGL_CALL(glBindBuffer(GL_ARRAY_BUFFER, m_VBO));
-    OPENGL_CALL(glBufferData(
+    glcheck(glBindBuffer(GL_ARRAY_BUFFER, m_VBO));
+    glcheck(glBufferData(
         GL_ARRAY_BUFFER,
         m_VertexBuffer.size() * sizeof(Vertex),
         &(m_VertexBuffer[0]), GL_STATIC_DRAW));
 
     // EBO
-    OPENGL_CALL(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_EBO));
-    OPENGL_CALL(glBufferData(
+    glcheck(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_EBO));
+    glcheck(glBufferData(
         GL_ELEMENT_ARRAY_BUFFER,
         m_IndexBuffer.size() * sizeof(uint32_t),
         &(m_IndexBuffer[0]), GL_STATIC_DRAW));
 
     // Vertex attribute layout
-    OPENGL_CALL(glEnableVertexAttribArray(0));
-    OPENGL_CALL(glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (GLvoid*)0));
+    glcheck(glEnableVertexAttribArray(0));
+    glcheck(glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (GLvoid*)0));
 
-    OPENGL_CALL(glEnableVertexAttribArray(1));
-    OPENGL_CALL(glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex),
+    glcheck(glEnableVertexAttribArray(1));
+    glcheck(glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex),
         (GLvoid*)offsetof(Vertex, normal)));
 
-    OPENGL_CALL(glEnableVertexAttribArray(2));
-    OPENGL_CALL(glVertexAttribPointer(2, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex),
+    glcheck(glEnableVertexAttribArray(2));
+    glcheck(glVertexAttribPointer(2, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex),
         (GLvoid*)offsetof(Vertex, boneIds)));
 
-    OPENGL_CALL(glEnableVertexAttribArray(3));
-    OPENGL_CALL(glVertexAttribPointer(3, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex),
+    glcheck(glEnableVertexAttribArray(3));
+    glcheck(glVertexAttribPointer(3, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex),
         (GLvoid*)offsetof(Vertex, boneWeights)));
 
-    OPENGL_CALL(glBindVertexArray(0));
+    glcheck(glBindVertexArray(0));
 }
 
 

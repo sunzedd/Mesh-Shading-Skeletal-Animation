@@ -1,18 +1,24 @@
-#include "MainApp.h"
+#include "App_Main.h"
 
-namespace FQW::MainApp {
+namespace FQW::Main {
 
-MainApp::MainApp()
+App_Main::App_Main()
     : Application(WIDTH, HEIGHT, "Test Animation")
 {
     glEnable(GL_CULL_FACE);
     //glPolygonMode(GL_FRONT, GL_LINE);
-    SetupDrawable();
-    SetupCamera();
 }
 
 
-void MainApp::SetupCamera()
+void App_Main::Init()
+{
+    SetupScene();
+    SetupCamera();
+    SetupShader();
+}
+
+
+void App_Main::SetupCamera()
 {
     _camera = CreateRef<CameraFPS>(glm::vec3(0, 0, 20));
     _camera->SetProjectionParameters((float)WIDTH / (float)HEIGHT, 60.0f);
@@ -22,29 +28,65 @@ void MainApp::SetupCamera()
 }
 
 
-void MainApp::SetupDrawable()
+void App_Main::SetupShader()
 {
     _shaderPipeline = CreateUnique<ClassicShaderPipeline>(
         s_SolutionDirectory + "res\\shaders\\animation\\shader.vs",
         s_SolutionDirectory + "res\\shaders\\animation\\shader.fs"
-        );
+    );
+}
 
+
+void App_Main::SetupScene()
+{
     _model = ModelLoader::LoadModel(MODEL_FILEPATH);
-
     FQW_TRACE("Loaded animated model from {}", MODEL_FILEPATH);
-    FQW_TRACE("\tMeshes count: {}", _model->GetMeshes().size());
-    FQW_TRACE("\tAnimations count: {}", _model->GetAnimations().size());
+
     _animator = _model->GetAnimator();
 
     auto modelScript = CreateRef<FQW::MainApp::ModelScript>();
     Script::Link(_model, modelScript);
 
     _scriptables.push_back(_model);
-    _drawableModel = _model;
 }
 
 
-void MainApp::LogSkeletonHierarchy(const Bone& bone, std::string logOffset) {
+void App_Main::Render()
+{
+    _model->Draw(*_shaderPipeline, *_camera);
+}
+
+
+void App_Main::Start()
+{
+    for (auto& scriptable : _scriptables) {
+        scriptable->Start();
+    }
+}
+
+void App_Main::Update(float deltaTime)
+{
+    if (Input::IsKeyPressed(GLFW_KEY_ESCAPE)) Shutdown();
+
+    for (auto& scriptable : _scriptables)
+        scriptable->Update(deltaTime);
+
+    _animator->Update(deltaTime);
+}
+
+void App_Main::DrawUI()
+{
+    ImGui::Begin(u8"Производительность");
+    ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
+    ImGui::Text(u8"Время композиции кадра %.3f", m_DeltaTime);
+    ImGui::SetWindowFontScale(1);
+    ImGui::End();
+}
+
+
+
+#if LOG_ANIMATION_DATA
+void App_Main::LogSkeletonHierarchy(const Bone& bone, std::string logOffset) {
     if (bone.name.empty()) {
         FQW_WARN("{} unnamed {}", logOffset, bone.name);
     }
@@ -58,7 +100,7 @@ void MainApp::LogSkeletonHierarchy(const Bone& bone, std::string logOffset) {
 }
 
 
-void MainApp::LogAnimationTransformations(Ref<Animation> animation) {
+void App_Main::LogAnimationTransformations(Ref<Animation> animation) {
     for (const auto& transform : animation->boneTransforms) {
         const std::string& name = transform.first;
         if (name.empty()) {
@@ -66,38 +108,6 @@ void MainApp::LogAnimationTransformations(Ref<Animation> animation) {
         }
     }
 }
-
-
-void MainApp::Render()
-{
-    _drawableModel->Draw(*_shaderPipeline, *_camera);
-}
-
-
-void MainApp::Start()
-{
-    for (auto& scriptable : _scriptables) {
-        scriptable->Start();
-    }
-}
-
-void MainApp::Update(float deltaTime)
-{
-    if (Input::IsKeyPressed(GLFW_KEY_ESCAPE)) Shutdown();
-
-    for (auto& scriptable : _scriptables)
-        scriptable->Update(deltaTime);
-
-    _animator->Update(deltaTime);
-}
-
-void MainApp::DrawUI()
-{
-    ImGui::Begin(u8"Производительность");
-    ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
-    ImGui::Text(u8"Время композиции кадра %.3f", m_DeltaTime);
-    ImGui::SetWindowFontScale(1);
-    ImGui::End();
-}
+#endif
 
 } // namespace FQW

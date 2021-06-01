@@ -9,8 +9,8 @@ public:
     ClassicShaderPipeline(string vertexFilepath, string fragmentFilepath);
 
 private:
-    string m_VertexSourceFilepath;
-    string m_FragmentSourceFilepath;
+    string m_VertexFilepath;
+    string m_FragmentFilepath;
 };
 
 }

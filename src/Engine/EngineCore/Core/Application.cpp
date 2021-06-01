@@ -19,6 +19,8 @@ Application::~Application() { }
 
 void Application::Run()
 {
+    FQW_INFO("Running application: {}", m_Name);
+
     m_IsRunning = true;
 
     Start();

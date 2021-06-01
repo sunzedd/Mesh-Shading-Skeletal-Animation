@@ -53,6 +53,8 @@ protected:
     float m_DeltaTime;
 
     ImFontConfig m_FontConfig;
+
+    string m_Name = "Application";
 };
 
 } // namespace FQW

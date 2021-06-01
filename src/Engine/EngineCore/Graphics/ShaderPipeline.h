@@ -11,7 +11,7 @@ namespace FQW {
 class ShaderPipeline 
 {
 public:
-    enum ShaderType
+    enum class ShaderType
     {
         Vertex, Fragment,
         Mesh, Task

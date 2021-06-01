@@ -1,7 +1,7 @@
 #pragma once
 #include "../Animation/Mesh.h"
 
-namespace FQW::MeshShaders {
+namespace FQW::NV_MeshShaders {
 
 struct Meshlet
 {
