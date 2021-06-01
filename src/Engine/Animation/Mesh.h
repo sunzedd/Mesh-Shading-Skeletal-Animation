@@ -8,7 +8,7 @@
 #include "../EngineCore/Core/Logger.h"
 #include "../EngineCore/Graphics/IDrawable.h"
 #include "../EngineCore/Graphics/OpenGL_Utils.h"
-#include "../EngineCore/Utility/AssimpGlmConverter.h"
+#include "../Utility/AssimpGlmConverter.h"
 
 
 

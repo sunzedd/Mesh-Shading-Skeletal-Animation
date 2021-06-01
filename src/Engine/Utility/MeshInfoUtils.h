@@ -1,9 +1,10 @@
 #pragma once
-#include "../../Animation/Model.h"
+#include "../Animation/Model.h"
 
 namespace FQW {
 
-void LogSkeletonHierarchy(const Bone& bone, std::string logOffset) {
+void LogSkeletonHierarchy(const Bone& bone, std::string logOffset)
+{
     if (bone.name.empty()) {
         FQW_WARN("{} unnamed {}", logOffset, bone.name);
     }
