@@ -87,13 +87,13 @@ struct Model_ : public IDrawable
         mat4 mvp = camera.GetProjectionMatrix() * camera.GetViewMatrix();
 
         shader.Use();
-        shader.SetMatrix4fv(ShaderPipeline::ShaderType::Mesh, "mvp", mvp);
+        shader.SetMatrix4fv(ShaderPipeline::ShaderType::Mesh, "u_mvp", mvp);
 
         for (const auto& mesh : meshes)
-        {   mesh.Draw();   }
+        {   mesh.Draw();  }
     }
 
-    void Draw(ShaderPipeline& shader, ICamera& camera) override {}
+    void Draw(ShaderPipeline& shader, ICamera& camera) override { FQW_WARN("Draw is not overriden"); }
 };
 
 Model_ convertModel(const Model& model)
@@ -133,16 +133,16 @@ struct App_TestMeshShader : public Main::App_Main
 
     void SetupShader() override
     {
-        _shaderPipeline = CreateUnique<FQW::NV_MeshShaders::MeshShaderPipeline>(
-            LOCAL_SHADERS_DIRECTORY + "my.mesh.glsl",
+        _ShaderPipeline = CreateUnique<FQW::NV_MeshShaders::MeshShaderPipeline>(
+            LOCAL_SHADERS_DIRECTORY + "v1\\shader.mesh.glsl",
             LOCAL_SHADERS_DIRECTORY + "basic.frag.glsl");
-        model = convertModel(*_model);
+        model = convertModel(*_Model);
     }
 
 
     void Render() override
     {
-        model.DrawWithMeshShader(*_shaderPipeline, *_camera);
+        model.DrawWithMeshShader(*_ShaderPipeline, *m_Camera);
     }
 };
 

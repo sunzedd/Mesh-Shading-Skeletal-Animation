@@ -83,7 +83,7 @@ void main()
 {
     uint lid = gl_LocalInvocationID.x;
     uint gid = gl_GlobalInvocationID.x;
-
+    
     uint base_index = gid * 3;
     uvec3 face_indices = uvec3(indices[base_index], indices[base_index + 1], indices[base_index + 2]);
     uint vertex_index = lid * 3;
