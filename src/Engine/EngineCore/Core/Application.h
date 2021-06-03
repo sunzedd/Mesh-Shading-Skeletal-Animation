@@ -5,11 +5,16 @@
 #include <imgui_impl_opengl3.h>
 #include <imgui_impl_glfw.h>
 
-#include "../Graphics/OpenGL_Utils.h"
+#include "../../CameraScript.h"
 
+#include "../Graphics/OpenGL_Utils.h"
+#include "../Scene/Script.h"
+#include "../Scene/CameraFPS.h"
+
+#include "Alias.h"
 #include "Window.h"
 #include "Input.h"
-#include "Alias.h"
+
 
 namespace FQW {
 
@@ -32,19 +37,27 @@ public:
 
     void Run();
 
+
 protected:
-    virtual void Update(float deltaTime) { }
+    void Start();
+    void Update(float deltaTime);
+    
     virtual void Render() { }
     virtual void DrawUI() { }
 
-    virtual void Start() { }
     virtual void Shutdown();
 
     virtual void SetupGraphicsPipeline();
 
+    void RegisterUpdatableEntity(Ref<IUpdatable> updatable);
+    void RegisterScriptableEntity(Ref<ScriptableEntity> scriptable);
+
+
 private:
     bool CheckGraphicsRequirements();
+    void SetupDefaultCameraFPS();
     void SetupImgui();
+
 
 protected:
     Unique<Window> m_Window;
@@ -55,6 +68,10 @@ protected:
     ImFontConfig m_FontConfig;
 
     string m_Name = "Application";
+
+    Ref<CameraFPS> m_Camera;
+    vector<Ref<IUpdatable>> m_UpdatableEntities;
+    vector<Ref<ScriptableEntity>> m_ScriptableEntities;
 };
 
 } // namespace FQW

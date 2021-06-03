@@ -5,7 +5,7 @@
 namespace FQW {
 
 
-class Animator
+class Animator : public IUpdatable
 {
 public:
     Animator(const Bone& skeleton, uint32_t boneCount);

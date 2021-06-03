@@ -1,4 +1,5 @@
 #pragma once
+#include "../Core/IUpdatable.h"
 #include "../Core/Alias.h"
 
 namespace FQW {
@@ -6,16 +7,16 @@ namespace FQW {
 class ScriptableEntity;
 
 
-class Script
+class Script : public IUpdatable
 {
 public:
     void AttachEntity(Ref<ScriptableEntity> entity);
 
     virtual void FirstSetup() { }
     virtual void Start() { }
-    virtual void Update(float deltaTime) { }
+    virtual void Update(float deltaTime) override { }
 
-    static void Link(Ref<ScriptableEntity> entity, Ref<Script>);
+    static void Link(Ref<ScriptableEntity> entity, Ref<Script> script);
 
 protected:
     Ref<ScriptableEntity> m_Entity;
@@ -23,14 +24,16 @@ protected:
 
 
 
-class ScriptableEntity
+class ScriptableEntity : public IUpdatable
 {
 public:
     void AttachScript(Ref<Script> script);
     void DetachScript();
 
     void Start();
-    void Update(float deltaTime);
+    void Update(float deltaTime) override;
+
+    bool HasScript() { return (bool)m_BehaviourScript; }
 
     Ref<Script> m_BehaviourScript;
 };

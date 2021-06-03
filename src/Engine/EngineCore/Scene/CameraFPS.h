@@ -27,6 +27,10 @@ public:
     const glm::mat4& GetViewMatrix() const override;
     const glm::mat4& GetProjectionMatrix() const override;
     const glm::vec3& GetPosition() const { return m_Position; }
+    const glm::vec3& GetFront() const { return m_Front; }
+    const glm::vec3& GetUp() const { return m_Up; }
+    const glm::vec3& GetRight() const { return m_Right; }
+
     float GetYaw() const { return m_Yaw; }
     float GetPitch() const { return m_Pitch; }
 

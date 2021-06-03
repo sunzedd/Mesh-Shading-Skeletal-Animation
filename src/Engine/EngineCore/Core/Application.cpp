@@ -11,10 +11,20 @@ Application::Application(int width, int height, std::string title)
     CheckGraphicsRequirements();
     SetupGraphicsPipeline();
     SetupImgui();
+    SetupDefaultCameraFPS();
 }
 
 
 Application::~Application() { }
+
+
+void Application::Start()
+{
+    for (auto& entity : m_ScriptableEntities) 
+    {
+        entity->Start();
+    }
+}
 
 
 void Application::Run()
@@ -56,6 +66,16 @@ void Application::Run()
     }
 }
 
+
+void Application::Update(float deltaTime)
+{
+    for (auto& entity : m_UpdatableEntities)
+    {
+        entity->Update(deltaTime);
+    }
+}
+
+
 void Application::Shutdown()
 {
     m_IsRunning = false;
@@ -71,6 +91,19 @@ void Application::SetupGraphicsPipeline()
     glEnable(GL_DEPTH_TEST);
 }
 
+
+void Application::SetupDefaultCameraFPS()
+{
+    m_Camera = CreateRef<CameraFPS>(glm::vec3(0, 0, 20));
+    m_Camera->SetProjectionParameters((float)m_Window->GetWidth() / (float)m_Window->GetHeight(), 60.0f);
+    auto cameraScript = CreateRef<CameraScript>();
+    Script::Link(m_Camera, cameraScript);
+
+    RegisterUpdatableEntity(m_Camera);
+    RegisterScriptableEntity(m_Camera);
+}
+
+
 void Application::SetupImgui()
 {
     ImGui::CreateContext();
@@ -81,6 +114,7 @@ void Application::SetupImgui()
     ImGuiIO& io = ImGui::GetIO();
     io.Fonts->AddFontFromFileTTF("C:\\Windows\\Fonts\\Tahoma.ttf", 14.0f, &m_FontConfig, ranges);
 }
+
 
 bool Application::CheckGraphicsRequirements()
 {
@@ -105,5 +139,18 @@ bool Application::CheckGraphicsRequirements()
 
     return allRequrementsSatisfied;
 }
+
+
+void Application::RegisterUpdatableEntity(Ref<IUpdatable> updatable)
+{
+    m_UpdatableEntities.push_back(updatable);
+}
+
+
+void Application::RegisterScriptableEntity(Ref<ScriptableEntity> scriptable)
+{
+    m_ScriptableEntities.push_back(scriptable);
+}
+
 
 } // namespace FQW

@@ -14,26 +14,19 @@ public:
     static const int HEIGHT = 720;
     string MODEL_FILEPATH = s_SolutionDirectory + "res\\meshes\\working\\spider.fbx";
 
-    Ref<CameraFPS>  _camera;
-    Ref<Model>      _model;
-    Ref<Animator>   _animator;
-
-    Unique<ShaderPipeline> _shaderPipeline;
-
-    vector<Ref<ScriptableEntity>> _scriptables;
+    Unique<ShaderPipeline> _ShaderPipeline;
+    Ref<Model>      _Model;
+    Ref<Animator>   _Animator;
 
 
 public:
     App_Main();
 
     void Init();
-    void SetupCamera();
     void SetupScene();
     virtual void SetupShader();
 
     virtual void Render() override;
-    void Start() override;
-    void Update(float deltaTime) override;
     void DrawUI() override;
 
 

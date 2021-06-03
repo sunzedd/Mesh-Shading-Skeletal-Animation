@@ -13,24 +13,13 @@ App_Main::App_Main()
 void App_Main::Init()
 {
     SetupScene();
-    SetupCamera();
     SetupShader();
-}
-
-
-void App_Main::SetupCamera()
-{
-    _camera = CreateRef<CameraFPS>(glm::vec3(0, 0, 20));
-    _camera->SetProjectionParameters((float)WIDTH / (float)HEIGHT, 60.0f);
-    auto cameraScript = CreateRef<CameraScript>();
-    Script::Link(_camera, cameraScript);
-    _scriptables.push_back(std::static_pointer_cast<ScriptableEntity>(_camera));
 }
 
 
 void App_Main::SetupShader()
 {
-    _shaderPipeline = CreateUnique<ClassicShaderPipeline>(
+    _ShaderPipeline = CreateUnique<ClassicShaderPipeline>(
         s_SolutionDirectory + "res\\shaders\\animation\\shader.vs",
         s_SolutionDirectory + "res\\shaders\\animation\\shader.fs"
     );
@@ -39,48 +28,54 @@ void App_Main::SetupShader()
 
 void App_Main::SetupScene()
 {
-    _model = ModelLoader::LoadModel(MODEL_FILEPATH);
+    _Model = ModelLoader::LoadModel(MODEL_FILEPATH);
     FQW_TRACE("Loaded animated model from {}", MODEL_FILEPATH);
 
-    _animator = _model->GetAnimator();
-
     auto modelScript = CreateRef<FQW::MainApp::ModelScript>();
-    Script::Link(_model, modelScript);
+    Script::Link(_Model, modelScript);
 
-    _scriptables.push_back(_model);
+    _Animator = _Model->GetAnimator();
+
+    RegisterScriptableEntity(_Model);
+    RegisterUpdatableEntity(_Model);
+    RegisterUpdatableEntity(_Animator);
 }
 
 
 void App_Main::Render()
 {
-    _model->Draw(*_shaderPipeline, *_camera);
+    _Model->Draw(*_ShaderPipeline, *m_Camera);
 }
 
-
-void App_Main::Start()
-{
-    for (auto& scriptable : _scriptables) {
-        scriptable->Start();
-    }
-}
-
-void App_Main::Update(float deltaTime)
-{
-    if (Input::IsKeyPressed(GLFW_KEY_ESCAPE)) Shutdown();
-
-    for (auto& scriptable : _scriptables)
-        scriptable->Update(deltaTime);
-
-    _animator->Update(deltaTime);
-}
 
 void App_Main::DrawUI()
 {
     ImGui::Begin(u8"Производительность");
-    ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
+    ImGui::SetWindowFontScale(1.3);
+    ImGui::Text(u8"Частота кадров %.3f", 1 / m_DeltaTime * 1000);
     ImGui::Text(u8"Время композиции кадра %.3f", m_DeltaTime);
-    ImGui::SetWindowFontScale(1);
     ImGui::End();
+
+    ImGui::Begin(u8"Камера");
+    ImGui::SetWindowFontScale(1.3);
+    ImGui::Text(u8"Позиция [%.3f %.3f %.3f]", m_Camera->GetPosition().x, m_Camera->GetPosition().y, m_Camera->GetPosition().z);
+    ImGui::Text(u8"Ориентация: [%.3f %.3f, %.3f]", m_Camera->GetFront().x, m_Camera->GetFront().y, m_Camera->GetFront().z);
+    ImGui::End();
+
+    ImGui::Begin(u8"Модель");
+    ImGui::SetWindowFontScale(1.3);
+    
+    ImGui::Text(u8"Позиция");
+    ImGui::SliderFloat("x", &_Model->transform.position.x, -3.0f, 3.0f);
+    ImGui::SliderFloat("y", &_Model->transform.position.y, -3.0f, 3.0f);
+    ImGui::SliderFloat("z", &_Model->transform.position.z, -3.0f, 3.0f);
+
+    ImGui::Text(u8"Ориентация");
+    ImGui::SliderFloat("rx", &_Model->transform.rotation.x, -180.0f, 180.0f);
+    ImGui::SliderFloat("ry", &_Model->transform.rotation.y, -180.0f, 180.0f);
+    ImGui::SliderFloat("rz", &_Model->transform.rotation.z, -180.0f, 180.0f);
+    ImGui::End();
+
 }
 
 
