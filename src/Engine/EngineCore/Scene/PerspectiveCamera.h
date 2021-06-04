@@ -4,7 +4,7 @@
 
 namespace FQW {
 
-class CameraFPS : public ICamera
+class PerspectiveCamera : public ICamera
 {
 private:
     static constexpr float YAW = -90.0f;
@@ -20,16 +20,15 @@ public:
     };
 
 public:
-    CameraFPS(const glm::vec3& position = glm::vec3(0, 0, 0),
-              const glm::vec3& up = glm::vec3(0, 1, 0),
-              float yaw = YAW, float pitch = PITCH);
+    PerspectiveCamera(const vec3& position = vec3(0, 0, 0), const vec3& up = vec3(0, 1, 0), 
+                      float yaw = YAW, float pitch = PITCH);
 
-    const glm::mat4& GetViewMatrix() const override;
-    const glm::mat4& GetProjectionMatrix() const override;
-    const glm::vec3& GetPosition() const { return m_Position; }
-    const glm::vec3& GetFront() const { return m_Front; }
-    const glm::vec3& GetUp() const { return m_Up; }
-    const glm::vec3& GetRight() const { return m_Right; }
+    const mat4& GetViewMatrix() const override;
+    const mat4& GetProjectionMatrix() const override;
+    const vec3& GetPosition() const { return m_Position; }
+    const vec3& GetFront() const { return m_Front; }
+    const vec3& GetUp() const { return m_Up; }
+    const vec3& GetRight() const { return m_Right; }
 
     float GetYaw() const { return m_Yaw; }
     float GetPitch() const { return m_Pitch; }
@@ -45,11 +44,11 @@ private:
     void UpdateVectors();
 
 private:
-    glm::vec3 m_Position;
-    glm::vec3 m_Front;
-    glm::vec3 m_Up;
-    glm::vec3 m_Right;
-    glm::vec3 m_WorldUp;
+    vec3 m_Position;
+    vec3 m_Front;
+    vec3 m_Up;
+    vec3 m_Right;
+    vec3 m_WorldUp;
 
     float m_Yaw;
     float m_Pitch;

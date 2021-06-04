@@ -6,7 +6,7 @@ namespace FQW {
 class ClassicShaderPipeline : public ShaderPipeline
 {
 public:
-    ClassicShaderPipeline(string vertexFilepath, string fragmentFilepath);
+    ClassicShaderPipeline(const string& vertexFilepath, const string& fragmentFilepath);
 
 private:
     string m_VertexFilepath;

@@ -3,7 +3,7 @@
 
 namespace FQW {
 
-void LogSkeletonHierarchy(const Bone& bone, std::string logOffset)
+void LogSkeletonHierarchy(const Bone& bone, const string& logOffset)
 {
     if (bone.name.empty()) {
         FQW_WARN("{} unnamed {}", logOffset, bone.name);
@@ -22,8 +22,9 @@ void LogAnimationTransformations(Ref<Animation> animation)
 {
     for (const auto& transform : animation->boneTransforms) 
     {
-        const std::string& name = transform.first;
-        if (name.empty()) {
+        const string& name = transform.first;
+        if (name.empty()) 
+        {
             FQW_WARN("[LogAnimationTransformations]: transformation unnamed {}", name);
         }
     }

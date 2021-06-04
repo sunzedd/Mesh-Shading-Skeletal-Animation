@@ -1,23 +1,25 @@
 #pragma once
 #include "Animator.h"
 
+
 namespace FQW {
 
 class Model : public IDrawable, public ScriptableEntity
 {
 public:
-    struct {
-        glm::vec3 position = glm::vec3(0);
-        glm::vec3 rotation = glm::vec3(0);
-        glm::vec3 scale = glm::vec3(1, 1, 1);
+    struct
+    {
+        vec3 position = vec3(0);
+        vec3 rotation = vec3(0);
+        vec3 scale = vec3(1, 1, 1); 
     } transform;
 
 
-    Model(const std::vector<Ref<Mesh>>& meshes, std::vector<Ref<Animation>>& animations, Ref<Animator> animator);
+    Model(const vector<Ref<Mesh>>& meshes, vector<Ref<Animation>>& animations, Ref<Animator> animator);
 
     Ref<Animator> GetAnimator() const { return m_Animator; }
-    const std::vector<Ref<Animation>>& GetAnimations() const { return m_Animations; }
-    const std::vector<Ref<Mesh>>& GetMeshes() const { return m_Meshes; }
+    const vector<Ref<Animation>>& GetAnimations() const { return m_Animations; }
+    const vector<Ref<Mesh>>& GetMeshes() const { return m_Meshes; }
 
     void Draw(ShaderPipeline& shader, ICamera& camera) override;
 

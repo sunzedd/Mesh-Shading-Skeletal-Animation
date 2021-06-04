@@ -1,9 +1,5 @@
 #pragma once
-#include <glm/glm.hpp>
-#include <glm/gtc/matrix_transform.hpp>
-#include <glm/gtc/quaternion.hpp>
-#include <glm/gtx/quaternion.hpp>
-#include <glm/gtc/type_ptr.hpp>
+#include "../EngineCore/Core/Math.h"
 
 #include "../EngineCore/Core/Logger.h"
 #include "../EngineCore/Graphics/IDrawable.h"
@@ -16,31 +12,17 @@ namespace FQW {
 
 struct Vertex
 {
-    glm::vec3  position;
-    glm::vec3  normal;
-    glm::ivec4 boneIds = glm::ivec4(0);
-    glm::vec4  boneWeights = glm::vec4(0.0f);
-
-    void AddBoneData(uint32_t boneId, float weight)
-    {
-        for (int i = 0; i < 4; i++)
-        {
-            if (boneWeights[i] == 0.0f)
-            {
-                boneIds[i] = boneId;
-                boneWeights[i] = weight;
-                return;
-            }
-        }
-    }
+    vec3  position;
+    vec3  normal;
+    ivec4 boneIds = ivec4(0);
+    vec4  boneWeights = vec4(0.0f);
 };
 
 
 class Mesh : public IDrawable
 {
 public:
-    Mesh(const std::vector<Vertex>& vertexBuffer,
-         const std::vector<uint32_t>& indexBuffer);
+    Mesh(const vector<Vertex>& vertexBuffer, const vector<uint32_t>& indexBuffer);
 
     void Draw();
     void Draw(ShaderPipeline& shader, ICamera& camera) override;
@@ -48,13 +30,13 @@ public:
     void DrawWithMeshShader();
     void DrawWithMeshShader(ShaderPipeline& shader, ICamera& camera) override;
 
-    const std::vector<Vertex>& GetVertexBuffer() const { return m_VertexBuffer; }
-    const std::vector<uint32_t>& GetIndexBuffer() const { return m_IndexBuffer; }
+    const vector<Vertex>& GetVertexBuffer() const { return m_VertexBuffer; }
+    const vector<uint32_t>& GetIndexBuffer() const { return m_IndexBuffer; }
     uint32_t GetVertexArrayObject() const { return m_VAO; }
 
 private:
-    const std::vector<Vertex> m_VertexBuffer;
-    const std::vector<uint32_t> m_IndexBuffer;
+    const vector<Vertex> m_VertexBuffer;
+    const vector<uint32_t> m_IndexBuffer;
 
     uint32_t m_VBO = 0;
     uint32_t m_EBO = 0;

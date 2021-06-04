@@ -1,19 +1,21 @@
-#include "CameraScript.h"
+#include "FPSCameraScript.h"
 
 namespace FQW {
 
 
-void CameraScript::FirstSetup()
+void FPSCameraScript::FirstSetup()
 {
-    ThisCamera = std::static_pointer_cast<CameraFPS>(m_Entity);
+    ThisCamera = std::static_pointer_cast<PerspectiveCamera>(m_Entity);
 }
 
-void CameraScript::Start()
+
+void FPSCameraScript::Start()
 {
-    ThisCamera->SetPosition(glm::vec3(0, 0, 10));
+    ThisCamera->SetPosition(vec3(0, 0, 10));
 }
 
-void CameraScript::Update(float deltaTime)
+
+void FPSCameraScript::Update(float deltaTime)
 {
     ProcessKeyboard(deltaTime);
     ProcessMouse();
@@ -28,28 +30,30 @@ void CameraScript::Update(float deltaTime)
     }
 }
 
-void CameraScript::ProcessKeyboard(float deltaTime)
+
+void FPSCameraScript::ProcessKeyboard(float deltaTime)
 {
     float velocity = m_Speed * deltaTime;
     if (Input::IsKeyPressed(GLFW_KEY_W))
     {
-        ThisCamera->Move(CameraFPS::Direction::Forward, velocity);
+        ThisCamera->Move(PerspectiveCamera::Direction::Forward, velocity);
     }
     if (Input::IsKeyPressed(GLFW_KEY_S))
     {
-        ThisCamera->Move(CameraFPS::Direction::Backward, velocity);
+        ThisCamera->Move(PerspectiveCamera::Direction::Backward, velocity);
     }
     if (Input::IsKeyPressed(GLFW_KEY_A))
     {
-        ThisCamera->Move(CameraFPS::Direction::Left, velocity);
+        ThisCamera->Move(PerspectiveCamera::Direction::Left, velocity);
     }
     if (Input::IsKeyPressed(GLFW_KEY_D))
     {
-        ThisCamera->Move(CameraFPS::Direction::Rigth, velocity);
+        ThisCamera->Move(PerspectiveCamera::Direction::Rigth, velocity);
     }
 }
 
-void CameraScript::ProcessMouse()
+
+void FPSCameraScript::ProcessMouse()
 {
     if (Input::IsMouseButtonPressed(GLFW_MOUSE_BUTTON_2) && !m_IsMouseButtonPressed)
     {
@@ -83,4 +87,5 @@ void CameraScript::ProcessMouse()
         m_LastMousePosition = currentMousePosition;
     }
 }
+
 }

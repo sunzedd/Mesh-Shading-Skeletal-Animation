@@ -1,11 +1,14 @@
-#if 0
+#if 1
 #include "Apps/Main/App_Main.h"
 
 int main()
 {
-    FQW::Main::App_Main app;
-    app.Init();
-    app.Run();
+    auto app = FQW::CreateRef<FQW::Main::App_Main>();
+    app->Init();
+    app->Run();
+        
+    //    app ->Init();
+    //app->Run();
 }
 
 #else

@@ -2,14 +2,14 @@
 
 #include "EngineCore/Scene/Script.h"
 #include "EngineCore/Core/Input.h"
-#include "EngineCore/Scene/CameraFPS.h"
+#include "EngineCore/Scene/PerspectiveCamera.h"
 
 namespace FQW {
 
-class CameraScript : public Script
+class FPSCameraScript : public Script
 {
 private:
-    Ref<CameraFPS> ThisCamera;
+    Ref<PerspectiveCamera> ThisCamera;
     float m_MouseSensitivity = 0.05f;
     float m_Speed = 0.01f;
     glm::vec2 m_LastMousePosition;

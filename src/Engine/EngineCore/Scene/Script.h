@@ -16,7 +16,7 @@ public:
     virtual void Start() { }
     virtual void Update(float deltaTime) override { }
 
-    static void Link(Ref<ScriptableEntity> entity, Ref<Script> script);
+    static void Connect(Ref<ScriptableEntity> entity, Ref<Script> script);
 
 protected:
     Ref<ScriptableEntity> m_Entity;

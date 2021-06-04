@@ -3,13 +3,10 @@
 
 namespace FQW {
 
-Mesh::Mesh(
-    const std::vector<Vertex>& vertexBuffer,
-    const std::vector<uint32_t>& indexBuffer)
+Mesh::Mesh(const vector<Vertex>& vertexBuffer, const vector<uint32_t>& indexBuffer)
     :
     m_VertexBuffer(vertexBuffer),
     m_IndexBuffer(indexBuffer)
-
 {
     CreateVertexArrayObject();
 }
@@ -87,16 +84,13 @@ void Mesh::CreateVertexArrayObject()
     glcheck(glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (GLvoid*)0));
 
     glcheck(glEnableVertexAttribArray(1));
-    glcheck(glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex),
-        (GLvoid*)offsetof(Vertex, normal)));
+    glcheck(glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (GLvoid*)offsetof(Vertex, normal)) );
 
     glcheck(glEnableVertexAttribArray(2));
-    glcheck(glVertexAttribPointer(2, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex),
-        (GLvoid*)offsetof(Vertex, boneIds)));
+    glcheck(glVertexAttribPointer(2, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex), (GLvoid*)offsetof(Vertex, boneIds)) );
 
     glcheck(glEnableVertexAttribArray(3));
-    glcheck(glVertexAttribPointer(3, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex),
-        (GLvoid*)offsetof(Vertex, boneWeights)));
+    glcheck(glVertexAttribPointer(3, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex),(GLvoid*)offsetof(Vertex, boneWeights)) );
 
     glcheck(glBindVertexArray(0));
 }

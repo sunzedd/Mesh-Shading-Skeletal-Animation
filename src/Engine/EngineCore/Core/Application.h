@@ -5,11 +5,12 @@
 #include <imgui_impl_opengl3.h>
 #include <imgui_impl_glfw.h>
 
-#include "../../CameraScript.h"
+#include "../../FPSCameraScript.h"
 
 #include "../Graphics/OpenGL_Utils.h"
 #include "../Scene/Script.h"
-#include "../Scene/CameraFPS.h"
+#include "../Scene/PerspectiveCamera.h"
+#include "../Scene/Script.h"
 
 #include "Alias.h"
 #include "Window.h"
@@ -29,14 +30,15 @@ static const std::string s_SolutionDirectory = SOLUTION_DIR;
 
 
 
-class Application
+class Application : public ScriptableEntity, public std::enable_shared_from_this<Application>
 {
 public:
-    Application(int width=800, int height=600, std::string title="Application");
+    Application(int width=800, int height=600, const string& title="Application");
     virtual ~Application();
-
+    
+    virtual void Init() { };
     void Run();
-
+    virtual void Shutdown();
 
 protected:
     void Start();
@@ -45,19 +47,15 @@ protected:
     virtual void Render() { }
     virtual void DrawUI() { }
 
-    virtual void Shutdown();
-
     virtual void SetupGraphicsPipeline();
 
     void RegisterUpdatableEntity(Ref<IUpdatable> updatable);
     void RegisterScriptableEntity(Ref<ScriptableEntity> scriptable);
 
-
 private:
     bool CheckGraphicsRequirements();
     void SetupDefaultCameraFPS();
     void SetupImgui();
-
 
 protected:
     Unique<Window> m_Window;
@@ -69,7 +67,7 @@ protected:
 
     string m_Name = "Application";
 
-    Ref<CameraFPS> m_Camera;
+    Ref<PerspectiveCamera> m_Camera;
     vector<Ref<IUpdatable>> m_UpdatableEntities;
     vector<Ref<ScriptableEntity>> m_ScriptableEntities;
 };

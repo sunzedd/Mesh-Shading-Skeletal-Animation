@@ -55,7 +55,8 @@ const std::vector<glm::mat4>& Animator::GetCurrentPose()
 }
 
 
-std::pair<uint32_t, float> getTimeFraction(const std::vector<float>& times, float& dt) {
+std::pair<uint32_t, float> Animator::GetTimeFraction(const vector<float>& times, float& dt)
+{
     uint32_t segment = 0;
 
     while (dt > times[segment])
@@ -101,14 +102,14 @@ void Animator::CalculatePose(
         //calculate interpolated position
         glm::vec3 position1;
 
-        fp = getTimeFraction(btt.positionTimestamps, time);
+        fp = GetTimeFraction(btt.positionTimestamps, time);
         position1 = btt.positions[fp.first - 1];
         glm::vec3 position2 = btt.positions[fp.first];
         glm::vec3 position = glm::mix(position1, position2, fp.second);
 
         //calculate interpolated rotation
         glm::quat rotation1;
-        fp = getTimeFraction(btt.rotationTimestamps, time);
+        fp = GetTimeFraction(btt.rotationTimestamps, time);
 
         rotation1 = btt.rotations[fp.first - 1];
         glm::quat rotation2 = btt.rotations[fp.first];
@@ -116,7 +117,7 @@ void Animator::CalculatePose(
 
         //calculate interpolated scale
         glm::vec3 scale1;
-        fp = getTimeFraction(btt.scaleTimestamps, time);
+        fp = GetTimeFraction(btt.scaleTimestamps, time);
 
         scale1 = btt.scales[fp.first - 1];
         glm::vec3 scale2 = btt.scales[fp.first];

@@ -14,6 +14,10 @@ void App_Main::Init()
 {
     SetupScene();
     SetupShader();
+
+    auto appScript = CreateRef<ApplicationScript>();
+    Script::Connect(shared_from_this(), appScript);
+    RegisterUpdatableEntity(appScript);
 }
 
 
@@ -32,7 +36,7 @@ void App_Main::SetupScene()
     FQW_TRACE("Loaded animated model from {}", MODEL_FILEPATH);
 
     auto modelScript = CreateRef<FQW::MainApp::ModelScript>();
-    Script::Link(_Model, modelScript);
+    Script::Connect(_Model, modelScript);
 
     _Animator = _Model->GetAnimator();
 

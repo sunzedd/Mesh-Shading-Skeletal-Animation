@@ -22,13 +22,13 @@ namespace FQW {
     Ключ = имя кости (Bone->name)
     Значение = пара (ID кости, Offset матрица кости)
 */
-using BoneMap = std::unordered_map<std::string, std::pair<int, glm::mat4>>;
+using BoneMap = std::unordered_map<string, std::pair<int, mat4>>;
 
 
 class ModelLoader 
 {
 public:
-    static Ref<Model> LoadModel(std::string filepath);
+    static Ref<Model> LoadModel(const string& filepath);
 
 private:
     static Ref<Model> ConstructModel(const aiScene* scene);

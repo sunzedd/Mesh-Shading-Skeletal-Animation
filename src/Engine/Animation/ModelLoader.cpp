@@ -2,7 +2,7 @@
 
 namespace FQW {
 
-Ref<Model> ModelLoader::LoadModel(std::string filepath)
+Ref<Model> ModelLoader::LoadModel(const string& filepath)
 {
     FQW_INFO("\nLoading model from {}", filepath);
 
@@ -42,7 +42,7 @@ Ref<Model> ModelLoader::ConstructModel(const aiScene* scene)
     {
         if (!CheckIfAllVerticesSkinned(*meshes[i]))
         {
-            FQW_CRITICAL("Not all vertices skinned in mesh");
+            FQW_WARN("Not all vertices skinned in mesh");
         }
     }
 
@@ -291,11 +291,10 @@ void ModelLoader::LoadAnimation(const aiScene* scene,
 
         outAnimation.boneTransforms[channel->mNodeName.C_Str()] = track;
 
-        if (std::string(channel->mNodeName.C_Str()).empty()) {
+        if (std::string(channel->mNodeName.C_Str()).empty()) 
+        {
             FQW_WARN("[LoadAnimation] channel (bone) name is empty");
         }
-
-        //LoadMissingBones(animation);
     }
 
     glm::mat4 globalInverseTransform = AssimpGlmConverter::AssimpMatrixToGlm(scene->mRootNode->mTransformation);

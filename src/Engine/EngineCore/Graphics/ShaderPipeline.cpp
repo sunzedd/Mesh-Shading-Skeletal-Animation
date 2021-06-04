@@ -5,7 +5,7 @@ namespace FQW {
 GLuint ShaderPipeline::GetUniformLocation(ShaderType shaderType, const string& name) const
 {
     GLuint shaderId = m_ShadersMap.at(shaderType);
-    glcheck(unsigned int location = glGetUniformLocation(shaderId, name.c_str()));
+    glcheck(GLuint location = glGetUniformLocation(shaderId, name.c_str()));
     return location;
 }
 
@@ -13,7 +13,7 @@ GLuint ShaderPipeline::GetUniformLocation(ShaderType shaderType, const string& n
 GLuint ShaderPipeline::GetAttributeLocation(ShaderType shaderType, const string& name) const
 {
     GLuint shaderId = m_ShadersMap.at(shaderType);
-    glcheck(unsigned int location = glGetAttribLocation(shaderId, name.c_str()));
+    glcheck(GLuint location = glGetAttribLocation(shaderId, name.c_str()));
     return location;
 }
 
@@ -27,52 +27,40 @@ void ShaderPipeline::Use()
 
 void ShaderPipeline::SetBool(ShaderType shaderType, const string& name, bool value) const
 {
-    uint32_t location = GetUniformLocation(shaderType, name);
+    GLuint location = GetUniformLocation(shaderType, name);
     glcheck( glProgramUniform1i(m_ShadersMap.at(shaderType), location, (int)value) );
-    //OPENGL_CALL(glUniform1i(location, (int)value));
 }
 
 
 void ShaderPipeline::SetInt(ShaderType shaderType, const string& name, int value) const
 {
-    uint32_t location = GetUniformLocation(shaderType, name);
+    GLuint location = GetUniformLocation(shaderType, name);
     glcheck(glProgramUniform1i(m_ShadersMap.at(shaderType), location, (int)value));
-    //OPENGL_CALL(glUniform1i(location, value));
 }
 
 
 void ShaderPipeline::SetFloat(ShaderType shaderType, const string& name, float value) const
 {
-    uint32_t location = GetUniformLocation(shaderType, name);
+    GLuint location = GetUniformLocation(shaderType, name);
     glcheck(glProgramUniform1f(m_ShadersMap.at(shaderType), location, value));
-    //OPENGL_CALL(glUniform1f(location, value));
 }
 
-void ShaderPipeline::SetMatrix4fv(ShaderType shaderType, const string& name, const glm::mat4& value) const
+
+void ShaderPipeline::SetMatrix4fv(ShaderType shaderType, const string& name, const mat4& value) const
 {
-    uint32_t location = GetUniformLocation(shaderType, name);
+    GLuint location = GetUniformLocation(shaderType, name);
     glcheck(glProgramUniformMatrix4fv(m_ShadersMap.at(shaderType), location, 1, GL_FALSE, glm::value_ptr(value)));
-    //OPENGL_CALL(glUniformMatrix4fv(location, 1, GL_FALSE, glm::value_ptr(value)));
 }
 
-void ShaderPipeline::SetMatrix4fvArray(ShaderType shaderType, const string& name,
-                                       const std::vector<glm::mat4>& matrices) const
+
+void ShaderPipeline::SetMatrix4fvArray(ShaderType shaderType, const string& name, const vector<mat4>& matrices) const
 {
-    uint32_t location = GetUniformLocation(shaderType, name);
-    glcheck(glProgramUniformMatrix4fv(
-        m_ShadersMap.at(shaderType),
-        location,
-        matrices.size(),
-        GL_FALSE,
-        glm::value_ptr(matrices[0]))
-    );
-
-    //OPENGL_CALL(glUniformMatrix4fv(location, matrices.size(), GL_FALSE,
-    //    glm::value_ptr(matrices[0])));
+    GLuint location = GetUniformLocation(shaderType, name);
+    glcheck(glProgramUniformMatrix4fv(m_ShadersMap.at(shaderType), location, matrices.size(), GL_FALSE,
+                                      glm::value_ptr(matrices[0])) );
 }
 
 
-// protected section
 string ShaderPipeline::ReadSource(string filepath)
 {
     std::ifstream sourceFile;
@@ -100,11 +88,6 @@ string ShaderPipeline::ReadSource(string filepath)
 }
 
 
-GLuint ShaderPipeline::GetShaderIdByType(ShaderType type)
-{
-    return m_ShadersMap[type];
-}
-
 
 GLuint ShaderPipeline::Compile(const GLchar* source, ShaderType type)
 {
@@ -117,6 +100,7 @@ GLuint ShaderPipeline::Compile(const GLchar* source, ShaderType type)
         case FQW::ShaderPipeline::ShaderType::Mesh:     glType = GL_MESH_SHADER_NV;  break;
         case FQW::ShaderPipeline::ShaderType::Task:     glType = GL_TASK_SHADER_NV;  break;
         default:
+            FQW_CRITICAL("Invalid shader type passed");
             throw std::runtime_error("Invalid shader type passed");
             break;
     }

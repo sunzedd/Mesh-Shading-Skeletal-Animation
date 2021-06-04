@@ -2,7 +2,7 @@
 
 namespace FQW {
 
-ClassicShaderPipeline::ClassicShaderPipeline(string vertexFilepath, string fragmentFilepath)
+ClassicShaderPipeline::ClassicShaderPipeline(const string& vertexFilepath, const string& fragmentFilepath)
     :
     m_VertexFilepath(vertexFilepath),
     m_FragmentFilepath(fragmentFilepath)
@@ -19,7 +19,6 @@ ClassicShaderPipeline::ClassicShaderPipeline(string vertexFilepath, string fragm
     m_ShadersMap[ShaderType::Vertex] = vertexShaderId;
     m_ShadersMap[ShaderType::Fragment] = fragmentShaderId;
 
-    //glGenProgramPipelines(1, &m_PipelineId);
     glcheck( glCreateProgramPipelines(1, &m_PipelineId) );
     glcheck( glUseProgramStages(m_PipelineId, GL_VERTEX_SHADER_BIT, vertexShaderId) );
     glcheck( glUseProgramStages(m_PipelineId, GL_FRAGMENT_SHADER_BIT, fragmentShaderId) );

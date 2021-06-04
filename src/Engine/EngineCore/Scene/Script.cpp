@@ -9,7 +9,7 @@ void Script::AttachEntity(Ref<ScriptableEntity> entity)
     m_Entity = entity;
 }
 
-void Script::Link(Ref<ScriptableEntity> entity, Ref<Script> script)
+void Script::Connect(Ref<ScriptableEntity> entity, Ref<Script> script)
 {
     entity->AttachScript(script);
     script->AttachEntity(entity);

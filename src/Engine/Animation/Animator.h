@@ -10,24 +10,16 @@ class Animator : public IUpdatable
 public:
     Animator(const Bone& skeleton, uint32_t boneCount);
 
-
     void PlayAnimation(Ref<Animation> animation);
-
+    void Update(float deltaTime);
 
     bool IsPlaying() const { return m_IsPlaying; }
     
-
-    void Update(float deltaTime);
-    
-    
-    const std::vector<glm::mat4>& GetCurrentPose();
-
-
+    const vector<mat4>& GetCurrentPose();
     const Bone& GetSkeleton() const { return m_Skeleton; }
 
 
 private:
-
     // Расчет текущей позы
     static void CalculatePose(
         const Animation& animation,
@@ -39,9 +31,7 @@ private:
 
 
     // Вычисление временной дроби для интерполяции между кадрами
-    static std::pair<uint32_t, float> GetTimeFraction(
-        const std::vector<float>& times,
-        float currentTime);
+    static std::pair<uint32_t, float> GetTimeFraction(const std::vector<float>& times, float& dt);
 
 
 private:

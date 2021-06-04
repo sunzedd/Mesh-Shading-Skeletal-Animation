@@ -2,7 +2,8 @@
 
 namespace FQW {
 
-Application::Application(int width, int height, std::string title)
+
+Application::Application(int width, int height, const string& title)
 {
     Logger::Initialize();
     m_Window = CreateUnique<Window>(width, height, title.c_str());
@@ -42,7 +43,6 @@ void Application::Run()
             m_IsRunning = false;
             continue;
         }
-
 
         const float currentTime = Input::GetTime_ms();
         m_DeltaTime = currentTime - m_LastFrameTime;
@@ -94,10 +94,10 @@ void Application::SetupGraphicsPipeline()
 
 void Application::SetupDefaultCameraFPS()
 {
-    m_Camera = CreateRef<CameraFPS>(glm::vec3(0, 0, 20));
+    m_Camera = CreateRef<PerspectiveCamera>(glm::vec3(0, 0, 20));
     m_Camera->SetProjectionParameters((float)m_Window->GetWidth() / (float)m_Window->GetHeight(), 60.0f);
-    auto cameraScript = CreateRef<CameraScript>();
-    Script::Link(m_Camera, cameraScript);
+    auto cameraScript = CreateRef<FPSCameraScript>();
+    Script::Connect(m_Camera, cameraScript);
 
     RegisterUpdatableEntity(m_Camera);
     RegisterScriptableEntity(m_Camera);
