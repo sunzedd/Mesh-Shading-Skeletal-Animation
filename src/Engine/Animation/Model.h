@@ -15,20 +15,20 @@ public:
 
     Model(const std::vector<Ref<Mesh>>& meshes, std::vector<Ref<Animation>>& animations, Ref<Animator> animator);
 
-    Ref<Animator> GetAnimator() const { return animator; }
-    const std::vector<Ref<Animation>>& GetAnimations() const { return animations; }
-    const std::vector<Ref<Mesh>>& GetMeshes() const { return meshes; }
+    Ref<Animator> GetAnimator() const { return m_Animator; }
+    const std::vector<Ref<Animation>>& GetAnimations() const { return m_Animations; }
+    const std::vector<Ref<Mesh>>& GetMeshes() const { return m_Meshes; }
 
     void Draw(ShaderPipeline& shader, ICamera& camera) override;
+
 
 private:
     void BindShaderUniforms(ShaderPipeline& shader, ICamera& camera);
 
 private:
-    std::vector<Ref<Mesh>> meshes;
-    std::vector<Ref<Animation>> animations;
-    Ref<Animator> animator;
-
+    std::vector<Ref<Mesh>> m_Meshes;
+    std::vector<Ref<Animation>> m_Animations;
+    Ref<Animator> m_Animator;
 };
 
 } // namespace FQW

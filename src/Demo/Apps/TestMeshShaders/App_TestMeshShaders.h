@@ -73,8 +73,8 @@ struct Mesh_
         glcheck(glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 1, index_ssbo));
         glcheck(glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 2, meshlets_ssbo));
 
-        GLuint count = (this->indices.size() / 3) / 32;
-        glcheck(glDrawMeshTasksNV(0, count));
+        GLuint workgroupCount = (this->indices.size() / 3) / 32;
+        glcheck(glDrawMeshTasksNV(0, workgroupCount));
     }
 };
 

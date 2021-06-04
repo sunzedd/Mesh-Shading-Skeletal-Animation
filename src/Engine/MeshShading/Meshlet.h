@@ -3,10 +3,10 @@
 
 namespace FQW::NV_MeshShaders {
 
-struct Meshlet
+struct alignas(16) Meshlet
 {
-    uint32_t vertices[64];  // vertex indices in mesh vertexbuffer
-    uint8_t indices[126];   // vertex indices in meshlet's vertexbuffer (Meshlet.vertices)
+    uint32_t vertices[64];       // vertex indices in mesh vertexbuffer
+    uint8_t indices[126];    // vertex indices in meshlet's vertexbuffer (Meshlet.vertices)
     uint8_t indexCount;
     uint8_t vertexCount;
 };

@@ -4,9 +4,9 @@ namespace FQW {
 
 Model::Model(const std::vector<Ref<Mesh>>& meshes, std::vector<Ref<Animation>>& animations, Ref<Animator> animator)
 {
-    this->meshes = meshes;
-    this->animations = animations;
-    this->animator = animator;
+    this->m_Meshes = meshes;
+    this->m_Animations = animations;
+    this->m_Animator = animator;
 }
 
 
@@ -14,7 +14,7 @@ void Model::Draw(ShaderPipeline& shader, ICamera& camera)
 {
     BindShaderUniforms(shader, camera);
 
-    for (auto& mesh : meshes)
+    for (auto& mesh : m_Meshes)
     {
         mesh->Draw();
     }
@@ -51,13 +51,13 @@ void Model::BindShaderUniforms(ShaderPipeline& shaderPipleline, ICamera& camera)
     shaderPipleline.SetMatrix4fv(ShaderPipeline::ShaderType::Vertex, "model_matrix", M);
     shaderPipleline.SetMatrix4fv(ShaderPipeline::ShaderType::Vertex, "view_projection_matrix", VP);
 
-    const std::vector<glm::mat4>& pose = animator->GetCurrentPose();
+    const std::vector<glm::mat4>& pose = m_Animator->GetCurrentPose();
     if (pose.size() > 0)
     {
         shaderPipleline.SetMatrix4fvArray(
             ShaderPipeline::ShaderType::Vertex, 
             "bone_transforms", 
-            animator->GetCurrentPose()
+            m_Animator->GetCurrentPose()
         );
     }
 }
