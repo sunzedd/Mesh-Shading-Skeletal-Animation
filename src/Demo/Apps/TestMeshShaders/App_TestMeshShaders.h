@@ -36,45 +36,6 @@ struct App_TestMeshShader : public Main::App_Main
             LOCAL_SHADERS_DIRECTORY  + "shader_multithread.mesh",
             GLOBAL_SHADERS_DIRECTORY + "animation\\shader.fs");
         model = convertModel(*_Model);
-#if 0
-        FQW_INFO("Mesh data");
-        for (auto& mesh : model.meshes)
-        {
-            FQW_TRACE("vertices:");
-            for (auto& vertex : mesh.vertices) {
-                FQW_TRACE("\t {}, {}, {}", vertex.position.x, vertex.position.y, vertex.position.z);
-            }
-            
-            FQW_TRACE("indices:");
-            for (auto& index : mesh.indices) {
-                FQW_TRACE("\t {}", index);
-            }
-
-            FQW_TRACE("\n\n");
-        }
-
-        FQW_INFO("\n\nMeshlet data");
-        for (auto& mesh : model.meshes)
-        {
-            for (auto& meshlet : mesh.meshlets)
-            {
-                FQW_TRACE("Meshlet vertex count: {}", meshlet.vertexCount);
-                FQW_TRACE("Meshlet triangle count: {}", meshlet.triangleCount);
-                FQW_TRACE("vertices:");
-                for (int i = 0; i < meshlet.vertexCount; i++) 
-                {
-                    auto& vertex = mesh.vertices[meshlet.vertices[i]];
-                    FQW_TRACE("\t {}, {}, {}", vertex.position.x, vertex.position.y, vertex.position.z);
-                }
-
-                FQW_TRACE("indices:");
-                for (int i = 0; i < meshlet.triangleCount * 3; i++) {
-                    FQW_TRACE("\t {}", meshlet.indices[i]);
-                }
-            }
-        }
-#endif
-
     }
 
 
