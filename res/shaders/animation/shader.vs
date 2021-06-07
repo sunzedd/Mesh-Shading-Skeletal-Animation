@@ -10,9 +10,10 @@ out vec3 v_normal;
 out vec3 v_position;
 out vec3 v_color;
 
-uniform mat4 bone_transforms[50];
-uniform mat4 view_projection_matrix;
-uniform mat4 model_matrix;
+uniform mat4 u_bone_transforms[50];
+uniform mat4 u_M_matrix;
+uniform mat4 u_VP_matrix;
+uniform mat4 u_MVP_matrix;
 uniform vec3 u_color = vec3(1.0, 1.0, 1.0);
 
 
@@ -26,7 +27,7 @@ mat4 CalculateSkinTransformationMatrix()
     mat4 transform = mat4(0);
     for (int i = 0; i < 4; i++)
     {
-        transform += bone_transforms[boneIds[i]] * boneWeights[i];
+        transform += u_bone_transforms[boneIds[i]] * boneWeights[i];
     }
     return transform;
 }
@@ -44,7 +45,7 @@ void main()
     //v_normal = mat3(transpose(inverse(model_matrix * skinnedTransform))) * normal;
     //v_normal = normalize(v_normal);
 
-    v_normal = vec3(normalize(model_matrix * vec4(normal, 0.0)).xyz);
+    v_normal = vec3(normalize(u_M_matrix * vec4(normal, 0.0)).xyz);
     v_color = u_color;
-    gl_Position = view_projection_matrix * model_matrix * vec4(position, 1.0);
+    gl_Position = u_MVP_matrix * vec4(position, 1.0);
 }

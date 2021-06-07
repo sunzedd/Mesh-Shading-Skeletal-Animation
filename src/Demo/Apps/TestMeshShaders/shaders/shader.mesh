@@ -40,9 +40,9 @@ struct Vertex_
 struct Meshlet
 {
     uint32_t vertices[64];       // vertex indices in mesh vertexbuffer
-    uint8_t indices[126*3];    // vertex indices in meshlet's vertexbuffer (Meshlet.vertices)
-    uint8_t triangleCount;
-    uint8_t vertexCount;
+    uint32_t indices[126*3];    // vertex indices in meshlet's vertexbuffer (Meshlet.vertices)
+    uint32_t triangleCount;
+    uint32_t vertexCount;
 };
 
 layout(binding = 0, std430) readonly buffer vertices_ssbo
@@ -61,9 +61,9 @@ layout(binding = 2, std430) readonly buffer meshlets_ssbo
 };
 
 
-uniform mat4 view_projection_matrix;
-uniform mat4 model_matrix;
-uniform int u_meshlet_count;
+uniform mat4 u_P_matrix;
+uniform mat4 u_M_matrix;
+uniform int32_t u_meshlet_count;
 
 uint hash(uint a)
 {
@@ -90,7 +90,7 @@ void main()
         {
             uint global_vi = meshlets[mi].vertices[i];
             vec4 position = vec4(vertices[global_vi].position.xyz, 1.0);
-            gl_MeshVerticesNV[i].gl_Position = view_projection_matrix * model_matrix * position;
+            gl_MeshVerticesNV[i].gl_Position = u_P_matrix * u_M_matrix * position;
             customData[i].color = mcolor;
         }
 

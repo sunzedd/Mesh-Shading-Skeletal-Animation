@@ -8,7 +8,7 @@
 
 namespace FQW::TestMeshShaders {
 
-using FQW::NV_MeshShaders::Meshlet;
+using FQW::Meshlet;
 using glm::vec4;
 using glm::mat4;
 
@@ -91,7 +91,7 @@ struct Mesh_
 
             // EBO
             glcheck(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, meshlet_ebo));
-            glcheck(glBufferData(GL_ELEMENT_ARRAY_BUFFER, meshlets[i].vertexCount * 3 * sizeof(uint8_t), &(meshlets[i].indices[0]), GL_STATIC_DRAW));
+            glcheck(glBufferData(GL_ELEMENT_ARRAY_BUFFER, meshlets[i].vertexCount * 3 * sizeof(uint32_t), &(meshlets[i].indices[0]), GL_STATIC_DRAW));
 
             // Vertex attribute layout
             glcheck(glEnableVertexAttribArray(0));
@@ -130,16 +130,20 @@ struct Mesh_
             glcheck(glGenBuffers(1, &vertex_ssbo));
             glcheck(glBindBuffer(GL_SHADER_STORAGE_BUFFER, vertex_ssbo));
             glcheck(glBufferData(GL_SHADER_STORAGE_BUFFER, sizeof(this->vertices[0]) * this->vertices.size(), &(this->vertices[0]), GL_STATIC_DRAW));
+            glcheck(glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, meshlets_ssbo));
             glcheck(glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0));
 
+            /*
             glcheck(glGenBuffers(1, &index_ssbo));
             glcheck(glBindBuffer(GL_SHADER_STORAGE_BUFFER, index_ssbo));
             glcheck(glBufferData(GL_SHADER_STORAGE_BUFFER, sizeof(this->indices[0]) * this->indices.size(), &(this->indices[0]), GL_STATIC_DRAW));
             glcheck(glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0));
+            */
 
             glcheck(glGenBuffers(1, &meshlets_ssbo));
             glcheck(glBindBuffer(GL_SHADER_STORAGE_BUFFER, meshlets_ssbo));
             glcheck(glBufferData(GL_SHADER_STORAGE_BUFFER, sizeof(this->meshlets[0]) * this->meshlets.size(), &(this->meshlets[0]), GL_STATIC_DRAW));
+            glcheck(glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 2, meshlets_ssbo));
             glcheck(glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0));
         }
     }
@@ -150,7 +154,7 @@ struct Mesh_
         {
             shader.SetVec3(ShaderPipeline::ShaderType::Vertex, "u_color", meshlets_colors[i]);
             glcheck(glBindVertexArray(meshlets_vao[i]));
-            glcheck(glDrawElements(GL_TRIANGLES, this->meshlets[i].triangleCount * 3, GL_UNSIGNED_BYTE, (GLvoid*)0));
+            glcheck(glDrawElements(GL_TRIANGLES, this->meshlets[i].triangleCount * 3, GL_UNSIGNED_INT, (GLvoid*)0));
             glcheck(glBindVertexArray(0));
         }
     }
@@ -158,11 +162,11 @@ struct Mesh_
     void DrawWithMeshShader(ShaderPipeline& shader) const
     {
         glcheck(glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, vertex_ssbo));
-        glcheck(glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 1, index_ssbo));
         glcheck(glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 2, meshlets_ssbo));
+        //glcheck(glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 1, index_ssbo));
 
         GLuint workgroupCount = this->meshlets.size();
-        shader.SetInt(ShaderPipeline::ShaderType::Mesh, "u_meshlet_count", workgroupCount);
+        //shader.SetInt(ShaderPipeline::ShaderType::Mesh, "u_meshlet_count", workgroupCount);
         glcheck(glDrawMeshTasksNV(0, workgroupCount));
     }
 
@@ -177,12 +181,7 @@ struct Mesh_
 struct Model_ : public IDrawable
 {
     vector<Mesh_> meshes;
-    struct
-    {
-        vec3 position = vec3(0, 0, 0);
-        vec3 rotation = vec3(0, 0, 0);
-        vec3 scale = vec3(1, 1, 1);
-    } transform;
+    Transform Transform;
 
     void DrawMeshletsSeparately(ShaderPipeline& shader, ICamera& camera)
     {
@@ -213,34 +212,14 @@ struct Model_ : public IDrawable
 
     void BindShaderUniforms(ShaderPipeline::ShaderType type, ShaderPipeline& shader, ICamera& camera)
     {
-        mat4 S = mat4(1.0f);
-        mat4 Rx = mat4(1.0f);
-        mat4 Ry = mat4(1.0f);
-        mat4 Rz = mat4(1.0f);
-        mat4 R = mat4(1.0f);
-        mat4 T = mat4(1.0f);
-
-        mat4 M = mat4(1.0f);
-        mat4 V = mat4(1.0f);
-        mat4 P = mat4(1.0f);
-        mat4 VP = mat4(1.0f);
-
-        S = glm::scale(S, transform.scale);
-        Rx = glm::rotate(Rx, glm::radians(transform.rotation.x), vec3(1, 0, 0));
-        Ry = glm::rotate(Ry, glm::radians(transform.rotation.y), vec3(0, 1, 0));
-        Rz = glm::rotate(Rz, glm::radians(transform.rotation.z), vec3(0, 0, 1));
-        R = Rx * Ry * Rz;
-        T = glm::translate(T, transform.position);
-
-        M = T * R * S;
-        V = camera.GetViewMatrix();
-        P = camera.GetProjectionMatrix();
-        VP = P * V;
+        const mat4& m = Transform.GetModelMatrix();
+        const mat4& vp = camera.GetViewProjectionMatrix();
+        mat4 mvp = vp * m;
 
         shader.Use();
-        shader.SetMatrix4fv(type, "model_matrix", M);
-        shader.SetMatrix4fv(type, "view_projection_matrix", VP);
-        shader.SetMatrix4fv(type, "u_mvp", M * VP);
+        //shader.SetMatrix4fv(type, "u_M_matrix", m);
+        //shader.SetMatrix4fv(type, "u_VP_matrix", vp);
+        shader.SetMatrix4fv(type, "u_MVP_matrix", mvp);
     }
 };
 
@@ -266,7 +245,7 @@ vector<Meshlet> buildMeshlets(const vector<Vertex_>& vertexBuffer, const vector<
 
     Meshlet meshlet = {};
 
-    std::vector<uint8_t> meshletVertices(vertexBuffer.size(), 0xff); // 0xff: We do not use this vertex in meshlet
+    std::vector<uint32_t> meshletVertices(vertexBuffer.size(), 0xff); // 0xff: We do not use this vertex in meshlet
 
     for (size_t i = 0; i < indexBuffer.size(); i += 3)
     {
@@ -274,9 +253,9 @@ vector<Meshlet> buildMeshlets(const vector<Vertex_>& vertexBuffer, const vector<
         uint32_t b = indexBuffer[i + 1];
         uint32_t c = indexBuffer[i + 2];
 
-        uint8_t& av = meshletVertices[a];  /* vertex indices in meshlet's local vertexbuffer */
-        uint8_t& bv = meshletVertices[b];
-        uint8_t& cv = meshletVertices[c];
+        uint32_t& av = meshletVertices[a];  /* vertex indices in meshlet's local vertexbuffer */
+        uint32_t& bv = meshletVertices[b];
+        uint32_t& cv = meshletVertices[c];
 
         if (meshlet.vertexCount + (av == 0xff) + (bv == 0xff) + (cv == 0xff) > 64 ||
             meshlet.triangleCount >= 126)

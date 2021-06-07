@@ -24,5 +24,13 @@ void main()
     //frag_color = vec4(result_color, 1.0);
     //frag_color = vec4(1.0f, 1.0f, 1.0f, 1.0f);
     //frag_color = vec4(v_normal, 1.0f);
-    frag_color = vec4(v_color, 1.0);
+
+    if (v_color == vec3(0.0, 0.0, 0.0))
+    {
+        frag_color = vec4(1.0, 1.0, 1.0, 1.0);
+    }
+    else
+    {
+        frag_color = vec4(v_color, 1.0);
+    }
 }

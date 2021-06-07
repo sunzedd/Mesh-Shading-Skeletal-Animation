@@ -4,8 +4,15 @@ namespace FQW {
 
 GLuint ShaderPipeline::GetUniformLocation(ShaderType shaderType, const string& name) const
 {
+    const GLchar* name_ = static_cast<const GLchar*>(name.c_str());
     GLuint shaderId = m_ShadersMap.at(shaderType);
-    glcheck(GLuint location = glGetUniformLocation(shaderId, name.c_str()));
+
+    glcheck(GLuint location = glGetUniformLocation(shaderId, name_));
+    if (location < 0 || location > GL_MAX_UNIFORM_LOCATIONS)
+    {
+        FQW_WARN("Uniform not found {} in shader {}", name, shaderType);
+    }
+
     return location;
 }
 
@@ -94,7 +101,7 @@ string ShaderPipeline::ReadSource(string filepath)
 
 
 
-GLuint ShaderPipeline::Compile(const GLchar* source, ShaderType type)
+GLuint ShaderPipeline::Compile(const GLchar* source, ShaderType type, const string& filepath)
 {
     GLuint glType;
 
@@ -126,7 +133,7 @@ GLuint ShaderPipeline::Compile(const GLchar* source, ShaderType type)
             glGetProgramInfoLog(shaderId, logLen, &written, &log[0]);
         }
 
-        FQW_CRITICAL("Failed to link shader {}", log);
+        FQW_CRITICAL("Failed to link shader {}, Info: {}", filepath, log);
         throw std::runtime_error("Failed to link shader: " + log);
     }
 

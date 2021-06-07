@@ -1,13 +1,15 @@
 #pragma once
 #include "../Main/App_Main.h"
-#include "NewTypes.h"
+#include "../../NewTypes.h"
 
 
 namespace FQW::TestMeshShaders {
 
 struct App_TestMeshShader : public Main::App_Main
 {
-    const string LOCAL_SHADERS_DIRECTORY = s_SolutionDirectory + "src\\Demo\\Apps\\TestMeshShaders\\res\\";
+    const string LOCAL_SHADERS_DIRECTORY = s_SolutionDirectory +  "src\\Demo\\Apps\\TestMeshShaders\\shaders\\";
+    const string GLOBAL_SHADERS_DIRECTORY = s_SolutionDirectory + "res\\shaders\\";
+
     Model_ model;
     Unique<ShaderPipeline> m_ClassicShaderPipeline;
 
@@ -16,24 +18,63 @@ struct App_TestMeshShader : public Main::App_Main
     bool m_BackfaceCulling = false;
     bool m_DrawMeshletsSeparately = false;
 
-
     App_TestMeshShader()
         : App_Main() 
     { 
         m_Name = "Test Mesh Shader";
+        MODEL_FILEPATH = s_SolutionDirectory + "res\\meshes\\working\\cube.obj";
 
         m_ClassicShaderPipeline = CreateUnique<ClassicShaderPipeline>(
-            s_SolutionDirectory + "res\\shaders\\animation\\shader.vs",
-            s_SolutionDirectory + "res\\shaders\\animation\\shader.fs");
+            GLOBAL_SHADERS_DIRECTORY + "animation\\shader.vs",
+            GLOBAL_SHADERS_DIRECTORY + "animation\\shader.fs");
     }
 
 
     void SetupShader() override
     {
-        _ShaderPipeline = CreateUnique<FQW::NV_MeshShaders::MeshShaderPipeline>(
-            LOCAL_SHADERS_DIRECTORY + "v2\\shader.mesh",
-            LOCAL_SHADERS_DIRECTORY + "basic.frag.glsl");
+        _ShaderPipeline = CreateUnique<MeshShaderPipeline>(
+            LOCAL_SHADERS_DIRECTORY  + "shader1.mesh",
+            GLOBAL_SHADERS_DIRECTORY + "animation\\shader.fs");
         model = convertModel(*_Model);
+#if 0
+        FQW_INFO("Mesh data");
+        for (auto& mesh : model.meshes)
+        {
+            FQW_TRACE("vertices:");
+            for (auto& vertex : mesh.vertices) {
+                FQW_TRACE("\t {}, {}, {}", vertex.position.x, vertex.position.y, vertex.position.z);
+            }
+            
+            FQW_TRACE("indices:");
+            for (auto& index : mesh.indices) {
+                FQW_TRACE("\t {}", index);
+            }
+
+            FQW_TRACE("\n\n");
+        }
+
+        FQW_INFO("\n\nMeshlet data");
+        for (auto& mesh : model.meshes)
+        {
+            for (auto& meshlet : mesh.meshlets)
+            {
+                FQW_TRACE("Meshlet vertex count: {}", meshlet.vertexCount);
+                FQW_TRACE("Meshlet triangle count: {}", meshlet.triangleCount);
+                FQW_TRACE("vertices:");
+                for (int i = 0; i < meshlet.vertexCount; i++) 
+                {
+                    auto& vertex = mesh.vertices[meshlet.vertices[i]];
+                    FQW_TRACE("\t {}, {}, {}", vertex.position.x, vertex.position.y, vertex.position.z);
+                }
+
+                FQW_TRACE("indices:");
+                for (int i = 0; i < meshlet.triangleCount * 3; i++) {
+                    FQW_TRACE("\t {}", meshlet.indices[i]);
+                }
+            }
+        }
+#endif
+
     }
 
 
@@ -89,14 +130,14 @@ struct App_TestMeshShader : public Main::App_Main
         ImGui::SetWindowFontScale(1.0);
 
         ImGui::Text(u8"Позиция");
-        ImGui::SliderFloat("x", &model.transform.position.x, -3.0f, 3.0f);
-        ImGui::SliderFloat("y", &model.transform.position.y, -3.0f, 3.0f);
-        ImGui::SliderFloat("z", &model.transform.position.z, -3.0f, 3.0f);
+        ImGui::SliderFloat("x", &model.Transform.position.x, -3.0f, 3.0f);
+        ImGui::SliderFloat("y", &model.Transform.position.y, -3.0f, 3.0f);
+        ImGui::SliderFloat("z", &model.Transform.position.z, -3.0f, 3.0f);
 
         ImGui::Text(u8"Ориентация");
-        ImGui::SliderFloat("rx", &model.transform.rotation.x, -180.0f, 180.0f);
-        ImGui::SliderFloat("ry", &model.transform.rotation.y, -180.0f, 180.0f);
-        ImGui::SliderFloat("rz", &model.transform.rotation.z, -180.0f, 180.0f);
+        ImGui::SliderFloat("rx", &model.Transform.rotation.x, -180.0f, 180.0f);
+        ImGui::SliderFloat("ry", &model.Transform.rotation.y, -180.0f, 180.0f);
+        ImGui::SliderFloat("rz", &model.Transform.rotation.z, -180.0f, 180.0f);
         ImGui::End();
 
         ImGui::Begin(u8"Рендер");

@@ -28,16 +28,16 @@ void Model::BindShaderUniforms(ShaderPipeline& shaderPipleline, ICamera& camera)
     mat4 mvp = vp * m;
 
     shaderPipleline.Use();
-    shaderPipleline.SetMatrix4fv(ShaderPipeline::ShaderType::Vertex, "model_matrix", m);
-    shaderPipleline.SetMatrix4fv(ShaderPipeline::ShaderType::Vertex, "view_projection_matrix", vp);
-    shaderPipleline.SetMatrix4fv(ShaderPipeline::ShaderType::Vertex, "model_view_projection_matrix", mvp);
+    shaderPipleline.SetMatrix4fv(ShaderPipeline::ShaderType::Vertex, "u_M_matrix", m);
+    shaderPipleline.SetMatrix4fv(ShaderPipeline::ShaderType::Vertex, "u_VP_matrix", vp);
+    shaderPipleline.SetMatrix4fv(ShaderPipeline::ShaderType::Vertex, "u_MVP_matrix", mvp);
 
     const vector<mat4>& pose = m_Animator->GetCurrentPose();
     if (pose.size() > 0)
     {
         shaderPipleline.SetMatrix4fvArray(
             ShaderPipeline::ShaderType::Vertex, 
-            "bone_transforms", 
+            "u_bone_transforms", 
             m_Animator->GetCurrentPose());
     }
 }

@@ -13,8 +13,8 @@ ClassicShaderPipeline::ClassicShaderPipeline(const string& vertexFilepath, const
     auto vertexSource_ = static_cast <const GLchar*>(vertexSource.c_str());
     auto fragmentSource_ = static_cast <const GLchar*>(fragmentSource.c_str());
 
-    GLuint vertexShaderId = Compile(vertexSource_, ShaderType::Vertex);
-    GLuint fragmentShaderId = Compile(fragmentSource_, ShaderType::Fragment);
+    GLuint vertexShaderId = Compile(vertexSource_, ShaderType::Vertex, vertexFilepath);
+    GLuint fragmentShaderId = Compile(fragmentSource_, ShaderType::Fragment, fragmentFilepath);
 
     m_ShadersMap[ShaderType::Vertex] = vertexShaderId;
     m_ShadersMap[ShaderType::Fragment] = fragmentShaderId;

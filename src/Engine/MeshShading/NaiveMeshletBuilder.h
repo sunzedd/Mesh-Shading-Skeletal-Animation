@@ -3,7 +3,7 @@
 #include "Meshlet.h"
 
 
-namespace FQW::NV_MeshShaders {
+namespace FQW {
 
 // Class for meshlet building from the mesh in the naive maner
 class NaiveMeshletBuilder
@@ -37,7 +37,7 @@ private:
 
         Meshlet meshlet = {};
 
-        std::vector<uint8_t> meshletVertices(vertexBuffer.size(), 0xff); // 0xff: We do not use this vertex in meshlet
+        std::vector<uint32_t> meshletVertices(vertexBuffer.size(), 0xff); // 0xff: We do not use this vertex in meshlet
 
         for (size_t i = 0; i < indexBuffer.size(); i += 3)
         {
@@ -45,9 +45,9 @@ private:
             uint32_t b = indexBuffer[i + 1];
             uint32_t c = indexBuffer[i + 2];
 
-            uint8_t& av = meshletVertices[a];  /* vertex indices in meshlet's local vertexbuffer */
-            uint8_t& bv = meshletVertices[b];
-            uint8_t& cv = meshletVertices[c];
+            uint32_t& av = meshletVertices[a];  /* vertex indices in meshlet's local vertexbuffer */
+            uint32_t& bv = meshletVertices[b];
+            uint32_t& cv = meshletVertices[c];
 
             if (meshlet.vertexCount + (av == 0xff) + (bv == 0xff) + (cv == 0xff) > 64 ||
                 meshlet.triangleCount >= 126)
@@ -87,20 +87,6 @@ private:
         {
             m_Meshlets.push_back(meshlet);
         }
-
-        // ???
-        //for (int i = 0; i < m_Meshlets.size(); i++)
-        //{
-        //    for (int idx = 0; idx < m_Meshlets[i].triangleCount * 3; idx++)
-        //    {
-        //        m_Meshlets[i].indices[idx] = idx;
-        //    }
-        //}
-
-        //while (m_Meshlets.size() % 32 != 0)
-        //{
-        //    m_Meshlets.push_back(Meshlet{});
-        //}
     }
 
 private:

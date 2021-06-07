@@ -37,7 +37,7 @@ protected:
     ShaderPipeline() {};
 
     static string ReadSource(string filepath);
-    static GLuint Compile(const GLchar* source, ShaderType type);
+    static GLuint Compile(const GLchar* source, ShaderType type, const string& filepath);
 
 protected:
     GLuint m_PipelineId;

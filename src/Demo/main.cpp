@@ -1,4 +1,4 @@
-#if 1
+#if 0
 #include "Apps/Main/App_Main.h"
 
 int main()

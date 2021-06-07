@@ -5,7 +5,7 @@
 #include <imgui_impl_opengl3.h>
 #include <imgui_impl_glfw.h>
 
-#include "../../FPSCameraScript.h"
+#include "../../Scripts/FPSCameraScript.h"
 
 #include "../Graphics/OpenGL_Utils.h"
 #include "../Scene/Script.h"

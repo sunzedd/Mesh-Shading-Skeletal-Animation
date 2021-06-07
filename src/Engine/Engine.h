@@ -10,4 +10,4 @@
 #include "MeshShading/TaskMeshShaderPipeline.h"
 #include "MeshShading/NaiveMeshletBuilder.h"
 
-#include "FPSCameraScript.h"
+#include "Scripts/FPSCameraScript.h"
