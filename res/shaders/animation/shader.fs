@@ -17,9 +17,12 @@ void main()
     //float diff = max(dot(v_normal, light_dir), 0.0);
     //vec3 diffuse = diff * light_color;
     //
-    //vec3 result_color = (ambient + diffuse) * v_color;
+    //vec3 result_color = (ambient + diffuse) * object_color;
     //
     //frag_color = vec4(result_color, 1.0);
+    //frag_color = vec4(result_color, 1.0);
+    //frag_color = vec4(result_color, 1.0);
     //frag_color = vec4(1.0f, 1.0f, 1.0f, 1.0f);
-    frag_color = vec4(v_normal, 1.0f);
+    //frag_color = vec4(v_normal, 1.0f);
+    frag_color = vec4(v_color, 1.0);
 }

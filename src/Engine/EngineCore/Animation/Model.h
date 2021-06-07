@@ -1,4 +1,6 @@
 #pragma once
+#include "../Scene/Transform.h"
+
 #include "Animator.h"
 
 
@@ -7,13 +9,7 @@ namespace FQW {
 class Model : public IDrawable, public ScriptableEntity
 {
 public:
-    struct
-    {
-        vec3 position = vec3(0);
-        vec3 rotation = vec3(0);
-        vec3 scale = vec3(1, 1, 1); 
-    } transform;
-
+    Transform Transform;
 
     Model(const vector<Ref<Mesh>>& meshes, vector<Ref<Animation>>& animations, Ref<Animator> animator);
 

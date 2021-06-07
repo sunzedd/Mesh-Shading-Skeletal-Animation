@@ -112,7 +112,7 @@ void Application::SetupImgui()
     ImGui_ImplOpenGL3_Init("#version 460");
 
     ImGuiIO& io = ImGui::GetIO();
-    io.Fonts->AddFontFromFileTTF("C:\\Windows\\Fonts\\Tahoma.ttf", 14.0f, &m_FontConfig, ranges);
+    io.Fonts->AddFontFromFileTTF("C:\\Windows\\Fonts\\Tahoma.ttf", 16.0f, &m_FontConfig, ranges);
 }
 
 

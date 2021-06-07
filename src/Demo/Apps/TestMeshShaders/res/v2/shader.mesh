@@ -1,0 +1,117 @@
+#version 450
+#extension GL_NV_mesh_shader : require
+#extension GL_ARB_separate_shader_objects : require
+#extension GL_NV_gpu_shader5 : enable
+
+layout(local_size_x=32, local_size_y=1, local_size_z=1) in;
+layout(triangles, max_vertices=64, max_primitives=126) out;
+
+out gl_PerVertex
+{
+    vec4 gl_Position;
+} gl_stupid;
+
+
+out gl_MeshPerVertexNV 
+{
+     vec4 gl_Position;
+} gl_MeshVerticesNV[];            // [max_vertices]
+
+
+out uint gl_PrimitiveCountNV;
+out uint gl_PrimitiveIndicesNV[];
+
+out perVertexData 
+{  
+    vec3 color;
+} customData[64];
+
+
+struct Vertex_
+{
+    vec3 position;
+    //vec3 normal;
+    //vec4 boneIds;
+    //int  boneIds[4];
+    //vec4 boneWeights;
+    //float boneWeights[4];
+};
+
+struct Meshlet
+{
+    uint32_t vertices[64];       // vertex indices in mesh vertexbuffer
+    uint8_t indices[126*3];    // vertex indices in meshlet's vertexbuffer (Meshlet.vertices)
+    uint8_t triangleCount;
+    uint8_t vertexCount;
+};
+
+layout(binding = 0, std430) readonly buffer vertices_ssbo
+{
+    Vertex_ vertices[];
+};
+
+layout(binding = 1, std430) readonly buffer indices_ssbo
+{
+    uint32_t indices[];
+};
+
+layout(binding = 2, std430) readonly buffer meshlets_ssbo
+{
+	Meshlet meshlets[];
+};
+
+
+uniform mat4 view_projection_matrix;
+uniform mat4 model_matrix;
+uniform int u_meshlet_count;
+
+uint hash(uint a)
+{
+   a = (a+0x7ed55d16) + (a<<12);
+   a = (a^0xc761c23c) ^ (a>>19);
+   a = (a+0x165667b1) + (a<<5);
+   a = (a+0xd3a2646c) ^ (a<<9);
+   a = (a+0xfd7046c5) + (a<<3);
+   a = (a^0xb55a4f09) ^ (a>>16);
+   return a;
+}
+
+void main()
+{
+    uint mi = gl_WorkGroupID.x;
+    uint ti = gl_LocalInvocationID.x;
+
+    uint mhash = hash(mi);
+    vec3 mcolor = vec3(float(mhash & 255), float((mhash >> 8) & 255), float((mhash >> 16) & 255)) / 255.0;
+    
+    if (mi < u_meshlet_count)
+    {
+        for (uint i = ti; i < meshlets[mi].vertexCount; i +=32)
+        {
+            uint global_vi = meshlets[mi].vertices[i];
+            vec4 position = vec4(vertices[global_vi].position.xyz, 1.0);
+            gl_MeshVerticesNV[i].gl_Position = view_projection_matrix * model_matrix * position;
+            customData[i].color = mcolor;
+        }
+
+        //for (uint i = ti; i < uint(meshlets[mi].triangleCount) * 3; i += 32)
+        //{
+        //    gl_PrimitiveIndicesNV[i] = meshlets[mi].indices[i];
+        //}
+
+        if (ti == 0)
+        {
+            gl_PrimitiveCountNV = meshlets[mi].triangleCount;
+            //for (uint i = 0; i < int(meshlets[mi].triangleCount) * 3; i++)
+            //{
+            //    uint local_vi = meshlets[mi].indices[i];
+            //    uint global_vi = meshlets[mi].vertices[local_vi];
+            //    gl_PrimitiveIndicesNV[i] = global_vi;
+            //}
+            for (int i = 0; i < 36; i++)
+            {
+                gl_PrimitiveIndicesNV[i] = i;
+            }
+        }
+    }
+}

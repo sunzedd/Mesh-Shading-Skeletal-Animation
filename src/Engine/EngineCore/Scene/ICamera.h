@@ -13,8 +13,9 @@ namespace FQW {
 class ICamera : public ScriptableEntity
 {
 public:
-    virtual const mat4& GetViewMatrix() const = 0;
-    virtual const mat4& GetProjectionMatrix() const = 0;
+    virtual const mat4& GetViewMatrix() = 0;
+    virtual const mat4& GetProjectionMatrix() = 0;
+    virtual const mat4& GetViewProjectionMatrix() = 0;
 };
 
 

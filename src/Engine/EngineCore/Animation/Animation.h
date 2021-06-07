@@ -5,7 +5,7 @@
 #include <assimp/scene.h>
 #include <assimp/postprocess.h>
 
-#include "../EngineCore/Core/Alias.h"
+#include "../Core/Alias.h"
 
 
 namespace FQW {

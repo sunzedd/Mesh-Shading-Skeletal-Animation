@@ -1,5 +1,5 @@
 #pragma once
-#include "../Animation/Mesh.h"
+#include "../EngineCore/Animation/Mesh.h"
 #include "Meshlet.h"
 
 
@@ -37,25 +37,28 @@ private:
 
         Meshlet meshlet = {};
 
-        std::vector<uint8_t> meshletVertices(vertexBuffer.size(), 0xff); // 0xff = -1: We do not use this vertex in meshlet
+        std::vector<uint8_t> meshletVertices(vertexBuffer.size(), 0xff); // 0xff: We do not use this vertex in meshlet
 
         for (size_t i = 0; i < indexBuffer.size(); i += 3)
         {
             uint32_t a = indexBuffer[i + 0];    /* vertex indices in mesh vertexbuffer */
             uint32_t b = indexBuffer[i + 1];
             uint32_t c = indexBuffer[i + 2];
-             
+
             uint8_t& av = meshletVertices[a];  /* vertex indices in meshlet's local vertexbuffer */
             uint8_t& bv = meshletVertices[b];
             uint8_t& cv = meshletVertices[c];
 
-            if (meshlet.vertexCount + (av == 0xff) + (bv == 0xff) + (cv == 0xff) > 64 || 
-                meshlet.indexCount + 1 > 126)
+            if (meshlet.vertexCount + (av == 0xff) + (bv == 0xff) + (cv == 0xff) > 64 ||
+                meshlet.triangleCount >= 126)
             {
                 /* we exceed max vertex count or triangle count, so get a brand new meshlet */
                 m_Meshlets.push_back(meshlet);
+                for (size_t j = 0; j < meshlet.vertexCount; ++j)
+                {
+                    meshletVertices[meshlet.vertices[j]] = 0xff;
+                }
                 meshlet = {};
-                memset(meshletVertices.data(), 0xff, meshletVertices.size());
             }
 
             if (av == 0xff) /* if vertex 'a' is not stored in meshlet's local vertexbuffer yet, put it into meshlet */
@@ -74,15 +77,30 @@ private:
                 meshlet.vertices[meshlet.vertexCount++] = c;
             }
 
-            meshlet.indices[meshlet.indexCount++] = av;
-            meshlet.indices[meshlet.indexCount++] = bv;
-            meshlet.indices[meshlet.indexCount++] = cv;
+            meshlet.indices[meshlet.triangleCount * 3 + 0] = av;
+            meshlet.indices[meshlet.triangleCount * 3 + 1] = bv;
+            meshlet.indices[meshlet.triangleCount * 3 + 2] = cv;
+            meshlet.triangleCount++;
         }
 
-        if (meshlet.indexCount > 0) // flush the last one
+        if (meshlet.triangleCount > 0) // flush the last one
         {
             m_Meshlets.push_back(meshlet);
         }
+
+        // ???
+        //for (int i = 0; i < m_Meshlets.size(); i++)
+        //{
+        //    for (int idx = 0; idx < m_Meshlets[i].triangleCount * 3; idx++)
+        //    {
+        //        m_Meshlets[i].indices[idx] = idx;
+        //    }
+        //}
+
+        //while (m_Meshlets.size() % 32 != 0)
+        //{
+        //    m_Meshlets.push_back(Meshlet{});
+        //}
     }
 
 private:

@@ -40,10 +40,7 @@ public:
     void Run();
     virtual void Shutdown();
 
-protected:
-    void Start();
-    void Update(float deltaTime);
-    
+protected:    
     virtual void Render() { }
     virtual void DrawUI() { }
 
@@ -53,6 +50,9 @@ protected:
     void RegisterScriptableEntity(Ref<ScriptableEntity> scriptable);
 
 private:
+    void Start();
+    void Update(float deltaTime);
+
     bool CheckGraphicsRequirements();
     void SetupDefaultCameraFPS();
     void SetupImgui();

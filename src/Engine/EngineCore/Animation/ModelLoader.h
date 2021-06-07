@@ -5,9 +5,9 @@
 #include <assimp/postprocess.h>
 #include <assimp/scene.h>
 
-#include "../EngineCore/Core/Alias.h"
-#include "../EngineCore/Core/Input.h"
-#include "../EngineCore/Graphics/IDrawable.h"
+#include "../Core/Alias.h"
+#include "../Core/Input.h"
+#include "../Graphics/IDrawable.h"
 
 #include "../Animation/Mesh.h"
 

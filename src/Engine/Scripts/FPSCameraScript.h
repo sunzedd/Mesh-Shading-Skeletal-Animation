@@ -1,8 +1,8 @@
 #pragma once
 
-#include "EngineCore/Scene/Script.h"
-#include "EngineCore/Core/Input.h"
-#include "EngineCore/Scene/PerspectiveCamera.h"
+#include "../EngineCore/Scene/Script.h"
+#include "../EngineCore/Core/Input.h"
+#include "../EngineCore/Scene/PerspectiveCamera.h"
 
 namespace FQW {
 

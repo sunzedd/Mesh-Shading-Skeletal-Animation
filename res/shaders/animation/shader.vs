@@ -13,6 +13,7 @@ out vec3 v_color;
 uniform mat4 bone_transforms[50];
 uniform mat4 view_projection_matrix;
 uniform mat4 model_matrix;
+uniform vec3 u_color = vec3(1.0, 1.0, 1.0);
 
 
 out gl_PerVertex
@@ -32,14 +33,18 @@ mat4 CalculateSkinTransformationMatrix()
 
 void main()
 {    
-    mat4 skinnedTransform = CalculateSkinTransformationMatrix();
-    vec4 skinned_position = skinnedTransform * vec4(position, 1.0);   // Позиция вершины в локальном  модельном пространстве
+    //mat4 skinnedTransform = CalculateSkinTransformationMatrix();
+    //vec4 skinned_position = skinnedTransform * vec4(position, 1.0);   // Позиция вершины в локальном  модельном пространстве
+    //
+    //vec4 final_position = view_projection_matrix * model_matrix * skinned_position;
+    //
+    //gl_Position = final_position;
+    //
+    //v_position = vec3(model_matrix * vec4(position, 1.0)); // позиция вершины в мировом пространстве для расчета освещения
+    //v_normal = mat3(transpose(inverse(model_matrix * skinnedTransform))) * normal;
+    //v_normal = normalize(v_normal);
 
-    vec4 final_position = view_projection_matrix * model_matrix * skinned_position;
-
-    gl_Position = final_position;
-
-    v_position = vec3(model_matrix * vec4(position, 1.0)); // позиция вершины в мировом пространстве для расчета освещения
-    v_normal = mat3(transpose(inverse(model_matrix * skinnedTransform))) * normal;
-    v_normal = normalize(v_normal);
+    v_normal = vec3(normalize(model_matrix * vec4(normal, 0.0)).xyz);
+    v_color = u_color;
+    gl_Position = view_projection_matrix * model_matrix * vec4(position, 1.0);
 }

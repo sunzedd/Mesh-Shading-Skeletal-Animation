@@ -70,14 +70,14 @@ void App_Main::DrawUI()
     ImGui::SetWindowFontScale(1.3);
     
     ImGui::Text(u8"Позиция");
-    ImGui::SliderFloat("x", &_Model->transform.position.x, -3.0f, 3.0f);
-    ImGui::SliderFloat("y", &_Model->transform.position.y, -3.0f, 3.0f);
-    ImGui::SliderFloat("z", &_Model->transform.position.z, -3.0f, 3.0f);
+    ImGui::SliderFloat("x", &_Model->Transform.position.x, -3.0f, 3.0f);
+    ImGui::SliderFloat("y", &_Model->Transform.position.y, -3.0f, 3.0f);
+    ImGui::SliderFloat("z", &_Model->Transform.position.z, -3.0f, 3.0f);
 
     ImGui::Text(u8"Ориентация");
-    ImGui::SliderFloat("rx", &_Model->transform.rotation.x, -180.0f, 180.0f);
-    ImGui::SliderFloat("ry", &_Model->transform.rotation.y, -180.0f, 180.0f);
-    ImGui::SliderFloat("rz", &_Model->transform.rotation.z, -180.0f, 180.0f);
+    ImGui::SliderFloat("rx", &_Model->Transform.rotation.x, -180.0f, 180.0f);
+    ImGui::SliderFloat("ry", &_Model->Transform.rotation.y, -180.0f, 180.0f);
+    ImGui::SliderFloat("rz", &_Model->Transform.rotation.z, -180.0f, 180.0f);
     ImGui::End();
 
 }

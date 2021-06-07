@@ -23,8 +23,10 @@ public:
     PerspectiveCamera(const vec3& position = vec3(0, 0, 0), const vec3& up = vec3(0, 1, 0), 
                       float yaw = YAW, float pitch = PITCH);
 
-    const mat4& GetViewMatrix() const override;
-    const mat4& GetProjectionMatrix() const override;
+    const mat4& GetViewMatrix() override;
+    const mat4& GetProjectionMatrix() override;
+    const mat4& GetViewProjectionMatrix() override;
+
     const vec3& GetPosition() const { return m_Position; }
     const vec3& GetFront() const { return m_Front; }
     const vec3& GetUp() const { return m_Up; }
@@ -55,6 +57,10 @@ private:
 
     float m_Fovy = 0.70f;
     float m_AspectRatio = 4.0f / 3.0f;
+
+    mat4 m_ViewMatrix;
+    mat4 m_ProjectionMatrix;
+    mat4 m_ViewProjectionMatrix;
 };
 
 } // namespace FQW

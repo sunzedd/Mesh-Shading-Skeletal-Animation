@@ -1,5 +1,5 @@
 #pragma once
-#include "../Animation/Model.h"
+#include "../EngineCore/Animation/Model.h"
 
 namespace FQW {
 

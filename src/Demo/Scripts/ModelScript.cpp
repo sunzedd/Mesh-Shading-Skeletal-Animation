@@ -9,9 +9,9 @@ void ModelScript::FirstSetup()
 
 void ModelScript::Start()
 {
-    ThisEntity->transform.position.y -= 4.0f;
-    ThisEntity->transform.rotation.z = 180.0f;
-    ThisEntity->transform.rotation.y = 180.0f;
+    ThisEntity->Transform.position.y -= 4.0f;
+    ThisEntity->Transform.rotation.z = 180.0f;
+    ThisEntity->Transform.rotation.y = 180.0f;
 }
 
 void ModelScript::Update(float deltaTime)

@@ -11,7 +11,9 @@ project "Demo"
     files
     {
         "%{wks.location}/src/Demo/**.h",
-        "%{wks.location}/src/Demo/**.cpp"
+        "%{wks.location}/src/Demo/**.cpp",
+        "%{wks.location}/deps/meshoptimizer/src/**.h",
+        "%{wks.location}/deps/meshoptimizer/src/**.cpp"
     }
 
     includedirs

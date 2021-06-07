@@ -1,7 +1,7 @@
 #pragma once
 #include <EngineCore/Core/Input.h>
-#include <Animation/Model.h>
-#include <Animation/Animator.h>
+#include <EngineCore/Animation/Model.h>
+#include <EngineCore/Animation/Animator.h>
 
 namespace FQW::MainApp {
 

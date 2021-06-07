@@ -16,15 +16,26 @@ PerspectiveCamera::PerspectiveCamera(const vec3& position, const vec3& up, float
 }
 
 
-const mat4& PerspectiveCamera::GetViewMatrix() const
+const mat4& PerspectiveCamera::GetViewMatrix()
 {
-    return glm::lookAt(m_Position, m_Position + m_Front, m_Up);
+    m_ViewMatrix = glm::lookAt(m_Position, m_Position + m_Front, m_Up);
+    return m_ViewMatrix;
 }
 
 
-const mat4& PerspectiveCamera::GetProjectionMatrix() const
+const mat4& PerspectiveCamera::GetProjectionMatrix()
 {
-    return glm::perspective(m_Fovy, m_AspectRatio, 0.001f, 1000.0f);
+    m_ProjectionMatrix = glm::perspective(m_Fovy, m_AspectRatio, 0.001f, 1000.0f);
+    return m_ProjectionMatrix;
+}
+
+
+const mat4& PerspectiveCamera::GetViewProjectionMatrix()
+{
+    GetViewMatrix();
+    GetProjectionMatrix();
+    m_ViewProjectionMatrix = m_ProjectionMatrix * m_ViewMatrix;
+    return m_ViewProjectionMatrix;
 }
 
 

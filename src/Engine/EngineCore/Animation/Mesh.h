@@ -1,10 +1,10 @@
 #pragma once
-#include "../EngineCore/Core/Math.h"
+#include "../../Utility/AssimpGlmConverter.h"
 
-#include "../EngineCore/Core/Logger.h"
-#include "../EngineCore/Graphics/IDrawable.h"
-#include "../EngineCore/Graphics/OpenGL_Utils.h"
-#include "../Utility/AssimpGlmConverter.h"
+#include "../Core/Math.h"
+#include "../Core/Logger.h"
+#include "../Graphics/IDrawable.h"
+#include "../Graphics/OpenGL_Utils.h"
 
 
 

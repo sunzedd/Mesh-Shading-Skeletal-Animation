@@ -45,6 +45,11 @@ void ShaderPipeline::SetFloat(ShaderType shaderType, const string& name, float v
     glcheck(glProgramUniform1f(m_ShadersMap.at(shaderType), location, value));
 }
 
+void ShaderPipeline::SetVec3(ShaderType shaderType, const string& name, const vec3& value) const
+{
+    GLuint location = GetUniformLocation(shaderType, name);
+    glcheck(glProgramUniform3fv(m_ShadersMap.at(shaderType), location, 1, glm::value_ptr(value)));
+}
 
 void ShaderPipeline::SetMatrix4fv(ShaderType shaderType, const string& name, const mat4& value) const
 {

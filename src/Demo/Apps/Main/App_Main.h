@@ -13,7 +13,7 @@ class App_Main : public Application
 public:
     static const int WIDTH = 1280;
     static const int HEIGHT = 720;
-    string MODEL_FILEPATH = s_SolutionDirectory + "res\\meshes\\working\\spider.fbx";
+    string MODEL_FILEPATH = s_SolutionDirectory + "res\\meshes\\working\\cube.obj";
 
     Unique<ShaderPipeline> _ShaderPipeline;
     Ref<Model>      _Model;

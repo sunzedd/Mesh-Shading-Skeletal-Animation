@@ -6,6 +6,7 @@
 
 #include "OpenGL_Utils.h"
 
+
 namespace FQW {
 
 class ShaderPipeline 
@@ -28,6 +29,7 @@ public:
     void SetBool(ShaderType shaderType, const string& name, bool value) const;
     void SetInt(ShaderType shaderType, const string& name, int value) const;
     void SetFloat(ShaderType shaderType, const string& name, float value) const;
+    void SetVec3(ShaderType shaderType, const string& name, const vec3& value) const;
     void SetMatrix4fv(ShaderType shaderType, const string& name, const mat4& value) const;
     void SetMatrix4fvArray(ShaderType shaderType, const string& name, const vector<mat4>& matrices) const;
 
