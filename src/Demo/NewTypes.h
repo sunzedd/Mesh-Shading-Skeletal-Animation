@@ -91,7 +91,7 @@ struct Mesh_
 
             // EBO
             glcheck(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, meshlet_ebo));
-            glcheck(glBufferData(GL_ELEMENT_ARRAY_BUFFER, meshlets[i].vertexCount * 3 * sizeof(uint32_t), &(meshlets[i].indices[0]), GL_STATIC_DRAW));
+            glcheck(glBufferData(GL_ELEMENT_ARRAY_BUFFER, meshlets[i].triangleCount * 3 * sizeof(uint32_t), &(meshlets[i].indices[0]), GL_STATIC_DRAW));
 
             // Vertex attribute layout
             glcheck(glEnableVertexAttribArray(0));
@@ -133,13 +133,6 @@ struct Mesh_
             glcheck(glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, meshlets_ssbo));
             glcheck(glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0));
 
-            /*
-            glcheck(glGenBuffers(1, &index_ssbo));
-            glcheck(glBindBuffer(GL_SHADER_STORAGE_BUFFER, index_ssbo));
-            glcheck(glBufferData(GL_SHADER_STORAGE_BUFFER, sizeof(this->indices[0]) * this->indices.size(), &(this->indices[0]), GL_STATIC_DRAW));
-            glcheck(glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0));
-            */
-
             glcheck(glGenBuffers(1, &meshlets_ssbo));
             glcheck(glBindBuffer(GL_SHADER_STORAGE_BUFFER, meshlets_ssbo));
             glcheck(glBufferData(GL_SHADER_STORAGE_BUFFER, sizeof(this->meshlets[0]) * this->meshlets.size(), &(this->meshlets[0]), GL_STATIC_DRAW));
@@ -163,10 +156,7 @@ struct Mesh_
     {
         glcheck(glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, vertex_ssbo));
         glcheck(glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 2, meshlets_ssbo));
-        //glcheck(glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 1, index_ssbo));
-
         GLuint workgroupCount = this->meshlets.size();
-        //shader.SetInt(ShaderPipeline::ShaderType::Mesh, "u_meshlet_count", workgroupCount);
         glcheck(glDrawMeshTasksNV(0, workgroupCount));
     }
 
@@ -217,23 +207,30 @@ struct Model_ : public IDrawable
         mat4 mvp = vp * m;
 
         shader.Use();
-        //shader.SetMatrix4fv(type, "u_M_matrix", m);
-        //shader.SetMatrix4fv(type, "u_VP_matrix", vp);
         shader.SetMatrix4fv(type, "u_MVP_matrix", mvp);
     }
 };
 
-void optimizeMesh(vector<Vertex_>& vertices, vector<uint32_t>& indices)
+void optimizeMesh(vector<Vertex_>& vertices, vector<uint32_t>& indices, bool optimizeVertexCache, bool optimizeVertexFetch)
 {
     size_t indexCount = indices.size();
     vector<uint32_t> remap(indexCount);
-    size_t vertexCount = meshopt_generateVertexRemap(&remap[0], &indices[0], indexCount, &vertices[0], vertices.size(), sizeof(Vertex_));
+    size_t vertexCount = meshopt_generateVertexRemap(&remap[0], indices.data(), indexCount, &vertices[0], vertices.size(), sizeof(Vertex_));
 
     vector<Vertex_> vertices_(vertexCount);
     vector<uint32_t> indices_(indexCount);
 
     meshopt_remapIndexBuffer(&indices_[0], &indices[0], indexCount, &remap[0]);
     meshopt_remapVertexBuffer(&vertices_[0], &vertices[0], indexCount, sizeof(Vertex_), &remap[0]);
+
+    if (optimizeVertexCache)
+    {
+        meshopt_optimizeVertexCache(indices_.data(), indices_.data(), indexCount, vertexCount);
+    }
+    if (optimizeVertexFetch)
+    {
+        meshopt_optimizeVertexFetch(vertices_.data(), indices_.data(), indexCount, vertices_.data(), vertexCount, sizeof(Vertex_));
+    }
 
     vertices = vertices_;
     indices = indices_;
@@ -245,7 +242,7 @@ vector<Meshlet> buildMeshlets(const vector<Vertex_>& vertexBuffer, const vector<
 
     Meshlet meshlet = {};
 
-    std::vector<uint32_t> meshletVertices(vertexBuffer.size(), 0xff); // 0xff: We do not use this vertex in meshlet
+    std::vector<uint32_t> meshletVertices(vertexBuffer.size(), 0xffffffff); // 0xffffffff: We do not use this vertex in meshlet
 
     for (size_t i = 0; i < indexBuffer.size(); i += 3)
     {
@@ -257,29 +254,89 @@ vector<Meshlet> buildMeshlets(const vector<Vertex_>& vertexBuffer, const vector<
         uint32_t& bv = meshletVertices[b];
         uint32_t& cv = meshletVertices[c];
 
-        if (meshlet.vertexCount + (av == 0xff) + (bv == 0xff) + (cv == 0xff) > 64 ||
+        if (meshlet.vertexCount + (av == 0xffffffff) + (bv == 0xffffffff) + (cv == 0xffffffff) > 64 ||
             meshlet.triangleCount >= 126)
         {
             /* we exceed max vertex count or triangle count, so get a brand new meshlet */
             result.push_back(meshlet);
             for (size_t j = 0; j < meshlet.vertexCount; ++j)
             {
-                meshletVertices[meshlet.vertices[j]] = 0xff;
+                meshletVertices[meshlet.vertices[j]] = 0xffffffff;
             }
             meshlet = {};
         }
 
-        if (av == 0xff) /* if vertex 'a' is not stored in meshlet's local vertexbuffer yet, put it into meshlet */
+        if (av == 0xffffffff) /* if vertex 'a' is not stored in meshlet's local vertexbuffer yet, put it into meshlet */
         {
             av = meshlet.vertexCount;
             meshlet.vertices[meshlet.vertexCount++] = a;
         }
-        if (bv == 0xff)
+        if (bv == 0xffffffff)
         {
             bv = meshlet.vertexCount;
             meshlet.vertices[meshlet.vertexCount++] = b;
         }
-        if (cv == 0xff)
+        if (cv == 0xffffffff)
+        {
+            cv = meshlet.vertexCount;
+            meshlet.vertices[meshlet.vertexCount++] = c;
+        }
+
+        meshlet.indices[meshlet.triangleCount * 3 + 0] = av;
+        meshlet.indices[meshlet.triangleCount * 3 + 1] = bv;
+        meshlet.indices[meshlet.triangleCount * 3 + 2] = cv;
+        meshlet.triangleCount++;
+    }
+
+    if (meshlet.triangleCount > 0) // flush the last one
+    {
+        result.push_back(meshlet);
+    }
+
+    return result;
+}
+
+vector<Meshlet> buildMeshletsForCubesScene(const vector<Vertex_>& vertexBuffer, const vector<uint32_t>& indexBuffer)
+{
+    vector<Meshlet> result;
+
+    Meshlet meshlet = {};
+
+    std::vector<uint32_t> meshletVertices(vertexBuffer.size(), 0xffffffff); // 0xffffffff: We do not use this vertex in meshlet
+
+    for (size_t i = 0; i < indexBuffer.size(); i += 3)
+    {
+        uint32_t a = indexBuffer[i + 0];    /* vertex indices in mesh vertexbuffer */
+        uint32_t b = indexBuffer[i + 1];
+        uint32_t c = indexBuffer[i + 2];
+
+        uint32_t& av = meshletVertices[a];  /* vertex indices in meshlet's local vertexbuffer */
+        uint32_t& bv = meshletVertices[b];
+        uint32_t& cv = meshletVertices[c];
+
+        if (meshlet.vertexCount + (av == 0xffffffff) + (bv == 0xffffffff) + (cv == 0xffffffff) > 36 ||
+            meshlet.triangleCount >= 126)
+        {
+            /* we exceed max vertex count or triangle count, so get a brand new meshlet */
+            result.push_back(meshlet);
+            for (size_t j = 0; j < meshlet.vertexCount; ++j)
+            {
+                meshletVertices[meshlet.vertices[j]] = 0xffffffff;
+            }
+            meshlet = {};
+        }
+
+        if (av == 0xffffffff) /* if vertex 'a' is not stored in meshlet's local vertexbuffer yet, put it into meshlet */
+        {
+            av = meshlet.vertexCount;
+            meshlet.vertices[meshlet.vertexCount++] = a;
+        }
+        if (bv == 0xffffffff)
+        {
+            bv = meshlet.vertexCount;
+            meshlet.vertices[meshlet.vertexCount++] = b;
+        }
+        if (cv == 0xffffffff)
         {
             cv = meshlet.vertexCount;
             meshlet.vertices[meshlet.vertexCount++] = c;
@@ -300,76 +357,6 @@ vector<Meshlet> buildMeshlets(const vector<Vertex_>& vertexBuffer, const vector<
 }
 
 
-vector<Meshlet> buildMeshlets_(const vector<Vertex_>& vertexBuffer, const vector<uint32_t>& indexBuffer)
-{
-    vector<Meshlet> resultMeshlets;
-
-    Meshlet m{};
-    uint32_t indexCount = 0;
-
-    // ѕусть vi - индекс вершины в vertexBuffer, котора€ должна попасть в мешлет m, “огда
-    // localVertexIndices[vi] = vi_local - индекс, под которым эта вершина занесена в локальный буфер вершин мешлета.
-    // значение -1 означает, что эта вершина еще не находитс€ в мешлете.
-    vector<int> localVertexIndices(vertexBuffer.size(), -1);
-
-    for (size_t i = 0; i < indexBuffer.size(); i += 3)
-    {
-        // “реугольник
-        uint32_t idx0 = indexBuffer[i + 0];
-        uint32_t idx1 = indexBuffer[i + 1];
-        uint32_t idx2 = indexBuffer[i + 2];
-
-        if (localVertexIndices[idx0] == -1)
-        {
-            localVertexIndices[idx0] = m.vertexCount;
-            m.vertices[m.vertexCount] = localVertexIndices[idx0];
-            m.indices[indexCount] = m.vertexCount;
-            m.vertexCount++;
-            indexCount++;
-        }
-        else
-        {
-            m.indices[indexCount] = localVertexIndices[idx0];
-            indexCount++;
-        }
-
-        if (localVertexIndices[idx1] == -1)
-        {
-            localVertexIndices[idx1] = m.vertexCount;
-            m.vertices[m.vertexCount] = localVertexIndices[idx1];
-            m.indices[indexCount] = m.vertexCount;
-            m.vertexCount++;
-            indexCount++;
-        }
-        else
-        {
-            m.indices[indexCount] = localVertexIndices[idx1];
-            indexCount++;
-        }
-
-        if (localVertexIndices[idx2] == -1)
-        {
-            localVertexIndices[idx2] = m.vertexCount;
-            m.vertices[m.vertexCount] = localVertexIndices[idx2];
-            m.indices[indexCount] = m.vertexCount;
-            m.vertexCount++;
-            indexCount++;
-        }
-        else
-        {
-            m.indices[indexCount] = localVertexIndices[idx2];
-            indexCount++;
-        }
-    }
-
-    m.triangleCount = indexCount / 3;
-    resultMeshlets.push_back(m);
-
-    return resultMeshlets;
-}
-
-
-
 
 Model_ convertModel(const Model& model)
 {
@@ -379,7 +366,10 @@ Model_ convertModel(const Model& model)
     {
         vector<Vertex_> vertices = convertMeshVertices(*mesh);
         vector<uint32_t> indices = mesh->GetIndexBuffer();
-        //optimizeMesh(vertices, indices);
+        
+        // Using Zeux Meshoptimizer
+        optimizeMesh(vertices, indices, false, false);
+        
         vector<Meshlet> meshlets = buildMeshlets(vertices, indices);
 
         Mesh_ converted(vertices, indices, meshlets);

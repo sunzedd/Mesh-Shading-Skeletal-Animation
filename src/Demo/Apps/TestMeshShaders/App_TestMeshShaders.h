@@ -22,7 +22,7 @@ struct App_TestMeshShader : public Main::App_Main
         : App_Main() 
     { 
         m_Name = "Test Mesh Shader";
-        MODEL_FILEPATH = s_SolutionDirectory + "res\\meshes\\working\\cube.obj";
+        MODEL_FILEPATH = s_SolutionDirectory + "res\\meshes\\working\\cubes.obj";
 
         m_ClassicShaderPipeline = CreateUnique<ClassicShaderPipeline>(
             GLOBAL_SHADERS_DIRECTORY + "animation\\shader.vs",
@@ -33,7 +33,7 @@ struct App_TestMeshShader : public Main::App_Main
     void SetupShader() override
     {
         _ShaderPipeline = CreateUnique<MeshShaderPipeline>(
-            LOCAL_SHADERS_DIRECTORY  + "shader1.mesh",
+            LOCAL_SHADERS_DIRECTORY  + "shader_multithread.mesh",
             GLOBAL_SHADERS_DIRECTORY + "animation\\shader.fs");
         model = convertModel(*_Model);
 #if 0
