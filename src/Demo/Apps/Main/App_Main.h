@@ -11,8 +11,8 @@ namespace FQW::Main {
 class App_Main : public Application
 {
 public:
-    static const int WIDTH = 1280;
-    static const int HEIGHT = 720;
+    static const int WIDTH = 1024;
+    static const int HEIGHT = 768;
     string MODEL_FILEPATH = s_SolutionDirectory + "res\\meshes\\working\\cube.obj";
 
     Unique<ShaderPipeline> _ShaderPipeline;

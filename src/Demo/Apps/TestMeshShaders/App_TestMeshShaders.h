@@ -1,6 +1,6 @@
 #pragma once
 #include "../Main/App_Main.h"
-#include "../../NewTypes.h"
+#include "NewTypes.h"
 
 
 namespace FQW::TestMeshShaders {
@@ -13,10 +13,13 @@ struct App_TestMeshShader : public Main::App_Main
     Model_ model;
     Unique<ShaderPipeline> m_ClassicShaderPipeline;
 
-    bool m_UseClassicPipeline = true;
-    bool m_Wireframe = true;
-    bool m_BackfaceCulling = false;
-    bool m_DrawMeshletsSeparately = false;
+    struct {
+        bool useClassicPipeline = true;
+        bool showMeshlets = false;
+        bool wireframe = true;
+        bool backfaceCulling = false;
+    } m_RenderConfig;
+
 
     App_TestMeshShader()
         : App_Main() 
@@ -41,12 +44,14 @@ struct App_TestMeshShader : public Main::App_Main
 
     void Render() override
     {
-        if (m_Wireframe) 
+        if (m_RenderConfig.wireframe) {
             glPolygonMode(GL_FRONT, GL_LINE);
-        else
+        }
+        else {
             glPolygonMode(GL_FRONT, GL_FILL);
+        }
         
-        if (m_BackfaceCulling)
+        if (m_RenderConfig.backfaceCulling)
         {
             glEnable(GL_CULL_FACE);
             glCullFace(GL_BACK);
@@ -56,19 +61,16 @@ struct App_TestMeshShader : public Main::App_Main
             glDisable(GL_CULL_FACE);
         }
 
-        if (m_UseClassicPipeline) 
+        if (m_RenderConfig.useClassicPipeline)
         {
-            if (m_DrawMeshletsSeparately) 
-            {
+            if (m_RenderConfig.showMeshlets) {
                 model.DrawMeshletsSeparately(*m_ClassicShaderPipeline, *m_Camera);
             }
-            else
-            {
+            else {
                 model.Draw(*m_ClassicShaderPipeline, *m_Camera);
             }
         }
-        else
-        {
+        else {
             model.DrawWithMeshShader(*_ShaderPipeline, *m_Camera);
         }
     }
@@ -102,10 +104,10 @@ struct App_TestMeshShader : public Main::App_Main
         ImGui::End();
 
         ImGui::Begin(u8"Рендер");
-        ImGui::Checkbox(u8"Использовать классический конвейер", &m_UseClassicPipeline);
-        ImGui::Checkbox(u8"Отрисовать отдельные мешлеты классически", &m_DrawMeshletsSeparately);
-        ImGui::Checkbox(u8"Каркас", &m_Wireframe);
-        ImGui::Checkbox(u8"Фильтровать задние грани", &m_BackfaceCulling);
+        ImGui::Checkbox(u8"Использовать классический конвейер", &m_RenderConfig.useClassicPipeline);
+        ImGui::Checkbox(u8"Показывать кластеры", &m_RenderConfig.showMeshlets);
+        ImGui::Checkbox(u8"Каркас", &m_RenderConfig.wireframe);
+        ImGui::Checkbox(u8"Фильтровать задние грани", &m_RenderConfig.backfaceCulling);
         ImGui::End();
     }
 };
