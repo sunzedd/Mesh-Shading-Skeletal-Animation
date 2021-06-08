@@ -4,9 +4,11 @@ namespace FQW {
 
 
 Application::Application(int width, int height, const string& title)
+    : 
+    m_Name(title)
 {
     Logger::Initialize();
-    m_Window = CreateUnique<Window>(width, height, title.c_str());
+    m_Window = CreateUnique<Window>(width, height, m_Name.c_str());
     Input::Initialize(*m_Window);
 
     CheckGraphicsRequirements();
@@ -150,6 +152,7 @@ void Application::RegisterUpdatableEntity(Ref<IUpdatable> updatable)
 void Application::RegisterScriptableEntity(Ref<ScriptableEntity> scriptable)
 {
     m_ScriptableEntities.push_back(scriptable);
+    RegisterUpdatableEntity(scriptable);
 }
 
 

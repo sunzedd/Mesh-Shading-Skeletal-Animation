@@ -32,7 +32,8 @@ void App_Main::SetupShader()
 
 void App_Main::SetupScene()
 {
-    _Model = ModelLoader::LoadModel(MODEL_FILEPATH);
+    ModelLoader loader(MeshOptimizer(false, false, false));
+    loader.LoadModel(MODEL_FILEPATH);
     FQW_TRACE("Loaded animated model from {}", MODEL_FILEPATH);
 
     auto modelScript = CreateRef<FQW::MainApp::ModelScript>();

@@ -11,6 +11,7 @@ class Model : public IDrawable, public ScriptableEntity
 public:
     Transform Transform;
 
+    // Instance should be created by ModelLoader class
     Model(const vector<Ref<Mesh>>& meshes, vector<Ref<Animation>>& animations, Ref<Animator> animator);
 
     Ref<Animator> GetAnimator() const { return m_Animator; }
@@ -21,7 +22,7 @@ public:
 
 
 private:
-    void BindShaderUniforms(ShaderPipeline& shader, ICamera& camera);
+    virtual void BindShaderUniforms(ShaderPipeline& shaderPipeline, ICamera& camera);
 
 private:
     std::vector<Ref<Mesh>> m_Meshes;

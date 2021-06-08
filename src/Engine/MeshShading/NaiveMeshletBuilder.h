@@ -1,43 +1,19 @@
 #pragma once
-#include "../EngineCore/Animation/Mesh.h"
-#include "Meshlet.h"
+#include "IMeshletBuilder.h"
 
 
 namespace FQW {
 
-// Class for meshlet building from the mesh in the naive maner
-class NaiveMeshletBuilder
+class NaiveMeshletBuilder final : public IMeshletBuilder
 {
 public:
-    NaiveMeshletBuilder()
+    vector<Meshlet> Build(const vector<Vertex>& vertexBuffer, const vector<uint32_t>& indexBuffer) override
     {
-    }
-
-    void BuildForSingleMesh(const Mesh& mesh)
-    {
-        m_Meshlets.clear();
-        Build(mesh);
-    }
-
-    void BuildForMultipleMeshes(const std::vector<Ref<Mesh>>& meshes)
-    {
-        m_Meshlets.clear();
-        for (const auto& mesh : meshes) {
-            Build(*mesh);
-        }
-    }
-
-    vector<Meshlet>& GetMeshlets() { return m_Meshlets; }
-
-private:
-    void Build(const Mesh& mesh)
-    {
-        const std::vector<Vertex>& vertexBuffer = mesh.GetVertexBuffer();
-        const std::vector<uint32_t>& indexBuffer = mesh.GetIndexBuffer();
+        vector<Meshlet> result;
 
         Meshlet meshlet = {};
 
-        std::vector<uint32_t> meshletVertices(vertexBuffer.size(), 0xff); // 0xff: We do not use this vertex in meshlet
+        std::vector<uint32_t> meshletVertices(vertexBuffer.size(), 0xffffffff); // 0xffffffff: This vertex is not used in current meshlet
 
         for (size_t i = 0; i < indexBuffer.size(); i += 3)
         {
@@ -49,29 +25,29 @@ private:
             uint32_t& bv = meshletVertices[b];
             uint32_t& cv = meshletVertices[c];
 
-            if (meshlet.vertexCount + (av == 0xff) + (bv == 0xff) + (cv == 0xff) > 64 ||
+            if (meshlet.vertexCount + (av == 0xffffffff) + (bv == 0xffffffff) + (cv == 0xffffffff) > 64 ||
                 meshlet.triangleCount >= 126)
             {
                 /* we exceed max vertex count or triangle count, so get a brand new meshlet */
-                m_Meshlets.push_back(meshlet);
+                result.push_back(meshlet);
                 for (size_t j = 0; j < meshlet.vertexCount; ++j)
                 {
-                    meshletVertices[meshlet.vertices[j]] = 0xff;
+                    meshletVertices[meshlet.vertices[j]] = 0xffffffff;
                 }
                 meshlet = {};
             }
 
-            if (av == 0xff) /* if vertex 'a' is not stored in meshlet's local vertexbuffer yet, put it into meshlet */
+            if (av == 0xffffffff) /* if vertex 'a' is not stored in meshlet's local vertexbuffer yet, put it into meshlet */
             {
                 av = meshlet.vertexCount;
                 meshlet.vertices[meshlet.vertexCount++] = a;
             }
-            if (bv == 0xff)
+            if (bv == 0xffffffff)
             {
                 bv = meshlet.vertexCount;
                 meshlet.vertices[meshlet.vertexCount++] = b;
             }
-            if (cv == 0xff)
+            if (cv == 0xffffffff)
             {
                 cv = meshlet.vertexCount;
                 meshlet.vertices[meshlet.vertexCount++] = c;
@@ -85,13 +61,11 @@ private:
 
         if (meshlet.triangleCount > 0) // flush the last one
         {
-            m_Meshlets.push_back(meshlet);
+            result.push_back(meshlet);
         }
-    }
 
-private:
-    std::vector<Meshlet> m_Meshlets;
+        return result;
+    }
 };
 
-
-} // namespace FQW::MeshShaders
+}

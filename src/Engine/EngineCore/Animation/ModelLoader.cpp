@@ -2,6 +2,12 @@
 
 namespace FQW {
 
+ModelLoader::ModelLoader(MeshOptimizer& meshOptimizer)
+    :
+    m_MeshOptimizer(meshOptimizer)
+{ }
+
+
 Ref<Model> ModelLoader::LoadModel(const string& filepath)
 {
     FQW_INFO("\nLoading model from {}", filepath);
@@ -38,13 +44,13 @@ Ref<Model> ModelLoader::ConstructModel(const aiScene* scene)
     // Mesh and bones hierarchy loading
     RecursivelyLoadMeshAndBonesData(rootNode, scene, meshes, boneMap);
     
-    for (int i = 0; i < meshes.size(); i++)
-    {
-        if (!CheckIfAllVerticesSkinned(*meshes[i]))
-        {
-            FQW_WARN("Not all vertices skinned in mesh");
-        }
-    }
+    //for (int i = 0; i < meshes.size(); i++)
+    //{
+    //    if (!CheckIfAllVerticesSkinned(*meshes[i]))
+    //    {
+    //        FQW_WARN("Not all vertices skinned in mesh");
+    //    }
+    //}
 
 
     // Animation loading
@@ -123,8 +129,9 @@ Ref<Mesh> ModelLoader::ProcessMeshAndUpdateBonemap(const aiMesh* assimpMesh,
     // Extract bones data
     ExtractBonesWeights(vertexBuffer, assimpMesh, scene, outBoneMap);
 
+    m_MeshOptimizer.OptimizeMeshData(vertexBuffer, indexBuffer);
 
-    auto resultMesh = CreateRef<Mesh>(vertexBuffer, indexBuffer);
+    auto resultMesh = CreateRef<Mesh>(vertexBuffer, indexBuffer, NaiveMeshletBuilder());
     return resultMesh;
 }
 
@@ -317,22 +324,22 @@ void ModelLoader::LoadMissingBones(const aiAnimation* assimpAnimation, BoneMap& 
 }
 
 
-bool ModelLoader::CheckIfAllVerticesSkinned(const Mesh& mesh)
-{
-    const auto& vertices = mesh.GetVertexBuffer();
-    bool allAffected = true;
-
-    for (int i = 0; i < vertices.size(); i++)
-    {
-        const Vertex& v = vertices[i];
-
-        if (v.boneIds.x == -1) { allAffected = false; break; }
-        if (v.boneIds.y == -1) { allAffected = false; break; }
-        if (v.boneIds.z == -1) { allAffected = false; break; }
-        if (v.boneIds.w == -1) { allAffected = false; break; }
-    }
-
-    return allAffected;
-}
+//bool ModelLoader::CheckIfAllVerticesSkinned(const Mesh& mesh)
+//{
+//    const auto& vertices = mesh.GetVertexBuffer();
+//    bool allAffected = true;
+//
+//    for (int i = 0; i < vertices.size(); i++)
+//    {
+//        const Vertex& v = vertices[i];
+//
+//        if (v.boneIds.x == -1) { allAffected = false; break; }
+//        if (v.boneIds.y == -1) { allAffected = false; break; }
+//        if (v.boneIds.z == -1) { allAffected = false; break; }
+//        if (v.boneIds.w == -1) { allAffected = false; break; }
+//    }
+//
+//    return allAffected;
+//}
 
 }

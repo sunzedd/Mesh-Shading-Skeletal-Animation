@@ -55,7 +55,7 @@ layout(binding = 0, shared) readonly buffer vertices_ssbo
     Vertex vertices[];
 } vertex_buffer;
 
-layout(binding = 2, shared) readonly buffer meshlets_ssbo
+layout(binding = 1, shared) readonly buffer meshlets_ssbo
 {
 	Meshlet meshlets[];
 } meshlet_buffer;
