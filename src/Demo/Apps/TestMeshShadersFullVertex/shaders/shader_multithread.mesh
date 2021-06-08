@@ -34,9 +34,10 @@ out perVertexData
 // --------------------- Structures ------------------------------
 struct Vertex
 {
-    float x;
-    float y;
-    float z;
+    float x, y, z;
+    float nx, ny, nz;
+    int boneIds[4];
+    float boneWeights[4];
 };
 
 struct Meshlet

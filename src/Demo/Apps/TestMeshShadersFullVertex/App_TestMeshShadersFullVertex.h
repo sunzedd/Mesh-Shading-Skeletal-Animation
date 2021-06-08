@@ -5,9 +5,9 @@
 
 namespace FQW::TestMeshShaders {
 
-struct App_TestMeshShader : public Main::App_Main
+struct App_TestMeshShaderFullVertex : public Main::App_Main
 {
-    const string LOCAL_SHADERS_DIRECTORY = s_SolutionDirectory +  "src\\Demo\\Apps\\TestMeshShaders\\shaders\\";
+    const string LOCAL_SHADERS_DIRECTORY = s_SolutionDirectory +  "src\\Demo\\Apps\\TestMeshShadersFullVertex\\shaders\\";
     const string GLOBAL_SHADERS_DIRECTORY = s_SolutionDirectory + "res\\shaders\\";
 
     Model_ model;
@@ -21,7 +21,7 @@ struct App_TestMeshShader : public Main::App_Main
     } m_RenderConfig;
 
 
-    App_TestMeshShader()
+    App_TestMeshShaderFullVertex()
         : App_Main() 
     { 
         m_Name = "Test Mesh Shader";

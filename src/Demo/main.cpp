@@ -8,7 +8,7 @@ int main()
     app->Run();
 }
 
-#elif 1
+#elif 0
 #include "Apps/TestMeshShaders/App_TestMeshShaders.h"
 
 int main()
@@ -18,14 +18,12 @@ int main()
     app->Run();
 }
 #else
-#include <Engine.h>
+#include "Apps/TestMeshShadersFullVertex/App_TestMeshShadersFullVertex.h"
 
 int main()
 {
-    float vec[3];
-
-    size_t vec3_size = sizeof(glm::vec3);
-    size_t float3_size = sizeof(vec);
-
+    auto app = FQW::CreateRef<FQW::TestMeshShaders::App_TestMeshShaderFullVertex>();
+    app->Init();
+    app->Run();
 }
 #endif

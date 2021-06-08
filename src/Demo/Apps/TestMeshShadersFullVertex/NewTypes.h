@@ -25,26 +25,10 @@ static const vec3 colors[MAX_COLORS] = {
     vec3(1,1,1)
 };
 
-struct Vertex_
-{
-    vec3 position;
-};
-
-vector<Vertex_> convertMeshVertices(const Mesh& mesh)
-{
-    vector<Vertex_> result;
-
-    for (const auto& v : mesh.GetVertexBuffer())
-    {
-        result.push_back(Vertex_{ v.position });
-    }
-
-    return result;
-}
 
 struct Mesh_
 {
-    vector<Vertex_>  vertices;
+    vector<Vertex>  vertices;
     vector<uint32_t> indices;
     vector<Meshlet>  meshlets;
     vector<GLuint> meshlets_vao;
@@ -61,7 +45,7 @@ struct Mesh_
     GLuint meshlets_ssbo;
 
 
-    Mesh_(vector<Vertex_> vertices, vector<uint32_t> indices, vector<Meshlet> meshlets)
+    Mesh_(vector<Vertex> vertices, vector<uint32_t> indices, vector<Meshlet> meshlets)
     {
         this->vertices = vertices;
         this->indices = indices;
@@ -78,16 +62,16 @@ struct Mesh_
             glcheck(glBindVertexArray(meshlet_vao));
 
             // VBO
-            vector<Vertex_> meshlet_vertices{};
+            vector<Vertex> meshlet_vertices{};
             for (int local_vi = 0; local_vi < meshlets[i].vertexCount; local_vi++)
             {
                 uint32_t global_vi = meshlets[i].vertices[local_vi];
-                Vertex_& v = this->vertices[global_vi];
+                Vertex& v = this->vertices[global_vi];
                 meshlet_vertices.push_back(v);
             }
 
             glcheck(glBindBuffer(GL_ARRAY_BUFFER, meshlet_vbo));
-            glcheck(glBufferData(GL_ARRAY_BUFFER, meshlets[i].vertexCount * sizeof(Vertex_), &meshlet_vertices[0], GL_STATIC_DRAW));
+            glcheck(glBufferData(GL_ARRAY_BUFFER, meshlets[i].vertexCount * sizeof(Vertex), &meshlet_vertices[0], GL_STATIC_DRAW));
 
             // EBO
             glcheck(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, meshlet_ebo));
@@ -95,7 +79,7 @@ struct Mesh_
 
             // Vertex attribute layout
             glcheck(glEnableVertexAttribArray(0));
-            glcheck(glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex_), (GLvoid*)0));
+            glcheck(glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (GLvoid*)0));
             glcheck(glBindVertexArray(0));
 
             meshlets_vao.push_back(meshlet_vao);
@@ -113,7 +97,7 @@ struct Mesh_
 
             // VBO
             glcheck(glBindBuffer(GL_ARRAY_BUFFER, vbo));
-            glcheck(glBufferData(GL_ARRAY_BUFFER, this->vertices.size() * sizeof(Vertex_), &(this->vertices[0]), GL_STATIC_DRAW));
+            glcheck(glBufferData(GL_ARRAY_BUFFER, this->vertices.size() * sizeof(Vertex), &(this->vertices[0]), GL_STATIC_DRAW));
 
             // EBO
             glcheck(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo));
@@ -121,7 +105,7 @@ struct Mesh_
 
             // Vertex attribute layout
             glcheck(glEnableVertexAttribArray(0));
-            glcheck(glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex_), (GLvoid*)0));
+            glcheck(glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (GLvoid*)0));
             glcheck(glBindVertexArray(0));
         }
 
@@ -211,17 +195,17 @@ struct Model_ : public IDrawable
     }
 };
 
-void optimizeMesh(vector<Vertex_>& vertices, vector<uint32_t>& indices, bool optimizeVertexCache, bool optimizeVertexFetch)
+void optimizeMesh(vector<Vertex>& vertices, vector<uint32_t>& indices, bool optimizeVertexCache, bool optimizeVertexFetch)
 {
     size_t indexCount = indices.size();
     vector<uint32_t> remap(indexCount);
-    size_t vertexCount = meshopt_generateVertexRemap(&remap[0], indices.data(), indexCount, &vertices[0], vertices.size(), sizeof(Vertex_));
+    size_t vertexCount = meshopt_generateVertexRemap(&remap[0], indices.data(), indexCount, &vertices[0], vertices.size(), sizeof(Vertex));
 
-    vector<Vertex_> vertices_(vertexCount);
+    vector<Vertex> vertices_(vertexCount);
     vector<uint32_t> indices_(indexCount);
 
     meshopt_remapIndexBuffer(&indices_[0], &indices[0], indexCount, &remap[0]);
-    meshopt_remapVertexBuffer(&vertices_[0], &vertices[0], indexCount, sizeof(Vertex_), &remap[0]);
+    meshopt_remapVertexBuffer(&vertices_[0], &vertices[0], indexCount, sizeof(Vertex), &remap[0]);
 
     if (optimizeVertexCache)
     {
@@ -229,14 +213,14 @@ void optimizeMesh(vector<Vertex_>& vertices, vector<uint32_t>& indices, bool opt
     }
     if (optimizeVertexFetch)
     {
-        meshopt_optimizeVertexFetch(vertices_.data(), indices_.data(), indexCount, vertices_.data(), vertexCount, sizeof(Vertex_));
+        meshopt_optimizeVertexFetch(vertices_.data(), indices_.data(), indexCount, vertices_.data(), vertexCount, sizeof(Vertex));
     }
 
     vertices = vertices_;
     indices = indices_;
 }
 
-vector<Meshlet> buildMeshlets(const vector<Vertex_>& vertexBuffer, const vector<uint32_t>& indexBuffer)
+vector<Meshlet> buildMeshlets(const vector<Vertex>& vertexBuffer, const vector<uint32_t>& indexBuffer)
 {
     vector<Meshlet> result;
 
@@ -296,7 +280,7 @@ vector<Meshlet> buildMeshlets(const vector<Vertex_>& vertexBuffer, const vector<
     return result;
 }
 
-vector<Meshlet> buildMeshletsForCubesScene(const vector<Vertex_>& vertexBuffer, const vector<uint32_t>& indexBuffer)
+vector<Meshlet> buildMeshletsForCubesScene(const vector<Vertex>& vertexBuffer, const vector<uint32_t>& indexBuffer)
 {
     vector<Meshlet> result;
 
@@ -364,11 +348,11 @@ Model_ convertModel(const Model& model)
 
     for (const auto& mesh : model.GetMeshes())
     {
-        vector<Vertex_> vertices = convertMeshVertices(*mesh);
+        vector<Vertex> vertices = mesh->GetVertexBuffer();
         vector<uint32_t> indices = mesh->GetIndexBuffer();
         
         // Using Zeux Meshoptimizer
-        optimizeMesh(vertices, indices, false, false);
+        optimizeMesh(vertices, indices, true, true);
         
         vector<Meshlet> meshlets = buildMeshlets(vertices, indices);
 
