@@ -20,8 +20,13 @@ void Mesh::Draw(ShaderPipeline& shaderPipeline, ICamera& camera)
 {
     switch (shaderPipeline.GetType())
     {
-        case ShaderPipeline::Type::Classic:     DrawWithClassicPipeline(shaderPipeline, camera); break;
-        case ShaderPipeline::Type::TuringRTX:   DrawWithTuringPipeline(shaderPipeline, camera);  break;
+        case ShaderPipeline::Type::Classic:     
+            DrawWithClassicPipeline(shaderPipeline, camera);
+            break;
+        
+        case ShaderPipeline::Type::TuringRTX:   
+            DrawWithTuringPipeline(shaderPipeline, camera); 
+            break;
 
         default: FQW_CRITICAL("Unknown render pipeline type passed"); break;
     }

@@ -23,6 +23,11 @@ Application::~Application() { }
 
 void Application::Start()
 {
+    if (HasScript())
+    {
+        m_BehaviourScript->Start();
+    }
+
     for (auto& entity : m_ScriptableEntities) 
     {
         entity->Start();

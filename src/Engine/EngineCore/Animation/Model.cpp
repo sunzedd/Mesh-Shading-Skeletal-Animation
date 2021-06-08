@@ -36,7 +36,7 @@ void Model::BindShaderUniforms(ShaderPipeline& shaderPipleline, ICamera& camera)
     const mat4& vp = camera.GetViewProjectionMatrix();
     mat4 mvp = vp * m;
 
-    shaderPipleline.Use();
+    //shaderPipleline.Use();
     shaderPipleline.SetMatrix4fv(stage, "u_M_matrix", m);
     shaderPipleline.SetMatrix4fv(stage, "u_MVP_matrix", mvp);
 

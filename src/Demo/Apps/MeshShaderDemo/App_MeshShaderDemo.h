@@ -1,24 +1,29 @@
 #pragma once
 #include <Engine.h>
-#include "../../Scripts/ApplicationScript.h"
-#include "../../Scripts/ModelScript.h"
+
+#include "Scripts/ManModelController.h"
+#include "Scripts/SpiderModelController.h"
+#include "Scripts/WolfModelController.h"
 
 
 namespace FQW::MeshShaderDemo {
 
+class ApplicationController;
+
 class App_MeshShaderDemo : public Application
 {
-private:
+public:
     const string SHADERS_DIRECTORY = s_SolutionDirectory + "src\\Demo\\Apps\\MeshShaderDemo\\Shaders\\";
     const string MODELS_DIRECTORY  = s_SolutionDirectory + "res\\meshes\\working\\";
 
     Unique<ShaderPipeline> m_ClassicPipeline;
     Unique<ShaderPipeline> m_MeshShaderPipeline;
-    Ref<Model> m_Model;
-    Ref<Animator> m_Animator;
+
+    std::map<string, Ref<Model>> m_Models;
+    Ref<Model> m_CurrentModel;
 
     struct {
-        bool useClassicPipeline = true;
+        bool useClassicPipeline = false;
         bool showMeshlets = false;
         bool wireframe = false;
         bool backfaceCulling = false;
@@ -30,24 +35,61 @@ public:
         : Application(1280, 720, "Test Mesh Shader")
     {
         // Load model
-        ModelLoader loader(MeshOptimizer(true, true, true));
-        m_Model = loader.LoadModel(MODELS_DIRECTORY + "wolf.fbx");
+        LoadModels();
+
+        /*
+        ModelLoader loader(MeshOptimizer(false));
+        m_Model = loader.LoadModel(MODELS_DIRECTORY + "spider.fbx");
 
         auto modelScript = CreateRef<MainApp::ModelScript>();
         Script::Connect(m_Model, modelScript);
         RegisterScriptableEntity(m_Model);
 
         // Setup animator
-        m_Animator = m_Model->GetAnimator();
-        RegisterUpdatableEntity(m_Animator);
+        RegisterUpdatableEntity(m_Model->GetAnimator());
+        */
 
         // Load shaders
         m_ClassicPipeline = CreateUnique<ClassicShaderPipeline>(SHADERS_DIRECTORY + "basic.vert",
-                                                                SHADERS_DIRECTORY + "basic.frag");
+                                                                SHADERS_DIRECTORY + "classic.frag");
 
         m_MeshShaderPipeline = CreateUnique<MeshShaderPipeline>(SHADERS_DIRECTORY + "basic.mesh",
-                                                                SHADERS_DIRECTORY + "basic.frag");    
+                                                                SHADERS_DIRECTORY + "turing.frag");    
     }
+
+
+    void LoadModels()
+    {
+        MeshOptimizer meshOptimizer(true, true, true);
+        auto loader = ModelLoader(meshOptimizer);
+        
+        auto manModel = loader.LoadModel(MODELS_DIRECTORY + "man.dae");
+        auto manModelController = CreateRef<ManModelController>();
+        Script::Connect(manModel, manModelController);
+
+        auto wolfModel = loader.LoadModel(MODELS_DIRECTORY + "wolf.fbx");
+        auto wolfModelController = CreateRef<WolfModelController>();
+        Script::Connect(wolfModel, wolfModelController);
+
+        meshOptimizer.doOptimization = false;
+
+        auto spiderModel = loader.LoadModel(MODELS_DIRECTORY + "spider.fbx");
+        auto spiderModelController = CreateRef<SpiderModelController>();
+        Script::Connect(wolfModel, wolfModelController);
+
+        m_Models.insert(std::make_pair("man", manModel));
+        m_Models.insert(std::make_pair("wolf", wolfModel));
+        m_Models.insert(std::make_pair("spider", spiderModel));
+
+        RegisterScriptableEntity(manModel);
+        RegisterScriptableEntity(wolfModel);
+        RegisterScriptableEntity(spiderModel);
+
+        RegisterUpdatableEntity(manModel->GetAnimator());
+        RegisterUpdatableEntity(wolfModel->GetAnimator());
+        RegisterUpdatableEntity(spiderModel->GetAnimator());
+    }
+
 
     void Render() override
     {
@@ -69,10 +111,16 @@ public:
         }
 
         if (m_RenderConfig.useClassicPipeline) {
-            m_Model->Draw(*m_ClassicPipeline, *m_Camera);
+            m_CurrentModel->Draw(*m_ClassicPipeline, *m_Camera);
         }
         else {
-            m_Model->Draw(*m_MeshShaderPipeline, *m_Camera);
+            if (m_RenderConfig.showMeshlets) {
+                m_MeshShaderPipeline->SetBool(ShaderPipeline::ShaderStage::Fragment, "u_colorize_meshlet", true);
+            } else {
+                m_MeshShaderPipeline->SetBool(ShaderPipeline::ShaderStage::Fragment, "u_colorize_meshlet", false);
+            }
+
+            m_CurrentModel->Draw(*m_MeshShaderPipeline, *m_Camera);
         }
     }
 
@@ -94,19 +142,26 @@ public:
         ImGui::SetWindowFontScale(1.0);
 
         ImGui::Text(u8"Позиция");
-        ImGui::SliderFloat("x", &m_Model->Transform.position.x, -3.0f, 3.0f);
-        ImGui::SliderFloat("y", &m_Model->Transform.position.y, -3.0f, 3.0f);
-        ImGui::SliderFloat("z", &m_Model->Transform.position.z, -3.0f, 3.0f);
+        ImGui::SliderFloat("x", &m_CurrentModel->Transform.position.x, -3.0f, 3.0f);
+        ImGui::SliderFloat("y", &m_CurrentModel->Transform.position.y, -3.0f, 3.0f);
+        ImGui::SliderFloat("z", &m_CurrentModel->Transform.position.z, -3.0f, 3.0f);
 
         ImGui::Text(u8"Ориентация");
-        ImGui::SliderFloat("rx", &m_Model->Transform.rotation.x, -180.0f, 180.0f);
-        ImGui::SliderFloat("ry", &m_Model->Transform.rotation.y, -180.0f, 180.0f);
-        ImGui::SliderFloat("rz", &m_Model->Transform.rotation.z, -180.0f, 180.0f);
+        ImGui::SliderFloat("rx", &m_CurrentModel->Transform.rotation.x, -180.0f, 180.0f);
+        ImGui::SliderFloat("ry", &m_CurrentModel->Transform.rotation.y, -180.0f, 180.0f);
+        ImGui::SliderFloat("rz", &m_CurrentModel->Transform.rotation.z, -180.0f, 180.0f);
+
+        ImGui::Text(u8"Масштаб");
+        ImGui::SliderFloat("s", &m_CurrentModel->Transform.scale.x, 0.1f, 10.0f);
+        ImGui::SliderFloat("s", &m_CurrentModel->Transform.scale.y, 0.1f, 10.0f);
+        ImGui::SliderFloat("s", &m_CurrentModel->Transform.scale.z, 0.1f, 10.0f);
         ImGui::End();
 
         ImGui::Begin(u8"Рендер");
         ImGui::Checkbox(u8"Использовать классический конвейер", &m_RenderConfig.useClassicPipeline);
-        ImGui::Checkbox(u8"Показывать кластеры", &m_RenderConfig.showMeshlets);
+        if (!m_RenderConfig.useClassicPipeline) {
+            ImGui::Checkbox(u8"Показывать кластеры", &m_RenderConfig.showMeshlets);
+        }
         ImGui::Checkbox(u8"Каркас", &m_RenderConfig.wireframe);
         ImGui::Checkbox(u8"Фильтровать задние грани", &m_RenderConfig.backfaceCulling);
         ImGui::End();
@@ -115,9 +170,44 @@ public:
 
     void Init()
     {
-        auto applicationScript = CreateRef<ApplicationScript>();
-        Script::Connect(shared_from_this(), applicationScript);
-        RegisterUpdatableEntity(applicationScript);
+        auto applicationScript = CreateRef<ApplicationController>();
+        Script::Connect(shared_from_this(), std::static_pointer_cast<Script>(applicationScript));
+        RegisterUpdatableEntity(std::static_pointer_cast<Script>(applicationScript));
+    }
+};
+
+
+class ApplicationController : public Script
+{
+private:
+    Ref<App_MeshShaderDemo> This;
+
+public:
+    void FirstSetup() override
+    {
+        This = std::static_pointer_cast<App_MeshShaderDemo>(m_Entity);
+    }
+
+    void Start() override
+    {
+        This->m_CurrentModel = This->m_Models["spider"];
+    }
+
+    void Update(float deltaTime) override
+    {
+        if (Input::IsKeyPressed(GLFW_KEY_ESCAPE)) {
+            This->Shutdown();
+        }
+
+        if (Input::IsKeyPressed(GLFW_KEY_1)) {
+            This->m_CurrentModel = This->m_Models["spider"];
+        }
+        if (Input::IsKeyPressed(GLFW_KEY_2)) {
+            This->m_CurrentModel = This->m_Models["man"];
+        }
+        if (Input::IsKeyPressed(GLFW_KEY_3)) {
+            This->m_CurrentModel = This->m_Models["wolf"];
+        }
     }
 };
 

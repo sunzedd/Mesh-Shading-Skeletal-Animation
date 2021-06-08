@@ -58,14 +58,14 @@ private:
     void SetupImgui();
 
 protected:
+    string m_Name;
     Unique<Window> m_Window;
+
     bool m_IsRunning;
     float m_LastFrameTime = 0.0f;
     float m_DeltaTime;
 
     ImFontConfig m_FontConfig;
-
-    string m_Name = "Application";
 
     Ref<PerspectiveCamera> m_Camera;
     vector<Ref<IUpdatable>> m_UpdatableEntities;
