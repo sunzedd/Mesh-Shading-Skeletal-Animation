@@ -37,6 +37,7 @@ void Model::BindShaderUniforms(ShaderPipeline& shaderPipleline, ICamera& camera)
     mat4 mvp = vp * m;
 
     shaderPipleline.Use();
+    shaderPipleline.SetMatrix4fv(stage, "u_M_matrix", m);
     shaderPipleline.SetMatrix4fv(stage, "u_MVP_matrix", mvp);
 
     const vector<mat4>& pose = m_Animator->GetCurrentPose();

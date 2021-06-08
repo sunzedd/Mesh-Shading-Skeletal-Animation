@@ -31,7 +31,7 @@ public:
     {
         // Load model
         ModelLoader loader(MeshOptimizer(true, true, true));
-        m_Model = loader.LoadModel(MODELS_DIRECTORY + "cubes.obj");
+        m_Model = loader.LoadModel(MODELS_DIRECTORY + "wolf.fbx");
 
         auto modelScript = CreateRef<MainApp::ModelScript>();
         Script::Connect(m_Model, modelScript);
@@ -45,7 +45,7 @@ public:
         m_ClassicPipeline = CreateUnique<ClassicShaderPipeline>(SHADERS_DIRECTORY + "vertex.vert",
                                                                 SHADERS_DIRECTORY + "fragment.frag");
 
-        m_MeshShaderPipeline = CreateUnique<MeshShaderPipeline>(SHADERS_DIRECTORY + "shader_multithread.mesh",
+        m_MeshShaderPipeline = CreateUnique<MeshShaderPipeline>(SHADERS_DIRECTORY + "animation_multithread.mesh",
                                                                 SHADERS_DIRECTORY + "fragment.frag");    
     }
 
