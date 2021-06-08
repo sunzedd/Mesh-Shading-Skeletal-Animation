@@ -42,11 +42,11 @@ public:
         RegisterUpdatableEntity(m_Animator);
 
         // Load shaders
-        m_ClassicPipeline = CreateUnique<ClassicShaderPipeline>(SHADERS_DIRECTORY + "vertex.vert",
-                                                                SHADERS_DIRECTORY + "fragment.frag");
+        m_ClassicPipeline = CreateUnique<ClassicShaderPipeline>(SHADERS_DIRECTORY + "basic.vert",
+                                                                SHADERS_DIRECTORY + "basic.frag");
 
-        m_MeshShaderPipeline = CreateUnique<MeshShaderPipeline>(SHADERS_DIRECTORY + "animation_multithread.mesh",
-                                                                SHADERS_DIRECTORY + "fragment.frag");    
+        m_MeshShaderPipeline = CreateUnique<MeshShaderPipeline>(SHADERS_DIRECTORY + "basic.mesh",
+                                                                SHADERS_DIRECTORY + "basic.frag");    
     }
 
     void Render() override
