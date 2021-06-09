@@ -32,7 +32,7 @@ public:
 
 public:
     App_MeshShaderDemo()
-        : Application(1280, 720, "Test Mesh Shader")
+        : Application(1920, 1080, "Test Mesh Shader")
     {
         LoadModels();
 
@@ -71,10 +71,6 @@ public:
         RegisterScriptableEntity(manModel);
         RegisterScriptableEntity(wolfModel);
         RegisterScriptableEntity(spiderModel);
-
-        RegisterUpdatableEntity(manModel->GetAnimator());
-        RegisterUpdatableEntity(wolfModel->GetAnimator());
-        RegisterUpdatableEntity(spiderModel->GetAnimator());
     }
 
 

@@ -4,7 +4,7 @@
 
 namespace FQW::MeshShaderDemo {
 
-class AnimationController : public ModelController
+class AnimationController : public ModelController 
 {
 private:
     Ref<Animator> m_Animator;
@@ -15,6 +15,7 @@ private:
     double m_LastAnimationSwitchTime = 0;
     
     bool m_RepeatAnimation = true;
+    float m_AnimationSpeedFactor = 1.0f;
 
 
 public:
@@ -29,12 +30,14 @@ public:
         m_DeltaTime = deltaTime;
         if (This->IsActive())
         {
-            SwitchAnimation();
-            PlayAnimation();
+            SwitchAnimationIfRequested();
+            PlayAnimationIfRequested();
+            m_Animator->SetAnimationSpeedFactor(m_AnimationSpeedFactor);
+            m_Animator->Update(m_DeltaTime);
         }
     }
 
-    void SwitchAnimation()
+    void SwitchAnimationIfRequested()
     {
         const vector<Ref<Animation>>& animations = This->GetAnimations();
 
@@ -70,7 +73,7 @@ public:
         }
     }
 
-    void PlayAnimation()
+    void PlayAnimationIfRequested()
     {
         if (Input::IsKeyPressed(GLFW_KEY_P))
         {
@@ -87,6 +90,7 @@ public:
             ImGui::Text(u8"Анимация %d / %d", m_CurrentAnimationIndex + 1, m_AnimationCount);
             ImGui::Text(u8"Время %.3f / %.3f с", m_Animator->GetCurrentAnimationTime() / 1000.0f, m_Animator->GetEndOfAnimationsTime() / 1000.0f);
             ImGui::Checkbox(u8"Зациклить анимацию", &m_RepeatAnimation);
+            ImGui::SliderFloat(u8"Скорость анимации", &m_AnimationSpeedFactor, 0.01f, 3.0f);
             ImGui::Separator();
             ImGui::Text(u8"<- / -> смена анимации");
             ImGui::Text(u8"P - проиграть анимацию");

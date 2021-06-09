@@ -23,7 +23,9 @@ void Animator::PlayAnimation(Ref<Animation> animation, bool repeat)
 
 void Animator::Update(float deltaTime)
 {
-    if (!m_Animation) return;
+    if (!m_Animation) {
+        return;
+    }
 
     if (m_CurrentAnimationTime >= m_Animation->duration)
     {
@@ -37,19 +39,20 @@ void Animator::Update(float deltaTime)
 
     if (m_IsPlaying)
     {
-        m_CurrentAnimationTime += deltaTime;
+        m_CurrentAnimationTime += deltaTime * m_AnimationSpeedFactor;
+        CalculateCurrentPose();
     }
 }
 
 
-const std::vector<glm::mat4>& Animator::GetCurrentPose()
+void Animator::CalculateCurrentPose()
 {
-    if (m_IsPlaying)
+    if (m_IsPlaying) 
     {
         if (m_BoneCount > 0)
         {
             CalculatePose(*m_Animation, m_Skeleton, m_CurrentAnimationTime,
-                          m_CurrentPose, glm::mat4(1.0f), 
+                          m_CurrentPose, glm::mat4(1.0f),
                           m_Animation->globalInverseTransform);
         }
         else
@@ -57,8 +60,6 @@ const std::vector<glm::mat4>& Animator::GetCurrentPose()
             FQW_ERROR("[Animator] bone count = 0");
         }
     }
-
-    return m_CurrentPose;
 }
 
 
@@ -80,6 +81,20 @@ std::pair<uint32_t, float> Animator::GetTimeFraction(const vector<float>& times,
     }
 
     return { segment + 1, 0 };
+}
+
+
+void Animator::SetAnimationSpeedFactor(float value)
+{
+    if (value < 0.01f) {
+        m_AnimationSpeedFactor = 0.01f;
+    }
+    else if (value > 5.0f) {
+        m_AnimationSpeedFactor = 3.0f;
+    }
+    else {
+        m_AnimationSpeedFactor = value;
+    }
 }
 
 
