@@ -33,7 +33,7 @@ void ScriptableEntity::DetachScript()
 
 void ScriptableEntity::Start()
 {
-    if (m_BehaviourScript)
+    if (HasScript())
     {
         m_BehaviourScript->Start();
     }
@@ -42,10 +42,31 @@ void ScriptableEntity::Start()
 
 void ScriptableEntity::Update(float deltaTime)
 {
-    if (m_BehaviourScript)
+    if (HasScript())
     {
         m_BehaviourScript->Update(deltaTime);
     }
+}
+
+
+void ScriptableEntity::OnDrawUI()
+{
+    if (HasScript())
+    {
+        m_BehaviourScript->OnDrawUI();
+    }
+}
+
+
+void ScriptableEntity::Activate()
+{
+    m_IsActive = true;
+}
+
+
+void ScriptableEntity::Deactivate()
+{
+    m_IsActive = false;
 }
 
 } // namespace FQW

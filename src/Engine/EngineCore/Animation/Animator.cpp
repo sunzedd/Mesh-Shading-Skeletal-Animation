@@ -15,6 +15,7 @@ void Animator::PlayAnimation(Ref<Animation> animation)
 {
     m_Animation = animation;
     m_CurrentAnimationTime = 0.001f;
+    m_EndOfAnimationTime = m_Animation->duration;
     m_IsPlaying = true;
 }
 

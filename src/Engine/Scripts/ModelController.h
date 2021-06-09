@@ -7,7 +7,7 @@ namespace FQW {
 
 class ModelController : public Script
 {
-private:
+protected:
     Ref<Model> This;
 
 public:

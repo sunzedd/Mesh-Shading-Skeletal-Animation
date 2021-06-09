@@ -1,16 +1,11 @@
 #pragma once
-#include <Scripts/ModelController.h>
+#include "AnimationController.h"
 
 
 namespace FQW::MeshShaderDemo {
 
-class ManModelController final : public ModelController
+class ManModelController final : public AnimationController
 {
-public:
-    void Update(float deltaTime) override
-    {
-        
-    }
 };
 
 } // namespace FQW::MeshShaderDemo

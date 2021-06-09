@@ -17,7 +17,8 @@ public:
     
     const vector<mat4>& GetCurrentPose();
     const Bone& GetSkeleton() const { return m_Skeleton; }
-
+    float GetCurrentAnimationTime() { return m_CurrentAnimationTime; }
+    float GetEndOfAnimationsTime()  { return m_EndOfAnimationTime; }
 
 private:
     // Расчет текущей позы
@@ -36,6 +37,7 @@ private:
 
 private:
     float m_CurrentAnimationTime = 0.0f;
+    float m_EndOfAnimationTime = 0.0f;
     bool m_IsPlaying = false;
 
     std::vector<glm::mat4> m_CurrentPose;

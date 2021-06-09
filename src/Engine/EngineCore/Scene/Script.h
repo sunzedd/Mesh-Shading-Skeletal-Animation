@@ -15,6 +15,8 @@ public:
     virtual void FirstSetup() { }
     virtual void Start() { }
     virtual void Update(float deltaTime) override { }
+    virtual void OnDrawUI() { }
+
 
     static void Connect(Ref<ScriptableEntity> entity, Ref<Script> script);
 
@@ -32,10 +34,17 @@ public:
 
     void Start();
     void Update(float deltaTime) override;
+    void OnDrawUI();
 
     bool HasScript() { return (bool)m_BehaviourScript; }
+    bool IsActive() { return m_IsActive; }
+    
+    void Activate();
+    void Deactivate();
 
+protected:
     Ref<Script> m_BehaviourScript;
+    bool m_IsActive = true;
 };
 
 } // namespace FQW

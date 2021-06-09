@@ -34,20 +34,7 @@ public:
     App_MeshShaderDemo()
         : Application(1280, 720, "Test Mesh Shader")
     {
-        // Load model
         LoadModels();
-
-        /*
-        ModelLoader loader(MeshOptimizer(false));
-        m_Model = loader.LoadModel(MODELS_DIRECTORY + "spider.fbx");
-
-        auto modelScript = CreateRef<MainApp::ModelScript>();
-        Script::Connect(m_Model, modelScript);
-        RegisterScriptableEntity(m_Model);
-
-        // Setup animator
-        RegisterUpdatableEntity(m_Model->GetAnimator());
-        */
 
         // Load shaders
         m_ClassicPipeline = CreateUnique<ClassicShaderPipeline>(SHADERS_DIRECTORY + "basic.vert",
@@ -75,7 +62,7 @@ public:
 
         auto spiderModel = loader.LoadModel(MODELS_DIRECTORY + "spider.fbx");
         auto spiderModelController = CreateRef<SpiderModelController>();
-        Script::Connect(wolfModel, wolfModelController);
+        Script::Connect(spiderModel, spiderModelController);
 
         m_Models.insert(std::make_pair("man", manModel));
         m_Models.insert(std::make_pair("wolf", wolfModel));
@@ -121,6 +108,10 @@ public:
             }
 
             m_CurrentModel->Draw(*m_MeshShaderPipeline, *m_Camera);
+        }
+
+        for (auto& scriptable : m_ScriptableEntities) {
+            scriptable->OnDrawUI();
         }
     }
 
@@ -190,7 +181,18 @@ public:
 
     void Start() override
     {
-        This->m_CurrentModel = This->m_Models["spider"];
+        for (auto& [name, model] : This->m_Models)
+        {
+            if (name == "spider")
+            {
+                model->Activate();
+                This->m_CurrentModel = model;
+            }
+            else
+            {
+                model->Deactivate();
+            }
+        }
     }
 
     void Update(float deltaTime) override
@@ -200,13 +202,19 @@ public:
         }
 
         if (Input::IsKeyPressed(GLFW_KEY_1)) {
+            This->m_CurrentModel->Deactivate();
             This->m_CurrentModel = This->m_Models["spider"];
+            This->m_CurrentModel->Activate();
         }
         if (Input::IsKeyPressed(GLFW_KEY_2)) {
+            This->m_CurrentModel->Deactivate();
             This->m_CurrentModel = This->m_Models["man"];
+            This->m_CurrentModel->Activate();
         }
         if (Input::IsKeyPressed(GLFW_KEY_3)) {
+            This->m_CurrentModel->Deactivate();
             This->m_CurrentModel = This->m_Models["wolf"];
+            This->m_CurrentModel->Activate();
         }
     }
 };
