@@ -10,7 +10,7 @@ class Animator : public IUpdatable
 public:
     Animator(const Bone& skeleton, uint32_t boneCount);
 
-    void PlayAnimation(Ref<Animation> animation);
+    void PlayAnimation(Ref<Animation> animation, bool repeat=false);
     void Update(float deltaTime);
 
     bool IsPlaying() const { return m_IsPlaying; }
@@ -39,6 +39,7 @@ private:
     float m_CurrentAnimationTime = 0.0f;
     float m_EndOfAnimationTime = 0.0f;
     bool m_IsPlaying = false;
+    bool m_Repeat = false;
 
     std::vector<glm::mat4> m_CurrentPose;
 

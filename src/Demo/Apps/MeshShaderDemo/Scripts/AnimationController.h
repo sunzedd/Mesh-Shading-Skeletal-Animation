@@ -10,9 +10,12 @@ private:
     Ref<Animator> m_Animator;
     size_t m_AnimationCount = 0;
     int m_CurrentAnimationIndex = 0;
-    float m_DeltaTime = 0;
 
+    float m_DeltaTime = 0;
     double m_LastAnimationSwitchTime = 0;
+    
+    bool m_RepeatAnimation = true;
+
 
 public:
     void Start() override
@@ -72,7 +75,7 @@ public:
         if (Input::IsKeyPressed(GLFW_KEY_P))
         {
             const vector<Ref<Animation>>& animations = This->GetAnimations();
-            m_Animator->PlayAnimation(animations[m_CurrentAnimationIndex]);
+            m_Animator->PlayAnimation(animations[m_CurrentAnimationIndex], m_RepeatAnimation);
         }
     }
 
@@ -82,7 +85,8 @@ public:
         {
             ImGui::Begin(u8"Анимация модели");
             ImGui::Text(u8"Анимация %d / %d", m_CurrentAnimationIndex + 1, m_AnimationCount);
-            ImGui::Text(u8"Время %.2f / %.2f с", m_Animator->GetCurrentAnimationTime() / 1000.0f, m_Animator->GetEndOfAnimationsTime() / 1000.0f);
+            ImGui::Text(u8"Время %.3f / %.3f с", m_Animator->GetCurrentAnimationTime() / 1000.0f, m_Animator->GetEndOfAnimationsTime() / 1000.0f);
+            ImGui::Checkbox("Зациклить анимацию", &m_RepeatAnimation);
             ImGui::Separator();
             ImGui::Text(u8"<- / -> смена анимации");
             ImGui::Text(u8"P - проиграть анимацию");

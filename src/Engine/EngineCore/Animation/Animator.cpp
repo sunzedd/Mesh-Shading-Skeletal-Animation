@@ -11,12 +11,13 @@ Animator::Animator(const Bone& skeleton, uint32_t boneCount)
 }
 
 
-void Animator::PlayAnimation(Ref<Animation> animation)
+void Animator::PlayAnimation(Ref<Animation> animation, bool repeat)
 {
     m_Animation = animation;
     m_CurrentAnimationTime = 0.001f;
     m_EndOfAnimationTime = m_Animation->duration;
     m_IsPlaying = true;
+    m_Repeat = repeat;
 }
 
 
@@ -26,7 +27,12 @@ void Animator::Update(float deltaTime)
 
     if (m_CurrentAnimationTime >= m_Animation->duration)
     {
-        m_IsPlaying = false;
+        if (!m_Repeat) {
+            m_IsPlaying = false;
+        }
+        else {
+            m_CurrentAnimationTime = 0.001f;
+        }
     }
 
     if (m_IsPlaying)
