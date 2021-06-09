@@ -10,7 +10,6 @@
 #include "../Graphics/OpenGL_Utils.h"
 #include "../Scene/Script.h"
 #include "../Scene/PerspectiveCamera.h"
-#include "../Scene/Script.h"
 
 #include "Alias.h"
 #include "Window.h"

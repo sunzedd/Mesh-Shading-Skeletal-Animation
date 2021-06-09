@@ -1,6 +1,7 @@
 #pragma once
 #include <Engine.h>
 
+#include "Profiling/GPUPerformanceProfiler.h"
 #include "Scripts/ManModelController.h"
 #include "Scripts/SpiderModelController.h"
 #include "Scripts/WolfModelController.h"
@@ -21,14 +22,17 @@ public:
 
     std::map<string, Ref<Model>> m_Models;
     Ref<Model> m_CurrentModel;
+    float m_ModelScale = 1.0f;
 
     struct {
-        bool useClassicPipeline = false;
+        int drawcallCount = 1;
+        int pipelineId = 0;
         bool showMeshlets = false;
         bool wireframe = false;
         bool backfaceCulling = false;
     } m_RenderConfig;
 
+    GPUPerformanceProfiler m_GPUProfiler;
 
 public:
     App_MeshShaderDemo()
@@ -76,6 +80,89 @@ public:
 
     void Render() override
     {
+        m_CurrentModel->Transform.scale = vec3(1.0f, 1.0f, 1.0f) * m_ModelScale;
+
+        SetupRenderPipeline();
+
+        // Actualy not only GPU time encountered, but CPU side number of commands is not so huge ...
+        m_GPUProfiler.FrameBegin();
+
+        if (m_RenderConfig.pipelineId == 0) 
+        {
+            for (int i = 0; i < m_RenderConfig.drawcallCount; i++) {
+                m_CurrentModel->Draw(*m_ClassicPipeline, *m_Camera);
+            }
+        }
+        else if (m_RenderConfig.pipelineId == 1)
+        {
+            m_MeshShaderPipeline->SetBool(ShaderPipeline::ShaderStage::Fragment,
+                                          "u_colorize_meshlet",
+                                          m_RenderConfig.showMeshlets);
+            
+            for (int i = 0; i < m_RenderConfig.drawcallCount; i++) {
+                m_CurrentModel->Draw(*m_MeshShaderPipeline, *m_Camera);
+            }
+        }
+
+        m_GPUProfiler.FrameEnd();
+
+        for (auto& scriptable : m_ScriptableEntities) {
+            scriptable->OnDrawUI();
+        }
+    }
+
+    void DrawUI() override
+    {
+        ImGui::Begin(u8"Производительность");
+        ImGui::SetWindowFontScale(1.0);
+        ImGui::Text(u8"Частота кадров: %.3f кадров/сек", 1.0f / m_DeltaTime * 1000.0f);
+        ImGui::Text(u8"Время композиции кадра CPU + GPU: %.4f мс", m_DeltaTime);
+        ImGui::Text(u8"Время композиции кадра GPU:       %.4f мс", m_GPUProfiler.GetFrameTime_ms());
+        ImGui::Spacing();
+        ImGui::SliderInt(u8"Вызовов отрисовки", &m_RenderConfig.drawcallCount, 1, 50);
+        ImGui::End();
+
+        ImGui::Begin(u8"Камера");
+        ImGui::SetWindowFontScale(1.0);
+        ImGui::Text(u8"Позиция [%.3f %.3f %.3f]", m_Camera->GetPosition().x, m_Camera->GetPosition().y, m_Camera->GetPosition().z);
+        ImGui::Text(u8"Ориентация: [%.3f %.3f, %.3f]", m_Camera->GetFront().x, m_Camera->GetFront().y, m_Camera->GetFront().z);
+        ImGui::End();
+
+        ImGui::Begin(u8"Модель");
+        ImGui::SetWindowFontScale(1.0);
+
+        ImGui::Text(u8"Позиция");
+        ImGui::SliderFloat("x", &m_CurrentModel->Transform.position.x, -5.0f, 5.0f);
+        ImGui::SliderFloat("y", &m_CurrentModel->Transform.position.y, -5.0f, 5.0f);
+        ImGui::SliderFloat("z", &m_CurrentModel->Transform.position.z, -5.0f, 5.0f);
+
+        ImGui::Text(u8"Ориентация");
+        ImGui::SliderFloat("rx", &m_CurrentModel->Transform.rotation.x, -180.0f, 180.0f);
+        ImGui::SliderFloat("ry", &m_CurrentModel->Transform.rotation.y, -180.0f, 180.0f);
+        ImGui::SliderFloat("rz", &m_CurrentModel->Transform.rotation.z, -180.0f, 180.0f);
+
+        ImGui::Text(u8"Масштаб");
+        ImGui::SliderFloat("s", &m_ModelScale, 0.1f, 10.0f);
+        ImGui::End();
+
+        ImGui::Begin(u8"Рендер");
+        ImGui::RadioButton("Classic", &m_RenderConfig.pipelineId, 0); ImGui::SameLine();
+        ImGui::RadioButton("Mesh Shader", &m_RenderConfig.pipelineId, 1); ImGui::SameLine();
+        ImGui::RadioButton("Task Mesh Shader", &m_RenderConfig.pipelineId, 2);
+        ImGui::Separator();
+        ImGui::Checkbox(u8"Только каркас", &m_RenderConfig.wireframe);
+        ImGui::Checkbox(u8"Фильтровать задние грани", &m_RenderConfig.backfaceCulling);
+
+        if (m_RenderConfig.pipelineId > 0) {
+            ImGui::Checkbox(u8"Показывать кластеры", &m_RenderConfig.showMeshlets);
+        }
+
+        ImGui::End();
+    }
+
+    
+    void SetupRenderPipeline()
+    {
         if (m_RenderConfig.wireframe) {
             glPolygonMode(GL_FRONT, GL_LINE);
         }
@@ -91,67 +178,6 @@ public:
         else {
             glDisable(GL_CULL_FACE);
         }
-
-        if (m_RenderConfig.useClassicPipeline) {
-            m_CurrentModel->Draw(*m_ClassicPipeline, *m_Camera);
-        }
-        else {
-            if (m_RenderConfig.showMeshlets) {
-                m_MeshShaderPipeline->SetBool(ShaderPipeline::ShaderStage::Fragment, "u_colorize_meshlet", true);
-            } 
-            else {
-                m_MeshShaderPipeline->SetBool(ShaderPipeline::ShaderStage::Fragment, "u_colorize_meshlet", false);
-            }
-
-            m_CurrentModel->Draw(*m_MeshShaderPipeline, *m_Camera);
-        }
-
-        for (auto& scriptable : m_ScriptableEntities) {
-            scriptable->OnDrawUI();
-        }
-    }
-
-    void DrawUI() override
-    {
-        ImGui::Begin(u8"Производительность");
-        ImGui::SetWindowFontScale(1.0);
-        ImGui::Text(u8"Частота кадров %.3f", 1 / m_DeltaTime * 1000);
-        ImGui::Text(u8"Время композиции кадра %.3f", m_DeltaTime);
-        ImGui::End();
-
-        ImGui::Begin(u8"Камера");
-        ImGui::SetWindowFontScale(1.0);
-        ImGui::Text(u8"Позиция [%.3f %.3f %.3f]", m_Camera->GetPosition().x, m_Camera->GetPosition().y, m_Camera->GetPosition().z);
-        ImGui::Text(u8"Ориентация: [%.3f %.3f, %.3f]", m_Camera->GetFront().x, m_Camera->GetFront().y, m_Camera->GetFront().z);
-        ImGui::End();
-
-        ImGui::Begin(u8"Модель");
-        ImGui::SetWindowFontScale(1.0);
-
-        ImGui::Text(u8"Позиция");
-        ImGui::SliderFloat("x", &m_CurrentModel->Transform.position.x, -3.0f, 3.0f);
-        ImGui::SliderFloat("y", &m_CurrentModel->Transform.position.y, -3.0f, 3.0f);
-        ImGui::SliderFloat("z", &m_CurrentModel->Transform.position.z, -3.0f, 3.0f);
-
-        ImGui::Text(u8"Ориентация");
-        ImGui::SliderFloat("rx", &m_CurrentModel->Transform.rotation.x, -180.0f, 180.0f);
-        ImGui::SliderFloat("ry", &m_CurrentModel->Transform.rotation.y, -180.0f, 180.0f);
-        ImGui::SliderFloat("rz", &m_CurrentModel->Transform.rotation.z, -180.0f, 180.0f);
-
-        ImGui::Text(u8"Масштаб");
-        ImGui::SliderFloat("s", &m_CurrentModel->Transform.scale.x, 0.1f, 10.0f);
-        ImGui::SliderFloat("s", &m_CurrentModel->Transform.scale.y, 0.1f, 10.0f);
-        ImGui::SliderFloat("s", &m_CurrentModel->Transform.scale.z, 0.1f, 10.0f);
-        ImGui::End();
-
-        ImGui::Begin(u8"Рендер");
-        ImGui::Checkbox(u8"Использовать классический конвейер", &m_RenderConfig.useClassicPipeline);
-        if (!m_RenderConfig.useClassicPipeline) {
-            ImGui::Checkbox(u8"Показывать кластеры", &m_RenderConfig.showMeshlets);
-        }
-        ImGui::Checkbox(u8"Каркас", &m_RenderConfig.wireframe);
-        ImGui::Checkbox(u8"Фильтровать задние грани", &m_RenderConfig.backfaceCulling);
-        ImGui::End();
     }
 
 
@@ -184,8 +210,7 @@ public:
                 model->Activate();
                 This->m_CurrentModel = model;
             }
-            else
-            {
+            else {
                 model->Deactivate();
             }
         }
@@ -197,17 +222,20 @@ public:
             This->Shutdown();
         }
 
-        if (Input::IsKeyPressed(GLFW_KEY_1)) {
+        if (Input::IsKeyPressed(GLFW_KEY_1))
+        {
             This->m_CurrentModel->Deactivate();
             This->m_CurrentModel = This->m_Models["spider"];
             This->m_CurrentModel->Activate();
         }
-        if (Input::IsKeyPressed(GLFW_KEY_2)) {
+        if (Input::IsKeyPressed(GLFW_KEY_2))
+        {
             This->m_CurrentModel->Deactivate();
             This->m_CurrentModel = This->m_Models["man"];
             This->m_CurrentModel->Activate();
         }
-        if (Input::IsKeyPressed(GLFW_KEY_3)) {
+        if (Input::IsKeyPressed(GLFW_KEY_3))
+        {
             This->m_CurrentModel->Deactivate();
             This->m_CurrentModel = This->m_Models["wolf"];
             This->m_CurrentModel->Activate();
