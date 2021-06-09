@@ -86,7 +86,7 @@ public:
             ImGui::Begin(u8"Анимация модели");
             ImGui::Text(u8"Анимация %d / %d", m_CurrentAnimationIndex + 1, m_AnimationCount);
             ImGui::Text(u8"Время %.3f / %.3f с", m_Animator->GetCurrentAnimationTime() / 1000.0f, m_Animator->GetEndOfAnimationsTime() / 1000.0f);
-            ImGui::Checkbox("Зациклить анимацию", &m_RepeatAnimation);
+            ImGui::Checkbox(u8"Зациклить анимацию", &m_RepeatAnimation);
             ImGui::Separator();
             ImGui::Text(u8"<- / -> смена анимации");
             ImGui::Text(u8"P - проиграть анимацию");

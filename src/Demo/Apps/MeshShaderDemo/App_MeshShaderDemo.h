@@ -92,8 +92,7 @@ public:
             glEnable(GL_CULL_FACE);
             glCullFace(GL_BACK);
         }
-        else
-        {
+        else {
             glDisable(GL_CULL_FACE);
         }
 
@@ -103,7 +102,8 @@ public:
         else {
             if (m_RenderConfig.showMeshlets) {
                 m_MeshShaderPipeline->SetBool(ShaderPipeline::ShaderStage::Fragment, "u_colorize_meshlet", true);
-            } else {
+            } 
+            else {
                 m_MeshShaderPipeline->SetBool(ShaderPipeline::ShaderStage::Fragment, "u_colorize_meshlet", false);
             }
 
