@@ -9,9 +9,9 @@ Mesh::Mesh(const vector<Vertex>& vertexBuffer, const vector<uint32_t>& indexBuff
     m_VertexBuffer(vertexBuffer),
     m_IndexBuffer(indexBuffer)
 {
-    CreateBuffersForClassicPipeline();
-
     m_Meshlets = meshletBuilder.Build(vertexBuffer, indexBuffer);
+
+    CreateBuffersForClassicPipeline();
     CreateBuffersForTuringPipeline();
 }
 
@@ -24,8 +24,12 @@ void Mesh::Draw(ShaderPipeline& shaderPipeline, ICamera& camera)
             DrawWithClassicPipeline(shaderPipeline, camera);
             break;
         
-        case ShaderPipeline::Type::TuringRTX:   
-            DrawWithTuringPipeline(shaderPipeline, camera); 
+        case ShaderPipeline::Type::TuringRTX_Mesh:   
+            DrawWithTuringMeshShaderPipeline(shaderPipeline, camera); 
+            break;
+
+        case ShaderPipeline::Type::TuringRTX_TaskMesh:
+            DrawWithTuringTaskMeshShaderPipeline(shaderPipeline, camera);
             break;
 
         default: FQW_CRITICAL("Unknown render pipeline type passed"); break;
@@ -42,13 +46,22 @@ void Mesh::DrawWithClassicPipeline(ShaderPipeline& shaderPipeline, ICamera& came
 }
 
 
-void Mesh::DrawWithTuringPipeline(ShaderPipeline& shaderPipeline, ICamera& camera)
+void Mesh::DrawWithTuringMeshShaderPipeline(ShaderPipeline& shaderPipeline, ICamera& camera)
 {
     shaderPipeline.Use();
     glcheck(glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, m_TuringPipelineBuffers.vertices_SSBO));
     glcheck(glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 1, m_TuringPipelineBuffers.meshlets_SSBO));
     GLuint workgroupCount = m_Meshlets.size();
     glcheck(glDrawMeshTasksNV(0, workgroupCount));
+}
+
+void Mesh::DrawWithTuringTaskMeshShaderPipeline(ShaderPipeline& shaderPipeline, ICamera& camera)
+{
+    shaderPipeline.Use();
+    glcheck(glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, m_TuringPipelineBuffers.vertices_SSBO));
+    glcheck(glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 1, m_TuringPipelineBuffers.meshlets_SSBO));
+    GLuint taskShaderCalls = std::ceil(static_cast<float>(m_Meshlets.size()) / 32.0f);
+    glcheck(glDrawMeshTasksNV(0, taskShaderCalls));
 }
 
 

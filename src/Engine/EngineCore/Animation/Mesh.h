@@ -28,7 +28,8 @@ public:
 
 private:
     void DrawWithClassicPipeline(ShaderPipeline& shaderPipeline, ICamera& camera);
-    void DrawWithTuringPipeline(ShaderPipeline& shaderPipeline, ICamera& camera);
+    void DrawWithTuringMeshShaderPipeline(ShaderPipeline& shaderPipeline, ICamera& camera);
+    void DrawWithTuringTaskMeshShaderPipeline(ShaderPipeline& shaderPipeline, ICamera& camera);
 
     void CreateBuffersForClassicPipeline();
     void CreateBuffersForTuringPipeline();

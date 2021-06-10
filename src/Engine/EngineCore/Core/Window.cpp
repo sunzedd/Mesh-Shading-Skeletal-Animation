@@ -80,7 +80,7 @@ void Window::_Create(int width, int height, const char* title)
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 2);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 0);
 
-    FQW_TRACE("Creating window {}x{} title: {} ...", width, height, title);
+    FQW_TRACE("Creating window {}x{} with title '{}'", width, height, title);
 
     m_Window = glfwCreateWindow(width, height, title, nullptr, nullptr);
     if (!m_Window)
@@ -93,7 +93,7 @@ void Window::_Create(int width, int height, const char* title)
 
     glfwMakeContextCurrent(m_Window);
     gladLoadGLLoader((GLADloadproc)glfwGetProcAddress);
-    glfwSwapInterval(0);
+    glfwSwapInterval(0); // Disable VSync
 }
 
 } // namespace FQW

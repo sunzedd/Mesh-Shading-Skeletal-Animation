@@ -6,6 +6,8 @@
 #include <glm/gtx/quaternion.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
+#include <math.h>
+
 namespace FQW {
 
 using glm::vec4;

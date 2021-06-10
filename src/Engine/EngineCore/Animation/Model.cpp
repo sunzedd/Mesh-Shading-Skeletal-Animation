@@ -26,10 +26,12 @@ void Model::BindShaderUniforms(ShaderPipeline& shaderPipleline, ICamera& camera)
     ShaderPipeline::ShaderStage stage = ShaderPipeline::ShaderStage::Vertex;
     switch (shaderPipleline.GetType())
     {
-        case ShaderPipeline::Type::Classic:     stage = ShaderPipeline::ShaderStage::Vertex; break;
-        case ShaderPipeline::Type::TuringRTX:   stage = ShaderPipeline::ShaderStage::Mesh; break;
-        
-        default: FQW_CRITICAL("Unknown shader pipeline type passed"); break;
+        case ShaderPipeline::Type::Classic:             stage = ShaderPipeline::ShaderStage::Vertex; break;
+        case ShaderPipeline::Type::TuringRTX_Mesh:      stage = ShaderPipeline::ShaderStage::Mesh; break;
+        case ShaderPipeline::Type::TuringRTX_TaskMesh:  stage = ShaderPipeline::ShaderStage::Mesh; break;
+        default: 
+            FQW_CRITICAL("Unknown shader pipeline type passed"); 
+            break;
     }
     
     const mat4& m = Transform.GetModelMatrix();

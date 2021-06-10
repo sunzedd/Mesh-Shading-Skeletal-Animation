@@ -14,14 +14,17 @@ class ShaderPipeline
 public:
     enum class ShaderStage
     {
-        Vertex, Fragment,
-        Mesh, Task
+        Vertex,
+        Fragment,
+        Mesh, 
+        Task
     };
 
     enum class Type
     {
         Classic,
-        TuringRTX
+        TuringRTX_Mesh,
+        TuringRTX_TaskMesh
     };
 
 

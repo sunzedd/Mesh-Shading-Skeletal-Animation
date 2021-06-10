@@ -19,6 +19,7 @@ public:
 
     Unique<ShaderPipeline> m_ClassicPipeline;
     Unique<ShaderPipeline> m_MeshShaderPipeline;
+    Unique<ShaderPipeline> m_TaskMeshShaderPipeline;
 
     std::map<string, Ref<Model>> m_Models;
     Ref<Model> m_CurrentModel;
@@ -41,11 +42,21 @@ public:
         LoadModels();
 
         // Load shaders
-        m_ClassicPipeline = CreateUnique<ClassicShaderPipeline>(SHADERS_DIRECTORY + "basic.vert",
-                                                                SHADERS_DIRECTORY + "classic.frag");
+        m_ClassicPipeline = CreateUnique<ClassicShaderPipeline>(
+            SHADERS_DIRECTORY + "classic\\basic.vert",
+            SHADERS_DIRECTORY + "classic\\basic.frag"
+        );
 
-        m_MeshShaderPipeline = CreateUnique<MeshShaderPipeline>(SHADERS_DIRECTORY + "basic.mesh",
-                                                                SHADERS_DIRECTORY + "turing.frag");    
+        m_MeshShaderPipeline = CreateUnique<MeshShaderPipeline>(
+            SHADERS_DIRECTORY + "turing_mesh\\basic.mesh",
+            SHADERS_DIRECTORY + "turing_mesh\\basic.frag"
+        ); 
+
+        m_TaskMeshShaderPipeline = CreateUnique<TaskMeshShaderPipeline>(
+            SHADERS_DIRECTORY + "turing_taskmesh\\basic.task",
+            SHADERS_DIRECTORY + "turing_taskmesh\\basic.mesh",
+            SHADERS_DIRECTORY + "turing_taskmesh\\basic.frag"
+        );
     }
 
 
@@ -68,9 +79,14 @@ public:
         auto spiderModelController = CreateRef<SpiderModelController>();
         Script::Connect(spiderModel, spiderModelController);
 
-        m_Models.insert(std::make_pair("man", manModel));
-        m_Models.insert(std::make_pair("wolf", wolfModel));
-        m_Models.insert(std::make_pair("spider", spiderModel));
+        auto kittenModel = loader.LoadModel(MODELS_DIRECTORY + "kitten.obj");
+        //auto spiderModelController = CreateRef<SpiderModelController>();
+        //Script::Connect(spiderModel, spiderModelController);
+
+        m_Models.insert({ "man", manModel });
+        m_Models.insert({ "wolf", wolfModel });
+        m_Models.insert({ "spider", spiderModel });
+        m_Models.insert({ "kitten", kittenModel });
 
         RegisterScriptableEntity(manModel);
         RegisterScriptableEntity(wolfModel);
@@ -93,14 +109,27 @@ public:
                 m_CurrentModel->Draw(*m_ClassicPipeline, *m_Camera);
             }
         }
-        else if (m_RenderConfig.pipelineId == 1)
+        else
         {
-            m_MeshShaderPipeline->SetBool(ShaderPipeline::ShaderStage::Fragment,
-                                          "u_colorize_meshlet",
-                                          m_RenderConfig.showMeshlets);
-            
-            for (int i = 0; i < m_RenderConfig.drawcallCount; i++) {
-                m_CurrentModel->Draw(*m_MeshShaderPipeline, *m_Camera);
+            if (m_RenderConfig.pipelineId == 1)
+            {
+                m_MeshShaderPipeline->SetBool(ShaderPipeline::ShaderStage::Fragment,
+                                              "u_colorize_meshlet",
+                                              m_RenderConfig.showMeshlets);
+
+                for (int i = 0; i < m_RenderConfig.drawcallCount; i++) {
+                    m_CurrentModel->Draw(*m_MeshShaderPipeline, *m_Camera);
+                }
+            }
+            else if (m_RenderConfig.pipelineId == 2)
+            {
+                m_TaskMeshShaderPipeline->SetBool(ShaderPipeline::ShaderStage::Fragment,
+                                                  "u_colorize_meshlet",
+                                                  m_RenderConfig.showMeshlets);
+
+                for (int i = 0; i < m_RenderConfig.drawcallCount; i++) {
+                    m_CurrentModel->Draw(*m_TaskMeshShaderPipeline, *m_Camera);
+                }
             }
         }
 
@@ -225,7 +254,7 @@ public:
         if (Input::IsKeyPressed(GLFW_KEY_1))
         {
             This->m_CurrentModel->Deactivate();
-            This->m_CurrentModel = This->m_Models["spider"];
+            This->m_CurrentModel = This->m_Models["wolf"];
             This->m_CurrentModel->Activate();
         }
         if (Input::IsKeyPressed(GLFW_KEY_2))
@@ -237,7 +266,13 @@ public:
         if (Input::IsKeyPressed(GLFW_KEY_3))
         {
             This->m_CurrentModel->Deactivate();
-            This->m_CurrentModel = This->m_Models["wolf"];
+            This->m_CurrentModel = This->m_Models["spider"];
+            This->m_CurrentModel->Activate();
+        }
+        if (Input::IsKeyPressed(GLFW_KEY_4))
+        {
+            This->m_CurrentModel->Deactivate();
+            This->m_CurrentModel = This->m_Models["kitten"];
             This->m_CurrentModel->Activate();
         }
     }

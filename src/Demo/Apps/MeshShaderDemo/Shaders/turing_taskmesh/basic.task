@@ -1,0 +1,40 @@
+#version 450
+#extension GL_NV_mesh_shader : require
+#extension GL_ARB_separate_shader_objects : require
+#extension GL_NV_gpu_shader5 : enable
+
+#define THREAD_COUNT 32
+
+layout(local_size_x=THREAD_COUNT, local_size_y=1, local_size_z=1) in;
+
+taskNV out Task 
+{
+    uint meshletIndices[32];
+} TaskShader_Output;
+
+struct Meshlet
+{
+    uint32_t vertices[64];      
+    uint32_t indices[126 * 3];
+    uint32_t triangleCount;
+    uint32_t vertexCount;
+};
+
+layout(binding = 1, shared) readonly buffer meshlets_ssbo
+{
+	Meshlet meshlets[];
+} meshlet_buffer;
+
+
+void main()
+{
+    uint mi = gl_WorkGroupID.x;
+    uint ti = gl_LocalInvocationID.x;
+
+    TaskShader_Output.meshletIndices[ti] = mi * 32 + ti;
+
+    if (ti == 0) {
+        gl_TaskCountNV = 32;
+    }
+}
+
