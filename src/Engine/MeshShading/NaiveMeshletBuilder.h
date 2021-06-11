@@ -13,7 +13,7 @@ public:
 
         Meshlet meshlet = {};
 
-        std::vector<uint32_t> meshletVertices(vertexBuffer.size(), 0xffffffff); // 0xffffffff: This vertex is not used in current meshlet
+        vector<uint32_t> meshletVertices(vertexBuffer.size(), 0xffffffff); // 0xffffffff: This vertex is not used in current meshlet
 
         for (size_t i = 0; i < indexBuffer.size(); i += 3)
         {
