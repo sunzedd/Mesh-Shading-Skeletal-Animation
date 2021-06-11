@@ -21,29 +21,50 @@ void Model::Draw(ShaderPipeline& shaderPipeline, ICamera& camera)
 }
 
 
+// TODO:
+// This is need to be rewritten.
+// Probably this stuff must be done in kind of Renderer class
+// That entity have as a component
 void Model::BindShaderUniforms(ShaderPipeline& shaderPipleline, ICamera& camera)
 {
-    ShaderPipeline::ShaderStage stage = ShaderPipeline::ShaderStage::Vertex;
-    switch (shaderPipleline.GetType())
-    {
-        case ShaderPipeline::Type::Classic:             stage = ShaderPipeline::ShaderStage::Vertex; break;
-        case ShaderPipeline::Type::TuringRTX_Mesh:      stage = ShaderPipeline::ShaderStage::Mesh; break;
-        case ShaderPipeline::Type::TuringRTX_TaskMesh:  stage = ShaderPipeline::ShaderStage::Mesh; break;
-        default: 
-            FQW_CRITICAL("Unknown shader pipeline type passed"); 
-            break;
-    }
-    
     const mat4& m = Transform.GetModelMatrix();
     const mat4& vp = camera.GetViewProjectionMatrix();
+    const mat4& v = camera.GetViewMatrix();
     mat4 mvp = vp * m;
 
-    shaderPipleline.SetMatrix4fv(stage, "u_M_matrix", m);
-    shaderPipleline.SetMatrix4fv(stage, "u_MVP_matrix", mvp);
-
+    const vec3& viewDirection = camera.GetViewDirection();
     const vector<mat4>& pose = m_Animator->GetCurrentPose();
-    if (pose.size() > 0) {
-        shaderPipleline.SetMatrix4fvArray(stage, "u_bone_transforms", pose);
+
+    switch (shaderPipleline.GetType())
+    {
+        case ShaderPipeline::Type::Classic:
+            shaderPipleline.SetMatrix4fv(ShaderPipeline::ShaderStage::Vertex, "u_M_matrix", m);
+            shaderPipleline.SetMatrix4fv(ShaderPipeline::ShaderStage::Vertex, "u_MVP_matrix", mvp);
+            if (pose.size() > 0)
+                shaderPipleline.SetMatrix4fvArray(ShaderPipeline::ShaderStage::Vertex, "u_bone_transforms", pose);
+            break;
+
+        case ShaderPipeline::Type::TuringRTX_Mesh:
+            shaderPipleline.SetMatrix4fv(ShaderPipeline::ShaderStage::Mesh, "u_M_matrix", m);
+            shaderPipleline.SetMatrix4fv(ShaderPipeline::ShaderStage::Mesh, "u_MVP_matrix", mvp);
+            if (pose.size() > 0)
+                shaderPipleline.SetMatrix4fvArray(ShaderPipeline::ShaderStage::Mesh, "u_bone_transforms", pose);
+            break;
+
+        case ShaderPipeline::Type::TuringRTX_TaskMesh:
+            shaderPipleline.SetMatrix4fv(ShaderPipeline::ShaderStage::Task, "u_M_matrix", m);
+            shaderPipleline.SetVec3(ShaderPipeline::ShaderStage::Task, "u_view_direction", viewDirection);
+            shaderPipleline.SetVec3(ShaderPipeline::ShaderStage::Task, "u_camera_position", camera.GetPosition());
+            shaderPipleline.SetMatrix4fv(ShaderPipeline::ShaderStage::Mesh, "u_MVP_matrix", mvp);
+            shaderPipleline.SetMatrix4fv(ShaderPipeline::ShaderStage::Mesh, "u_V_matrix", v);
+            shaderPipleline.SetMatrix4fv(ShaderPipeline::ShaderStage::Mesh, "u_M_matrix", m);
+            if (pose.size() > 0)
+                shaderPipleline.SetMatrix4fvArray(ShaderPipeline::ShaderStage::Mesh, "u_bone_transforms", pose);
+            break;
+
+        default:
+            FQW_CRITICAL("Unknown shader pipeline type passed");
+            break;
     }
 }
 

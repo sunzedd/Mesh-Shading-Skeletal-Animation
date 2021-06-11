@@ -26,18 +26,19 @@ public:
     float m_ModelScale = 1.0f;
 
     struct {
-        int drawcallCount = 1;
-        int pipelineId = 0;
-        bool showMeshlets = false;
-        bool wireframe = false;
-        bool backfaceCulling = false;
+        int DrawcallCount = 1;
+        int PipelineID = 0;
+        bool ShowMeshlets = false;
+        bool Wireframe = false;
+        bool BackfaceCulling = false;
+        bool ClusterCulling = false;
     } m_RenderConfig;
 
     GPUPerformanceProfiler m_GPUProfiler;
 
 public:
     App_MeshShaderDemo()
-        : Application(1920, 1080, "Test Mesh Shader")
+        : Application(1600, 900, "Test Mesh Shader")
     {
         LoadModels();
 
@@ -53,9 +54,9 @@ public:
         ); 
 
         m_TaskMeshShaderPipeline = CreateUnique<TaskMeshShaderPipeline>(
-            SHADERS_DIRECTORY + "turing_taskmesh\\basic.task",
-            SHADERS_DIRECTORY + "turing_taskmesh\\basic.mesh",
-            SHADERS_DIRECTORY + "turing_taskmesh\\basic.frag"
+            SHADERS_DIRECTORY + "turing_taskmesh\\culling\\basic.task",
+            SHADERS_DIRECTORY + "turing_taskmesh\\culling\\basic.mesh",
+            SHADERS_DIRECTORY + "turing_taskmesh\\culling\\basic.frag"
         );
     }
 
@@ -103,41 +104,37 @@ public:
         // Actualy not only GPU time encountered, but CPU side number of commands is not so huge ...
         m_GPUProfiler.FrameBegin();
 
-        if (m_RenderConfig.pipelineId == 0) 
+        if (m_RenderConfig.PipelineID == 0) 
         {
-            for (int i = 0; i < m_RenderConfig.drawcallCount; i++) {
+            for (int i = 0; i < m_RenderConfig.DrawcallCount; i++)
                 m_CurrentModel->Draw(*m_ClassicPipeline, *m_Camera);
-            }
         }
         else
         {
-            if (m_RenderConfig.pipelineId == 1)
+            if (m_RenderConfig.PipelineID == 1)
             {
                 m_MeshShaderPipeline->SetBool(ShaderPipeline::ShaderStage::Fragment,
                                               "u_colorize_meshlet",
-                                              m_RenderConfig.showMeshlets);
+                                              m_RenderConfig.ShowMeshlets);
 
-                for (int i = 0; i < m_RenderConfig.drawcallCount; i++) {
+                for (int i = 0; i < m_RenderConfig.DrawcallCount; i++)
                     m_CurrentModel->Draw(*m_MeshShaderPipeline, *m_Camera);
-                }
             }
-            else if (m_RenderConfig.pipelineId == 2)
+            else if (m_RenderConfig.PipelineID == 2)
             {
                 m_TaskMeshShaderPipeline->SetBool(ShaderPipeline::ShaderStage::Fragment,
                                                   "u_colorize_meshlet",
-                                                  m_RenderConfig.showMeshlets);
+                                                  m_RenderConfig.ShowMeshlets);
 
-                for (int i = 0; i < m_RenderConfig.drawcallCount; i++) {
+                for (int i = 0; i < m_RenderConfig.DrawcallCount; i++)
                     m_CurrentModel->Draw(*m_TaskMeshShaderPipeline, *m_Camera);
-                }
             }
         }
 
         m_GPUProfiler.FrameEnd();
 
-        for (auto& scriptable : m_ScriptableEntities) {
+        for (auto& scriptable : m_ScriptableEntities)
             scriptable->OnDrawUI();
-        }
     }
 
     void DrawUI() override
@@ -148,7 +145,7 @@ public:
         ImGui::Text(u8"Время композиции кадра CPU + GPU: %.4f мс", m_DeltaTime);
         ImGui::Text(u8"Время композиции кадра GPU:       %.4f мс", m_GPUProfiler.GetFrameTime_ms());
         ImGui::Spacing();
-        ImGui::SliderInt(u8"Вызовов отрисовки", &m_RenderConfig.drawcallCount, 1, 50);
+        ImGui::SliderInt(u8"Вызовов отрисовки", &m_RenderConfig.DrawcallCount, 1, 50);
         ImGui::End();
 
         ImGui::Begin(u8"Камера");
@@ -175,15 +172,24 @@ public:
         ImGui::End();
 
         ImGui::Begin(u8"Рендер");
-        ImGui::RadioButton("Classic", &m_RenderConfig.pipelineId, 0); ImGui::SameLine();
-        ImGui::RadioButton("Mesh Shader", &m_RenderConfig.pipelineId, 1); ImGui::SameLine();
-        ImGui::RadioButton("Task Mesh Shader", &m_RenderConfig.pipelineId, 2);
+        ImGui::RadioButton("Classic", &m_RenderConfig.PipelineID, 0); ImGui::SameLine();
+        ImGui::RadioButton("Mesh Shader", &m_RenderConfig.PipelineID, 1); ImGui::SameLine();
+        ImGui::RadioButton("Task Mesh Shader", &m_RenderConfig.PipelineID, 2);
         ImGui::Separator();
-        ImGui::Checkbox(u8"Только каркас", &m_RenderConfig.wireframe);
-        ImGui::Checkbox(u8"Фильтровать задние грани", &m_RenderConfig.backfaceCulling);
+        ImGui::Checkbox(u8"Только каркас", &m_RenderConfig.Wireframe);
+        ImGui::Checkbox(u8"Фильтровать задние грани", &m_RenderConfig.BackfaceCulling);
 
-        if (m_RenderConfig.pipelineId > 0) {
-            ImGui::Checkbox(u8"Показывать кластеры", &m_RenderConfig.showMeshlets);
+        if (m_RenderConfig.PipelineID > 0) 
+            ImGui::Checkbox(u8"Показывать кластеры", &m_RenderConfig.ShowMeshlets);
+
+        if (m_RenderConfig.PipelineID == 2)
+        {
+            if (ImGui::Checkbox(u8"Фильтровать кластеры", &m_RenderConfig.ClusterCulling))
+            {
+                m_TaskMeshShaderPipeline->SetBool(ShaderPipeline::ShaderStage::Task,
+                                                  "u_do_cluster_culling",
+                                                  m_RenderConfig.ClusterCulling);
+            }
         }
 
         ImGui::End();
@@ -192,14 +198,14 @@ public:
     
     void SetupRenderPipeline()
     {
-        if (m_RenderConfig.wireframe) {
+        if (m_RenderConfig.Wireframe) {
             glPolygonMode(GL_FRONT, GL_LINE);
         }
         else {
             glPolygonMode(GL_FRONT, GL_FILL);
         }
 
-        if (m_RenderConfig.backfaceCulling)
+        if (m_RenderConfig.BackfaceCulling)
         {
             glEnable(GL_CULL_FACE);
             glCullFace(GL_BACK);
@@ -255,24 +261,28 @@ public:
         {
             This->m_CurrentModel->Deactivate();
             This->m_CurrentModel = This->m_Models["wolf"];
+            This->m_ModelScale = 1.0f;
             This->m_CurrentModel->Activate();
         }
         if (Input::IsKeyPressed(GLFW_KEY_2))
         {
             This->m_CurrentModel->Deactivate();
             This->m_CurrentModel = This->m_Models["man"];
+            This->m_ModelScale = 1.0f;
             This->m_CurrentModel->Activate();
         }
         if (Input::IsKeyPressed(GLFW_KEY_3))
         {
             This->m_CurrentModel->Deactivate();
             This->m_CurrentModel = This->m_Models["spider"];
+            This->m_ModelScale = 1.0f;
             This->m_CurrentModel->Activate();
         }
         if (Input::IsKeyPressed(GLFW_KEY_4))
         {
             This->m_CurrentModel->Deactivate();
             This->m_CurrentModel = This->m_Models["kitten"];
+            This->m_ModelScale = 1.0f;
             This->m_CurrentModel->Activate();
         }
     }

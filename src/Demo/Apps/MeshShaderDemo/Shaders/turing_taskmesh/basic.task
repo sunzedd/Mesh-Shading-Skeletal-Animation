@@ -7,6 +7,7 @@
 
 layout(local_size_x=THREAD_COUNT, local_size_y=1, local_size_z=1) in;
 
+
 taskNV out Task 
 {
     uint meshletIndices[32];
@@ -21,6 +22,7 @@ struct Meshlet
     uint8_t vertexCount;
 };
 
+
 layout(binding = 1, shared) readonly buffer meshlets_ssbo
 {
 	Meshlet meshlets[];
@@ -29,13 +31,13 @@ layout(binding = 1, shared) readonly buffer meshlets_ssbo
 
 void main()
 {
-    uint mi = gl_WorkGroupID.x;
     uint ti = gl_LocalInvocationID.x;
+    uint mgi = gl_WorkGroupID.x;
+    uint mi = mgi * 32 + ti;
 
-    TaskShader_Output.meshletIndices[ti] = mi * 32 + ti;
+    TaskShader_Output.meshletIndices[ti] = mi;
 
-    if (ti == 0) {
+    if (ti == 0)
         gl_TaskCountNV = 32;
-    }
 }
 

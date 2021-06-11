@@ -24,6 +24,9 @@ ClassicShaderPipeline::ClassicShaderPipeline(const string& vertexFilepath, const
     glcheck( glCreateProgramPipelines(1, &m_PipelineId) );
     glcheck( glUseProgramStages(m_PipelineId, GL_VERTEX_SHADER_BIT, vertexShaderId) );
     glcheck( glUseProgramStages(m_PipelineId, GL_FRAGMENT_SHADER_BIT, fragmentShaderId) );
+
+    glDeleteShader(vertexShaderId);
+    glDeleteShader(fragmentShaderId);
 }
 
 }

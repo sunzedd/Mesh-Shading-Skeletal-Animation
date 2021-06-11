@@ -10,7 +10,7 @@ GLuint ShaderPipeline::GetUniformLocation(ShaderStage stage, const string& name)
     glcheck(GLuint location = glGetUniformLocation(shaderId, name_));
     if (location < 0 || location > GL_MAX_UNIFORM_LOCATIONS)
     {
-        FQW_WARN("Uniform not found {} in shader {}", name, stage);
+        //FQW_WARN("Uniform not found {} in shader {}", name, stage);
     }
 
     return location;
@@ -134,7 +134,7 @@ GLuint ShaderPipeline::Compile(const GLchar* source, ShaderStage stage, const st
             glGetProgramInfoLog(shaderId, logLen, &written, &log[0]);
         }
 
-        FQW_CRITICAL("Failed to link shader {}, Info: {}", filepath, log);
+        FQW_CRITICAL("Failed to link shader {}\n{}", filepath, log);
         throw std::runtime_error("Failed to link shader: " + log);
     }
 

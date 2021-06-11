@@ -9,7 +9,7 @@ class NaiveMeshletBuilder final : public IMeshletBuilder
 public:
     vector<Meshlet> Build(const vector<Vertex>& vertexBuffer, const vector<uint32_t>& indexBuffer) override
     {
-        vector<Meshlet> result;
+        vector<Meshlet> resultMeshlets;
 
         Meshlet meshlet = {};
 
@@ -29,7 +29,7 @@ public:
                 meshlet.triangleCount >= 126)
             {
                 /* we exceed max vertex count or triangle count, so get a brand new meshlet */
-                result.push_back(meshlet);
+                resultMeshlets.push_back(meshlet);
                 for (size_t j = 0; j < meshlet.vertexCount; ++j)
                 {
                     meshletVertices[meshlet.vertices[j]] = 0xffffffff;
@@ -61,10 +61,20 @@ public:
 
         if (meshlet.triangleCount > 0) // flush the last one
         {
-            result.push_back(meshlet);
+            resultMeshlets.push_back(meshlet);
         }
 
-        return result;
+        while (resultMeshlets.size() % 32 != 0)
+        {
+            resultMeshlets.push_back(Meshlet{});
+        }
+
+        for (auto& meshlet : resultMeshlets)
+        {
+            CalculateMeshletCone(vertexBuffer, meshlet);
+        }
+
+        return resultMeshlets;
     }
 };
 

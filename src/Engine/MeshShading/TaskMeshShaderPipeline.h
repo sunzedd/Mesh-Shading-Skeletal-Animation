@@ -36,6 +36,10 @@ public:
         glcheck(glUseProgramStages(m_PipelineId, GL_TASK_SHADER_BIT_NV, taskShaderId));
         glcheck(glUseProgramStages(m_PipelineId, GL_MESH_SHADER_BIT_NV, meshShaderId));
         glcheck(glUseProgramStages(m_PipelineId, GL_FRAGMENT_SHADER_BIT, fragmentShaderId));
+
+        glDeleteShader(taskShaderId);
+        glDeleteShader(meshShaderId);
+        glDeleteShader(fragmentShaderId);
     }
 
 private:

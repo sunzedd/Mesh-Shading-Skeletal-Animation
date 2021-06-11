@@ -23,11 +23,12 @@ public:
     PerspectiveCamera(const vec3& position = vec3(0, 0, 0), const vec3& up = vec3(0, 1, 0), 
                       float yaw = YAW, float pitch = PITCH);
 
+    const vec3& GetViewDirection() override;
     const mat4& GetViewMatrix() override;
     const mat4& GetProjectionMatrix() override;
     const mat4& GetViewProjectionMatrix() override;
 
-    const vec3& GetPosition() const { return m_Position; }
+    const vec3& GetPosition() const override { return m_Position; }
     const vec3& GetFront() const { return m_Front; }
     const vec3& GetUp() const { return m_Up; }
     const vec3& GetRight() const { return m_Right; }

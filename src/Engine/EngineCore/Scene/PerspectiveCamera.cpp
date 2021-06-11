@@ -16,6 +16,12 @@ PerspectiveCamera::PerspectiveCamera(const vec3& position, const vec3& up, float
 }
 
 
+const vec3& PerspectiveCamera::GetViewDirection()
+{
+    return GetFront();
+}
+
+
 const mat4& PerspectiveCamera::GetViewMatrix()
 {
     m_ViewMatrix = glm::lookAt(m_Position, m_Position + m_Front, m_Up);
