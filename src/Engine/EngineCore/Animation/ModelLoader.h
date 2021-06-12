@@ -32,7 +32,7 @@ using BoneMap = std::unordered_map<string, std::pair<int, mat4>>;
 class ModelLoader 
 {
 public:
-    ModelLoader(MeshOptimizer& meshOptimizer);
+    ModelLoader(MeshOptimizer& meshOptimizer, std::weak_ptr<IMeshletBuilder> meshletBuilder);
     Ref<Model> LoadModel(const string& filepath);
 
 private:
@@ -40,9 +40,9 @@ private:
 
 
     void RecursivelyLoadMeshAndBonesData(const aiNode* node,
-                                                const aiScene* scene,
-                                                std::vector<Ref<Mesh>>& outMeshes,
-                                                BoneMap& outBoneMap);
+                                         const aiScene* scene,
+                                         std::vector<Ref<Mesh>>& outMeshes,
+                                         BoneMap& outBoneMap);
 
 
     Ref<Mesh> ProcessMeshAndUpdateBonemap(const aiMesh* assimpMesh, const aiScene* scene, BoneMap& outBoneMap);
@@ -71,6 +71,7 @@ private:
 
 private:
     MeshOptimizer& m_MeshOptimizer;
+    std::weak_ptr<IMeshletBuilder> m_MeshletBuilder;
 };
 
 } // namespace FQW 

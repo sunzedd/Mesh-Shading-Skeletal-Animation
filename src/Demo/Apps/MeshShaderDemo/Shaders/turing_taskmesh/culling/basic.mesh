@@ -33,6 +33,7 @@ out uint gl_PrimitiveIndicesNV[];
 
 layout(location=0) out MeshShader_Output 
 {
+    flat uint32_t meshletClassID;
     vec3 meshletColor;
     vec3 normal;
 } perVertexOutput[64];
@@ -139,6 +140,7 @@ void main()
         perVertexOutput[i].normal = mat3(transpose(inverse(u_M_matrix * skinned_transform))) * normal;
         perVertexOutput[i].normal = normalize(perVertexOutput[i].normal);
         perVertexOutput[i].meshletColor = meshlet_color;
+        perVertexOutput[i].meshletClassID = meshlet_buffer.meshlets[mi].classID;
     }
 
     // process indices

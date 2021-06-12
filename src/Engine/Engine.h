@@ -9,5 +9,6 @@
 #include "MeshShading/MeshShaderPipeline.h"
 #include "MeshShading/TaskMeshShaderPipeline.h"
 #include "MeshShading/NaiveMeshletBuilder.h"
+#include "MeshShading/AnimationMeshletBuilder.h"
 
 #include "Scripts/FPSCameraScript.h"

@@ -4,12 +4,12 @@
 namespace FQW {
 
 
-Mesh::Mesh(const vector<Vertex>& vertexBuffer, const vector<uint32_t>& indexBuffer, IMeshletBuilder& meshletBuilder)
+Mesh::Mesh(const vector<Vertex>& vertexBuffer, const vector<uint32_t>& indexBuffer, std::weak_ptr<IMeshletBuilder> meshletBuilder)
     :
     m_VertexBuffer(vertexBuffer),
     m_IndexBuffer(indexBuffer)
 {
-    m_Meshlets = meshletBuilder.Build(vertexBuffer, indexBuffer);
+    m_Meshlets = meshletBuilder.lock()->Build(vertexBuffer, indexBuffer);
 
     CreateBuffersForClassicPipeline();
     CreateBuffersForTuringPipeline();
@@ -92,7 +92,7 @@ void Mesh::CreateBuffersForClassicPipeline()
     glcheck(glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (GLvoid*)offsetof(Vertex, normal)) );
 
     glcheck(glEnableVertexAttribArray(2));
-    glcheck(glVertexAttribPointer(2, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex), (GLvoid*)offsetof(Vertex, boneIds)) );
+    glcheck(glVertexAttribPointer(2, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex), (GLvoid*)offsetof(Vertex, boneIDs)) );
 
     glcheck(glEnableVertexAttribArray(3));
     glcheck(glVertexAttribPointer(3, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex),(GLvoid*)offsetof(Vertex, boneWeights)) );

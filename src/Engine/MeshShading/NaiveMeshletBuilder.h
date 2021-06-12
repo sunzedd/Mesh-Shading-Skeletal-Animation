@@ -4,6 +4,10 @@
 
 namespace FQW {
 
+// Arseny Kapoulkine's mesh clustering algorithm, 
+// niagara Vulkan renderer, 2018. 
+// https://github.com/zeux/niagara
+
 class NaiveMeshletBuilder final : public IMeshletBuilder
 {
 public:
@@ -64,10 +68,10 @@ public:
             resultMeshlets.push_back(meshlet);
         }
 
-        while (resultMeshlets.size() % 32 != 0)
-        {
-            resultMeshlets.push_back(Meshlet{});
-        }
+        //while (resultMeshlets.size() % 32 != 0)
+        //{
+        //    resultMeshlets.push_back(Meshlet{});
+        //}
 
         for (auto& meshlet : resultMeshlets)
         {

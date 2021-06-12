@@ -18,7 +18,7 @@ namespace FQW {
 class Mesh : public IDrawable
 {
 public:
-    Mesh(const vector<Vertex>& vertexBuffer, const vector<uint32_t>& indexBuffer, IMeshletBuilder& meshletBuilder);
+    Mesh(const vector<Vertex>& vertexBuffer, const vector<uint32_t>& indexBuffer, std::weak_ptr<IMeshletBuilder> meshletBuilder);
 
     void Draw(ShaderPipeline& shader, ICamera& camera) override;
 

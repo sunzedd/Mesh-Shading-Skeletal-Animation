@@ -32,6 +32,7 @@ public:
         bool Wireframe = false;
         bool BackfaceCulling = false;
         bool ClusterCulling = false;
+        bool ShowMeshletClassGroups = false;
     } m_RenderConfig;
 
     GPUPerformanceProfiler m_GPUProfiler;
@@ -64,7 +65,8 @@ public:
     void LoadModels()
     {
         MeshOptimizer meshOptimizer(true, true, true);
-        auto loader = ModelLoader(meshOptimizer);
+        auto meshletBuilder = CreateRef<AnimationMeshletBuilder>(0);
+        auto loader = ModelLoader(meshOptimizer, meshletBuilder);
         
         auto manModel = loader.LoadModel(MODELS_DIRECTORY + "man.dae");
         auto manModelController = CreateRef<ManModelController>();
@@ -80,14 +82,9 @@ public:
         auto spiderModelController = CreateRef<SpiderModelController>();
         Script::Connect(spiderModel, spiderModelController);
 
-        auto kittenModel = loader.LoadModel(MODELS_DIRECTORY + "kitten.obj");
-        //auto spiderModelController = CreateRef<SpiderModelController>();
-        //Script::Connect(spiderModel, spiderModelController);
-
         m_Models.insert({ "man", manModel });
         m_Models.insert({ "wolf", wolfModel });
         m_Models.insert({ "spider", spiderModel });
-        m_Models.insert({ "kitten", kittenModel });
 
         RegisterScriptableEntity(manModel);
         RegisterScriptableEntity(wolfModel);
@@ -186,9 +183,20 @@ public:
         {
             if (ImGui::Checkbox(u8"Фильтровать кластеры", &m_RenderConfig.ClusterCulling))
             {
-                m_TaskMeshShaderPipeline->SetBool(ShaderPipeline::ShaderStage::Task,
-                                                  "u_do_cluster_culling",
-                                                  m_RenderConfig.ClusterCulling);
+                m_TaskMeshShaderPipeline->SetBool(
+                    ShaderPipeline::ShaderStage::Task,
+                    "u_do_cluster_culling",
+                    m_RenderConfig.ClusterCulling
+                );
+            }
+
+            if (ImGui::Checkbox(u8"Показывать группы кластеров", &m_RenderConfig.ShowMeshletClassGroups))
+            {
+                m_TaskMeshShaderPipeline->SetBool(
+                    ShaderPipeline::ShaderStage::Fragment,
+                    "u_show_meshlet_class_groups",
+                    m_RenderConfig.ShowMeshletClassGroups
+                );
             }
         }
 

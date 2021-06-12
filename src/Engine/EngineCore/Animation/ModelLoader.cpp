@@ -2,9 +2,10 @@
 
 namespace FQW {
 
-ModelLoader::ModelLoader(MeshOptimizer& meshOptimizer)
+ModelLoader::ModelLoader(MeshOptimizer& meshOptimizer, std::weak_ptr<IMeshletBuilder> meshletBuilder)
     :
-    m_MeshOptimizer(meshOptimizer)
+    m_MeshOptimizer(meshOptimizer),
+    m_MeshletBuilder(meshletBuilder)
 { }
 
 
@@ -131,7 +132,7 @@ Ref<Mesh> ModelLoader::ProcessMeshAndUpdateBonemap(const aiMesh* assimpMesh,
 
     m_MeshOptimizer.OptimizeMeshData(vertexBuffer, indexBuffer);
 
-    auto resultMesh = CreateRef<Mesh>(vertexBuffer, indexBuffer, NaiveMeshletBuilder());
+    auto resultMesh = CreateRef<Mesh>(vertexBuffer, indexBuffer, m_MeshletBuilder);
     return resultMesh;
 }
 
@@ -146,7 +147,7 @@ void ModelLoader::ExtractBonesWeights(std::vector<Vertex>& vertexBuffer,
     for (int i = 0; i < assimpMesh->mNumBones; i++)
     {
         const aiBone& assimpBone = *(assimpMesh->mBones[i]);
-        FQW_TRACE("[Model loader] Bone {}", assimpBone.mName.C_Str());
+        //FQW_TRACE("[Model loader] Bone {}", assimpBone.mName.C_Str());
 
         std::string name = assimpMesh->mBones[i]->mName.C_Str();
         if (name.empty()) {
@@ -172,19 +173,19 @@ void ModelLoader::ExtractBonesWeights(std::vector<Vertex>& vertexBuffer,
             switch (boneCountForVertex[affectedVertexId])
             {
                 case 1:
-                    vertexBuffer[affectedVertexId].boneIds.x = i;
+                    vertexBuffer[affectedVertexId].boneIDs.x = i;
                     vertexBuffer[affectedVertexId].boneWeights.x = weight;
                     break;
                 case 2:
-                    vertexBuffer[affectedVertexId].boneIds.y = i;
+                    vertexBuffer[affectedVertexId].boneIDs.y = i;
                     vertexBuffer[affectedVertexId].boneWeights.y = weight;
                     break;
                 case 3:
-                    vertexBuffer[affectedVertexId].boneIds.z = i;
+                    vertexBuffer[affectedVertexId].boneIDs.z = i;
                     vertexBuffer[affectedVertexId].boneWeights.z = weight;
                     break;
                 case 4:
-                    vertexBuffer[affectedVertexId].boneIds.w = i;
+                    vertexBuffer[affectedVertexId].boneIDs.w = i;
                     vertexBuffer[affectedVertexId].boneWeights.w = weight;
                     break;
                 default:
