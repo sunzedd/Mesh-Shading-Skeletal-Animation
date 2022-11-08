@@ -1,3 +1,3 @@
 # Mesh-Shading-Skeletal-Animation
 
-Bachelor diploma
+Exploring the capabilities of [NVIDIA Turing Mesh Shader Pipeline](https://developer.nvidia.com/blog/introduction-turing-mesh-shaders/) to optimize skeletal animation rendering. Source code is incomplete ...
